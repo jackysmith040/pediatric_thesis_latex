@@ -13,14 +13,14 @@ synaptic_weight: 100
 ## 🧠 Left Hemisphere — Analytical Chamber
 > Formal logic, mathematics, structured reasoning, deterministic systems.
 
-*Empty. Awaiting ingestion.*
+- [Clinical Real-Time Latency Derivation](file:///c:/Users/doks/Desktop/cooking_my_thesis/memory/neocortex/left_hemisphere/clinical_real_time_latency_derivation.md) — Decomposition of standalone vs full-pipeline latencies and CPU speedups.
 
 ---
 
 ## 🎨 Right Hemisphere — Intuition Chamber  
 > Spatial reasoning, metaphor, pattern recognition, creative synthesis.
 
-*Empty. Awaiting ingestion.*
+- [Clinical Queue Motion Intuition](file:///c:/Users/doks/Desktop/cooking_my_thesis/memory/neocortex/right_hemisphere/clinical_queue_motion_intuition.md) — Physical dynamics of low pedestrian speeds in clinical triage areas.
 
 ---
 
