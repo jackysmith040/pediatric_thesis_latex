@@ -60,7 +60,9 @@ This work answers five research questions:
 \section{Delimitation and Scope}
 This study combines applied mathematics, computer vision, and healthcare operations. We evaluate data from ambulatory triage areas, waiting corridors, and consultation halls at KATH and the KNUST Hospital in Kumasi, Ghana.
 
-The scope is limited to non-invasive optical detection, demographic classification, and tracking of pediatric and adult persons. The system does not assess clinical acuity or determine patient status independently of hospital workflow records; true patient identification requires linking optical counts with registration or queue-zone management rules. We exclude facial recognition and biometric identity logging to protect patient privacy. All tracking and occupancy metrics rely solely on anonymous bounding box centroids and skeletal coordinates.
+The scope is limited to non-invasive optical detection, demographic classification, and tracking of pediatric and adult persons. In this study, the pediatric cohort operationally includes children under 12 years of age, with primary focus on children under 5 years who experience carrying occlusion. The computer vision model separates individuals by physical allometry. Pre-pubescent children exhibit large cephalocaudal ratios ($R_{\text{ceph}} \ge 0.80$) and shorter normalized stature ($\theta_{\text{adult}} = 0.32$). Post-pubescent adolescents who have attained adult height and limb proportions are grouped with the adult class by visual sensors. Ground-truth demographic labels were established by two independent observers who reviewed video recordings alongside clinic reception registers.
+
+The system does not assess clinical acuity or determine patient status independently of hospital workflow records; true patient identification requires linking optical counts with registration or queue-zone management rules. We exclude facial recognition and biometric identity logging to protect patient privacy. All tracking and occupancy metrics rely solely on anonymous bounding box centroids and skeletal coordinates.
 
 \section{Organization of the Thesis}
 This thesis contains five chapters:

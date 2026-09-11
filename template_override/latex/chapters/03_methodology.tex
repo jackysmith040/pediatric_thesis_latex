@@ -226,7 +226,7 @@ In triage waiting areas and playrooms, adult statures exceed child statures when
     P_{\text{model}}, & \text{otherwise}
     \end{cases}
 \end{equation}
-where $\theta_{\text{adult}} = 0.32$, calibrated against empirical clinical standing measurements (adults: $0.334\text{--}0.420$, children: $0.170\text{--}0.274$).
+where $\theta_{\text{adult}} = 0.32$ and $\theta_{\text{child}} = 0.20$. These thresholds derive from empirical CCTV measurements where standing adults measure $h_{\text{norm}} \in [0.334, 0.420]$ and young children measure $h_{\text{norm}} \in [0.170, 0.274]$. Older adolescents who have achieved adult stature ($h_{\text{norm}} \ge 0.32$) are visually classified within the adult group.
 
 \subsection{Dual-Horizon Temporal Consensus Weighting}
 To eliminate transient classification jitter when toddlers bend or crawl, the final demographic probability blends cumulative historical observation (70\%) with a rolling 15-frame window mean (30\%):
@@ -374,6 +374,15 @@ In hospital waiting halls, seated occupants often trigger two fragmented boundin
     \end{equation}
 \end{enumerate}
 When satisfied, $b_A$ and $b_B$ merge into the encompassing union track $b_A \cup b_B$, eliminating double counts.
+
+\subsection{Clinical Staff and Non-Patient Zone Filtering}\label{sec:staff_filtering}
+Clinical staff work at registration counters, triage desks, and pharmacy dispensary windows. The computer vision detector classifies clinical staff as adult persons. To prevent staff from inflating patient queue numbers, the system uses spatial exclusion masks.
+
+Administrators configure non-counting polygonal zones $\Omega_{\text{staff}}$ over staff service counters. The system determines occupancy status from tracklet bounding box centroids:
+\begin{equation}
+    (x_c, y_c) \in \Omega_{\text{staff}} \implies \text{Status}(T_k) = \text{Staff Occupant}
+\end{equation}
+The software tracks staff occupants for local corridor safety. However, it filters out these tracklet IDs before sending waiting-room census aggregates to LHIMS. In addition, clinical staff wearing uniforms (such as white laboratory coats or nursing scrubs) exhibit uniform upper-body color signatures that support automated identification.
 
 \section{Cross-Camera Person Re-Identification (Re-ID) Decoupled Plugin}
 To track individuals across multi-room clinics without cloud dependencies, the architecture includes a decoupled Person Re-Identification plugin.

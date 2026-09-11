@@ -153,8 +153,8 @@ Table \ref{tab:cephalocaudal_measurements} reports empirical 17-keypoint skeleta
 \textbf{Identified Subject} & \textbf{Torso Length (px)} & \textbf{Leg Length (px)} & \textbf{Cephalocaudal Ratio ($R_{\text{ceph}}$)} & \textbf{Predicted Class} \\
 \midrule
 Toddler Subject (Drawers Feed) & 19.9 & 20.2 & \textbf{0.982} & Child (Pediatric) \\
-Adult Patient 1 (Pharmacy Lobby) & 126.5 & 185.9 & \textbf{0.681} & Adult (Mature) \\
-Adult Patient 2 (Pharmacy Lobby) & 150.2 & 219.1 & \textbf{0.686} & Adult (Mature) \\
+Adult Occupant 1 (Pharmacy Lobby) & 126.5 & 185.9 & \textbf{0.681} & Adult (Mature) \\
+Adult Occupant 2 (Pharmacy Lobby) & 150.2 & 219.1 & \textbf{0.686} & Adult (Mature) \\
 Adult Counter Staff (Pharmacy Lobby) & 105.0 & 168.9 & \textbf{0.621} & Adult (Mature) \\
 Kindergarten Teacher (Classroom Feed) & 154.5 & 209.5 & \textbf{0.737} & Adult (Mature) \\
 \bottomrule
@@ -162,7 +162,9 @@ Kindergarten Teacher (Classroom Feed) & 154.5 & 209.5 & \textbf{0.737} & Adult (
 }
 \end{table}
 
-These measurements show that the cephalocaudal ratio provides an empirical separation margin ($\Delta R \ge 0.245$) between toddlers and mature adults.
+These measurements show that the cephalocaudal ratio provides an empirical separation margin ($\Delta R \ge 0.245$) between toddlers and mature adults. 
+
+Table \ref{tab:cephalocaudal_measurements} includes an Adult Counter Staff member working at the dispensary window. The computer vision model correctly classifies this worker as an adult person ($R_{\text{ceph}} = 0.621$). To prevent dispensary workers from inflating clinical patient waiting totals, the deployment pipeline applies the spatial exclusion zone $\Omega_{\text{staff}}$ described in Section \ref{sec:staff_filtering}. The system tracks the staff member inside the dispensary perimeter, but removes the track ID from the outpatient waiting census sent to LHIMS.
 
 \section{Hardware Latency and CPU SIMD Ablation}
 Deploying vision models in Ghanaian hospitals requires evaluating processor latency and throughput on standard x86 CPU hardware.
