@@ -65,3 +65,4 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 - [x] Phase 3: Results, Benchmarks & Consistency (Points 8–15, 23–25, 29–34) completely executed and verified on branch `phase-3-benchmarks`
 - [x] Phase 4: Citations, Bibliography & Abstract Rewrite (Points 43–45, 47) completely executed and verified on branch `phase-4-citations`
 - [x] Final Adversarial Quality Assurance & Cross-Phase Codex Review under ASD-STE100 rules: zero compilation errors, zero margin overflows across all 85 pages, zero broken citations or orphan bibtex entries, zero banned words, zero prose semicolons, and 100% synchronized numerical metrics.
+- [x] Academic Defense Elevation (~9.0/10 target) on branch `academic-defense-elevation`: Executed full forensic claim-evidence bounding, methodology split transparency, tilt foreshortening caveats, cumulative component addition labeling, preliminary $n=6$ sample clarification, and expanded 4-point limitations under strict ASD-STE100 rules.
