@@ -6,8 +6,8 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 ---
 
 ## 🎯 Phase 1: Title, Scope, Terminology & Research Questions (Points 1–5, 16–19, 35–36, 40–42)
-- [ ] **1.1 Update Thesis Title**: Change title to *"Pediatric Person Detection and Counting Using Computer Vision and Multi-Object Tracking in Clinical Environments"* across all frontmatter, headers, cover, and `thesis_main.tex`. Remove ungrounded terms "Interactive Computer Vision" and "Dynamic Multi-Tracking". *(Point 1)*
-- [ ] **1.2 Standardize Architecture Naming**: Formally designate the system as a **multi-stage pipeline** (Stage 1 Detection $\to$ Stage 2 Crop Classification $\to$ Stage 3 Allometric/Geometric Verification $\to$ Stage 4 Multi-Object Tracking & Smoothing, + optional Re-ID). Eliminate "dual-stage" confusion. *(Point 2)*
+- [x] **1.1 Update Thesis Title**: Change title to *"Pediatric Person Detection and Counting Using Computer Vision and Multi-Object Tracking in Clinical Environments"* across all frontmatter, headers, cover, and `thesis_main.tex`. Remove ungrounded terms "Interactive Computer Vision" and "Dynamic Multi-Tracking". *(Point 1)*
+- [/] **1.2 Standardize Architecture Naming**: Formally designate the system as a **multi-stage pipeline** (Stage 1 Detection $\to$ Stage 2 Crop Classification $\to$ Stage 3 Allometric/Geometric Verification $\to$ Stage 4 Multi-Object Tracking & Smoothing, + optional Re-ID). Eliminate "dual-stage" confusion. *(Point 2)*
 - [ ] **1.3 Conceptual Shift: "Patient" $\to$ "Person"**: Clarify across Chapters 1–5 that computer vision detects *pediatric vs adult persons*, not clinical status. Clarify that patient identification requires registration linkage or queue-zone rules. *(Points 3, 4)*
 - [ ] **1.4 Staff & Clinic Filtering**: Explain how staff (e.g., Table 4.3 "Adult Counter Staff") are handled/filtered or categorized as non-patients prior to LHIMS dispatch. *(Point 5)*
 - [ ] **1.5 Define Pediatric Cohort**: Define pediatric age threshold (e.g. under-five vs child $\le 12$) in Chapter 1 & 3, and state how ground-truth age labels were established. *(Point 17)*

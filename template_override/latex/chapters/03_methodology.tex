@@ -1,7 +1,7 @@
 \chapter{METHODOLOGY}
 
 \section{Methodological Overview}
-This chapter presents a multi-stage, privacy-preserving computer vision framework to count pediatric patients in hospital triage environments under heavy occlusion and variable lighting. The architecture integrates full-frame detection, secondary crop classification, and biological verification, as illustrated in Figure \ref{fig:system_arch}:
+This chapter presents a multi-stage, privacy-preserving computer vision framework to detect and count pediatric and adult persons in hospital outpatient waiting environments under heavy occlusion and variable lighting. The architecture integrates full-frame detection, secondary crop classification, and biological verification, as illustrated in Figure \ref{fig:system_arch}:
 \begin{enumerate}[(i)]
     \item \textbf{Stage 1: Full-Frame Spatial Detection and Tracking:} Input video frames pass through Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI). A YOLO26s-ONNX detector predicts person bounding boxes. A ByteTrack tracker matches targets using an 8D Kalman filter, history-prioritized containment resolution, and anatomical seated occupant deduplication.
     \item \textbf{Stage 2: Margin-Expanded Crop Classification:} Candidate bounding boxes undergo margin expansion ($\alpha = 0.10$) and isotropic letterboxing to $224 \times 224$ pixels with neutral gray padding. A dedicated secondary ONNX crop classifier predicts raw demographic class probabilities.
@@ -12,7 +12,7 @@ This chapter presents a multi-stage, privacy-preserving computer vision framewor
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{images/fig1_system_architecture.png}
-    \caption{Multi-Stage Pediatric Detection, Tracking, and Census Architecture.}
+    \caption{Multi-Stage Pediatric Person Detection, Tracking, and Occupancy Counting Architecture.}
     \label{fig:system_arch}
 \end{figure}
 
@@ -41,7 +41,7 @@ A grayscale frame is therefore a matrix $I \in \mathcal{M}_{H \times W}(\mathbb{
     \label{fig:quant_matrix}
 \end{figure}
 
-Figure \ref{fig:quant_matrix} shows a digital patch $I(x, y)$ along a patient edge. In a $5 \times 5$ sub-patch, the values change from dark background tiles ($I \approx 10-15$) to child clothing ($I \approx 95-105$), producing a step edge of $+84$ intensity units between column 2 and column 3:
+Figure \ref{fig:quant_matrix} shows a digital patch $I(x, y)$ along a human boundary edge. In a $5 \times 5$ sub-patch, the values change from dark background tiles ($I \approx 10-15$) to child clothing ($I \approx 95-105$), producing a step edge of $+84$ intensity units between column 2 and column 3:
 \begin{equation}
     I_{5 \times 5} = \begin{bmatrix}
     12 & 14 & 98 & 102 & 105 \\
@@ -191,7 +191,7 @@ Distillation tests on clinical data revealed clear failure modes:
     \item \textbf{Teacher Hallucination Transfer:} When the teacher labeled bags or cloth wraps as children, distillation forced the student to learn and repeat these false detections.
     \item \textbf{Loss of Spatial Precision:} Distilling soft logits transferred class probabilities, but failed to preserve the sharp boundary coordinates needed for occluded subjects.
 \end{enumerate}
-These distillation errors led us to pivot from soft-logit distillation to a dedicated dual-stage architecture with explicit biological constraints.
+These distillation errors led us to pivot from soft-logit distillation to a dedicated multi-stage architecture with explicit biological constraints.
 
 \section{Stage 2: Margin-Expanded Crop Classification Engine}
 Rather than relying solely on single-pass object detection bounding boxes, the system introduces a dedicated secondary classification stage operating on normalized target crops.
@@ -363,7 +363,7 @@ When a carried infant's bounding box $b_A$ overlaps with a caregiver's bounding 
 where $N_{\text{hits}}$ is confirmed historical tracklet length. This prevents newly spawned single-frame proposals from overwriting verified tracks.
 
 \subsection{Anatomical Seated Occupant Deduplication}
-In hospital waiting halls, seated patients often trigger two fragmented bounding boxes: one for the upper torso/head and one for the lap/knees. Standard IoU fails to merge them because horizontal overlap is minimal. The system detects anatomical fragmentation when:
+In hospital waiting halls, seated occupants often trigger two fragmented bounding boxes: one for the upper torso/head and one for the lap/knees. Standard IoU fails to merge them because horizontal overlap is minimal. The system detects anatomical fragmentation when:
 \begin{enumerate}[(i)]
     \item Aspect ratios are non-tall: $\max(h_A/w_A, h_B/w_B) \le 1.60$.
     \item Vertical or horizontal span overlap satisfies: $\text{overlap}_{\text{span}} \ge 0.70$.
@@ -376,7 +376,7 @@ In hospital waiting halls, seated patients often trigger two fragmented bounding
 When satisfied, $b_A$ and $b_B$ merge into the encompassing union track $b_A \cup b_B$, eliminating double counts.
 
 \section{Cross-Camera Person Re-Identification (Re-ID) Decoupled Plugin}
-To track patients across multi-room clinics without cloud dependencies, the architecture includes a decoupled Person Re-Identification plugin.
+To track individuals across multi-room clinics without cloud dependencies, the architecture includes a decoupled Person Re-Identification plugin.
 
 \subsection{Dual-Zone Color Appearance Signature}
 To maintain low latency on edge CPUs ($< 0.2\text{ ms}$ per crop), the descriptor splits bounding box $B = (x_1, y_1, x_2, y_2)$ into upper and lower regions:

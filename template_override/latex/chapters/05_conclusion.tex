@@ -1,7 +1,7 @@
 \chapter{CONCLUSION}
 
 \section{Summary of Findings}
-This thesis developed and validated a dual-stage computer vision and multi-object tracking framework to prevent pediatric undercounting in crowded healthcare clinics. By combining discrete differential geometry, human allometry, margin-expanded crop classification, and temporal Bayesian filtering, the framework mitigates pediatric undercounting and addresses key challenges of the ``Invisible Child'' problem in Ghanaian hospital triage.
+This thesis developed and validated a multi-stage computer vision and multi-object tracking framework to mitigate pediatric undercounting in crowded healthcare clinics. By combining discrete differential geometry, human allometry, margin-expanded crop classification, and temporal filtering, the framework mitigates pediatric undercounting and addresses key challenges of the ``Invisible Child'' problem in Ghanaian hospital triage.
 
 The main findings of this work are:
 \begin{enumerate}[(i)]
@@ -16,7 +16,7 @@ The main findings of this work are:
 \section{Conclusions}
 This research demonstrates that unconstrained deep neural networks alone are insufficient for hospital triage. Vision models require mathematical and biological constraints derived from image formation and human body growth.
 
-By treating digital images as quantized matrices, applying Complete IoU regression, cropping candidate targets for specialized classification, anchoring infant trajectories to caregivers, and stabilizing tracks with Bayesian filtering, this framework provides a practical, privacy-preserving patient census tool. The system links ceiling CCTV feeds with the Lightwave Health Information Management System (LHIMS) to support hospital operations.
+By treating digital images as quantized matrices, applying Complete IoU regression, cropping candidate targets for specialized classification, anchoring infant trajectories to caregivers, and stabilizing tracks with temporal filtering, this framework provides a practical, privacy-preserving demographic occupancy and person counting tool. When integrated with clinical triage workflows, the system provides objective occupancy telemetry to support hospital operations and LHIMS-linked resource allocation.
 
 \section{Recommendations for Clinical Deployment}
 To deploy this system in Ghanaian hospitals, we recommend four practical steps:
