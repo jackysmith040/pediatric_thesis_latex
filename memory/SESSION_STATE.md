@@ -34,16 +34,20 @@
 10. **Differentiated Environments (Point 33)**: Grouped and clearly distinguished Clinical Hospital Feeds from Educational and Domestic Stress Feeds in Table 4.2.
 11. **Quantitative Tracking Metrics (Point 34)**: Added `\subsection{Quantitative Multi-Object Tracking Evaluation}` reporting ID switches (0), track fragmentation (1, resolved in 2 frames), MT (97.8%), and ML (0.0%).
 
+### Phase 4: Citations, Bibliography & Abstract Rewrite (100% Done & Verified)
+1. **Raw Citation Key Repairs (Point 43)**: Replaced raw/mismatched keys (`zheng2020distance`, `aykyal2022sahi`, `camacho2022`, `alvarez2024`) with valid bibtex entries (`zheng2020ciou`, `akyon2022sahi`, `mlinaric2024`, `javaid2024`).
+2. **Bibliography Relevance Audit (Point 44)**: Reconciled all citations against text claims. Added ethnographic and public health citation for Ghanaian maternal carrying practices (`agyepong1992`). Grounded clinical triage bottlenecks (`addotey2023`, `osei2024`).
+3. **Modern Architecture Citations (Point 45)**: Added and cited official documentation for Ultralytics YOLO (`jocher2023ultralytics`), ONNX Runtime (`onnxruntime2021`), Intel OpenVINO (`openvino2023`), and OpenPose (`cao2019openpose`). All 31 bibliography entries actively cited.
+4. **Abstract Overhaul (Point 47)**: Rewrote the abstract under strict ASD-STE100 (max 21 words/sentence). Integrated revised title, multi-stage architecture, person vs patient scope, 45-person ground truth cohort across 7 sequences, qualified accuracy figures, and edge CPU throughput.
+5. **Compilation & PyMuPDF Audit**: Recompiled cleanly via Tectonic (`exit code 0`, 22.15 MiB, 85 pages). Verified zero margin overflows across all 85 pages with PyMuPDF. Zero prose semicolons, zero banned terms.
+
 ---
 
 ## 2. Immediate Next Step
 
-**Target Milestone: Phase 4 (Citations, Bibliography & Abstract Rewrite)**
-1. **Item 4.1 (Point 43)**: Fix raw bracketed citation keys (`[zheng2020distance]`, `[aykyal2022sahi]`) in Chapter 3 with proper numbered bibtex citations.
-2. **Item 4.2 (Point 44)**: Audit bibliography relevance for cited claims (Ghanaian carrying practices, clinical workflows, triage bottlenecks).
-3. **Item 4.3 (Point 45)**: Modernize architecture citations for YOLO26/ultralytics, ONNX Runtime, OpenVINO, and pose estimation.
-4. **Item 4.4 (Point 47)**: Overhaul the abstract to incorporate all changes: revised title, multi-stage architecture, person vs patient clarification, 45-person count, qualified accuracy figures, and grounded real-time CPU throughput.
-5. **Item 4.5**: Recompile full thesis via Tectonic and verify zero margin overflows across all pages.
+**Target Milestone: Final Review & Codex Audit**
+- Run adversarial review simulating supervisor's Codex audit across all 4 phases.
+- Confirm zero issues remaining across Critical, Important, and Minor tiers.
 
 ---
 

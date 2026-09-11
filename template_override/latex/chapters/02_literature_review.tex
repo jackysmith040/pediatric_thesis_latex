@@ -17,7 +17,7 @@ Later methods used gradient statistics, such as the Histogram of Oriented Gradie
 \end{enumerate}
 
 \subsection{Two-Stage Deep Detectors: Region-Based CNNs}
-Deep Convolutional Neural Networks (CNNs), starting with AlexNet and formalized for detection in R-CNN, improved feature representation. Two-stage detectors divide object detection into two steps:
+Deep Convolutional Neural Networks (CNNs), starting with AlexNet and formalized for detection in R-CNN, improved feature representation. Deep Residual Learning (ResNet) \cite{he2016resnet} introduced identity shortcut connections to solve vanishing gradients. Two-stage detectors divide object detection into two steps:
 \begin{enumerate}[(i)]
     \item \textbf{Region Proposal Generation:} Finding class-agnostic regions of interest (RoIs) using Selective Search or Region Proposal Networks (RPN) in Faster R-CNN.
     \item \textbf{Classification and Bounding Box Refinement:} Extracting feature vectors via RoI Pooling or RoI Align and feeding them into fully connected layers for classification and coordinate regression.
@@ -28,12 +28,12 @@ Two-stage detectors achieve high Mean Average Precision (mAP). However, processi
 \subsection{One-Stage Deep Detectors: The YOLO Family}
 To increase throughput, Redmon et al.\ \cite{redmon2016yolo} introduced the ``You Only Look Once'' (YOLO) framework. YOLO treats object detection as a single spatial regression task. Instead of proposing regions, YOLO divides the input image into an $S \times S$ grid. If an object center falls into a grid cell, that cell predicts bounding coordinates $(x, y, w, h)$, confidence $C$, and class probabilities $P(\text{Class}_i \mid \text{Object})$.
 
-Later architectures, including modern anchor-free models (such as YOLOv8 and YOLO26s), added Path Aggregation Networks (PANet), Cross-Stage Partial (CSP) connections, and Task-Aligned Assigners \cite{jiang2022}. These features fuse shallow high-resolution layers with deep semantic layers.
+Later architectures, including modern anchor-free models (such as YOLOv8 and YOLO26s), added Path Aggregation Networks (PANet), Cross-Stage Partial (CSP) connections, and Task-Aligned Assigners \cite{jiang2022, jocher2023ultralytics}. These features fuse shallow high-resolution layers with deep semantic layers.
 
-However, standard detectors trained on benchmarks like MS COCO group all humans into one ``person'' class. When fine-tuned on pediatric datasets such as the Child Detection Dataset (CDD) \cite{diop2025}, these models struggle with close physical proximity. They often merge an infant carried on a mother's back into the adult's bounding box.
+However, standard detectors trained on benchmarks like MS COCO group all humans into one ``person'' class. When fine-tuned on pediatric datasets such as the Child Detection Dataset (CDD) \cite{diop2025}, these models struggle with close physical proximity. Recent medical vision models have explored infant monitoring and spasm detection in specialized clinical wards \cite{diop2024}. Yet they often merge an infant carried on a mother's back into the adult's bounding box.
 
 \section{Pediatric Anthropometry and Developmental Allometry}
-To separate children from adults without relying on variable clothing patterns, computer vision can use biological growth principles from physical anthropology.
+Early computer vision studies estimated age groups from facial geometry \cite{kwon1999, liu2020}. However, facial features are frequently invisible in downward-tilted ceiling cameras. To separate children from adults reliably, vision models can evaluate whole-body allometric growth rules from physical anthropology \cite{bogin1999}.
 
 \subsection{The Cephalocaudal Growth Gradient}
 Human physical growth does not follow uniform isometric expansion. It follows allometric scaling rules \cite{bogin1999}. Allometry describes the relative growth rate of body parts compared to total body size:
@@ -56,7 +56,7 @@ However, dimensionless body ratios remain stable under 2D perspective projection
 \begin{equation}
     R_{head} = \frac{H_{head}}{H_{total}}, \qquad R_{ceph} = \frac{L_{torso}}{L_{leg}}
 \end{equation}
-As Bogin \cite{bogin1999} and Mlinari\'{c} et al.\ \cite{mlinaric2024} show, pediatric subjects have $R_{head} \approx 0.25$ and $R_{ceph} \ge 0.85$. Adults have $R_{head} \approx 0.125$ and $R_{ceph} \le 0.70$. Adding these biological ratios directly into detection provides a clear mathematical rule to separate adults and children.
+17-point skeletal pose estimation \cite{cao2019openpose} extracts joint coordinates for the head, shoulders, hips, knees, and ankles. As Bogin \cite{bogin1999} and Mlinari\'{c} et al.\ \cite{mlinaric2024} show, pediatric subjects have $R_{head} \approx 0.25$ and $R_{ceph} \ge 0.85$. Adults have $R_{head} \approx 0.125$ and $R_{ceph} \le 0.70$. Adding these biological ratios directly into detection provides a clear mathematical rule to separate adults and children.
 
 \section{Occlusion Handling in Crowded Clinical Healthcare Environments}
 Physical occlusion is a major obstacle in visual monitoring. In outpatient clinics, waiting individuals sit close together on wooden benches or crowd around triage desks and pharmacy windows \cite{osei2024}.
@@ -65,7 +65,7 @@ Physical occlusion is a major obstacle in visual monitoring. In outpatient clini
 In hospital surveillance, occlusions fall into two groups:
 \begin{enumerate}[(i)]
     \item \textbf{Static Environmental Occlusion:} Physical fixtures, including desks, registration counters, pillars, and carts, block occupant torsos and legs.
-    \item \textbf{Dynamic Inter-Object Occlusion:} Walking or seated occupants block each other. In Ghana, mothers carry infants wrapped against their bodies. This causes up to $80\%$ visual occlusion of the child \cite{addotey2023, ouyang2015}.
+    \item \textbf{Dynamic Inter-Object Occlusion:} Walking or seated occupants block each other. In Ghana, mothers carry infants wrapped against their bodies \cite{agyepong1992}. This causes up to $80\%$ visual occlusion of the child \cite{ouyang2015}.
 \end{enumerate}
 
 \subsection{Algorithmic Strategies for Occlusion Robustness}
@@ -83,7 +83,7 @@ Single-frame detection alone cannot maintain an accurate count. A tracking syste
 Multi-object tracking (MOT) typically uses the \textit{Tracking-by-Detection} approach. In this setup, a detector outputs bounding boxes in frame $t$. An association algorithm then matches these boxes to active tracks from earlier frames $1, \dots, t-1$.
 
 \subsection{Evolution from SORT to ByteTrack}
-Bewley et al.\ \cite{bewley2016sort} created Simple Online and Realtime Tracking (SORT). SORT uses a linear constant-velocity Kalman filter to predict positions and uses the Hungarian algorithm to match boxes by IoU distance. SORT is fast (over 200 FPS), but it drops lost tracks after only a few occluded frames.
+Bewley et al.\ \cite{bewley2016sort} created Simple Online and Realtime Tracking (SORT). SORT uses a linear constant-velocity Kalman filter to predict positions and uses the Hungarian algorithm to match boxes by IoU distance. Beyond standard Kalman filtering, researchers have examined centroid-based tracking \cite{ralhan2023} and hierarchical graph structures \cite{koshkina2025} for identity persistence across occlusions. SORT is fast (over 200 FPS), but it drops lost tracks after only a few occluded frames.
 
 Wojke et al.\ \cite{wojke2017deepsort} introduced DeepSORT. DeepSORT adds appearance embeddings from a deep Re-ID network to the matching cost. However, extracting embeddings for every box slows down CPU inference. Furthermore, when mothers and children wear identical patterned cloth, appearance embeddings become too similar, leading to ID switches.
 
@@ -105,7 +105,7 @@ Knowledge distillation, developed by Hinton et al.\ \cite{hinton2015distilling},
 While distillation works well for image classification, applying it to dense object detection in specialized clinical domains presents challenges. As shown in Chapter 3, distillation quality depends directly on training data annotations. Noisy bounding boxes and occlusion in the student dataset cause the student network to copy and amplify errors from the teacher.
 
 \subsection{Hardware SIMD Acceleration and ONNX Runtime}
-To run models in real time on hospital CPUs without GPUs, modern systems use the Open Neural Network Exchange (ONNX) Runtime and Single Instruction, Multiple Data (SIMD) instructions.
+Hospital edge devices require real-time CPU execution without discrete GPUs. Modern frameworks deploy models using ONNX Runtime \cite{onnxruntime2021} and Intel OpenVINO \cite{openvino2023} with SIMD acceleration.
 
 Modern x86\_64 CPUs include Advanced Vector Extensions 2 (AVX2). AVX2 uses 256-bit registers that execute eight parallel 32-bit floating-point multiply-accumulate operations in one clock cycle:
 \begin{equation}

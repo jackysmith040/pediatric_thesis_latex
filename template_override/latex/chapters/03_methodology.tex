@@ -3,7 +3,7 @@
 \section{Methodological Overview}
 This chapter presents a multi-stage, privacy-preserving computer vision framework to detect and count pediatric and adult persons in hospital outpatient waiting environments under heavy occlusion and variable lighting. The architecture integrates full-frame detection, secondary crop classification, and biological verification, as illustrated in Figure \ref{fig:system_arch}:
 \begin{enumerate}[(i)]
-    \item \textbf{Stage 1: Full-Frame Spatial Detection and Tracking:} Input video frames pass through Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI). A YOLO26s-ONNX detector predicts person bounding boxes. A ByteTrack tracker matches targets using an 8D Kalman filter, history-prioritized containment resolution, and anatomical seated occupant deduplication.
+    \item \textbf{Stage 1: Full-Frame Spatial Detection and Tracking:} Input video frames pass through Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI). A YOLO26s-ONNX detector \cite{jocher2023ultralytics} predicts person bounding boxes. A ByteTrack tracker matches targets using an 8D Kalman filter, history-prioritized containment resolution, and anatomical seated occupant deduplication.
     \item \textbf{Stage 2: Margin-Expanded Crop Classification:} Candidate bounding boxes undergo margin expansion ($\alpha = 0.10$) and isotropic letterboxing to $224 \times 224$ pixels with neutral gray padding. A dedicated secondary ONNX crop classifier predicts raw demographic class probabilities.
     \item \textbf{Stage 3: Physical Prior and Weighted Temporal Smoothing:} Raw model probabilities are modulated by a normalized height stature prior ($\theta_{\text{adult}} = 0.32$, $\theta_{\text{child}} = 0.20$) and smoothed across time using weighted temporal smoothing (70\% cumulative track history and 30\% rolling window average). Ambiguous detections are resolved using 17-point skeletal pose estimation to evaluate the cephalocaudal torso-to-leg growth ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$).
     \item \textbf{Cross-Camera Re-Identification Plugin:} An optional decoupled plugin extracts dual-zone upper and lower color signatures to link occupant trajectories across hospital rooms without cloud processing.
@@ -156,7 +156,7 @@ To convert unbounded gradient responses $z = \|\nabla I\| - \theta$ into bounded
 As shown in Figure \ref{fig:grad_field}, the derivative peaks at the decision boundary $z = 0$, where $\sigma'(0) = 0.25$. This property provides strong gradient updates during model calibration.
 
 \subsection{Complete Intersection over Union (CIoU) Loss}
-Bounding box regression uses Complete Intersection over Union (CIoU) loss \cite{zheng2020distance}. CIoU incorporates overlap area, central point distance, and aspect ratio consistency:
+Bounding box regression uses Complete Intersection over Union (CIoU) loss \cite{zheng2020ciou}. CIoU incorporates overlap area, central point distance, and aspect ratio consistency:
 \begin{equation}
     \mathcal{L}_{CIoU} = 1 - \operatorname{IoU} + \frac{\rho^2(\mathbf{b}, \mathbf{b}^{gt})}{c^2} + \alpha v
 \end{equation}
@@ -190,7 +190,7 @@ Contrast Limited Adaptive Histogram Equalization (CLAHE) processes only the lumi
 The clipped excess $\Delta$ distributes uniformly across all bins before bilinear interpolation merges tile boundaries.
 
 \subsection{Slicing Aided Hyper Inference (SAHI)}
-Standard deep neural networks downsample 1080p and 2.7K video frames to $640 \times 640$ pixels, removing fine edge details of infants. Slicing Aided Hyper Inference (SAHI) \cite{aykyal2022sahi} extracts overlapping tiles:
+Standard deep neural networks downsample 1080p and 2.7K video frames to $640 \times 640$ pixels, removing fine edge details of infants. Slicing Aided Hyper Inference (SAHI) \cite{akyon2022sahi} extracts overlapping tiles:
 \begin{enumerate}[(i)]
     \item Each frame $I \in \mathbb{R}^{H \times W}$ splits into tiles $P_{i,j} \in \mathbb{R}^{S_H \times S_W}$ with slice dimensions $640 \times 640$ and overlap fraction $p_o = 0.20$.
     \item The model evaluates both full-frame and tiled inputs.
@@ -305,7 +305,7 @@ $P_{\text{thresh}}$ & $0.60$ & Pediatric confirmation threshold & Conservative d
 $N_{\text{init}}$ & $5\text{ frames}$ & Minimum tracklet confirmation duration & Requires $0.20\text{ s}$ of continuous observation at 25 FPS to filter transient false positives. \\
 $w_{\text{hist}} / w_{\text{roll}}$ & $0.70 / 0.30$ & Temporal smoothing blend weights & Anchors 70\% weight to cumulative track evidence while allowing 30\% sensitivity to posture shifts. \\
 $M$ & $15\text{ frames}$ & Rolling window smoothing horizon & Spans $0.60\text{ s}$ at 25 FPS to absorb momentary bending or crawling without lagging behind transit. \\
-$\tau_{\text{ceph}}$ & $0.80$ & Cephalocaudal ratio threshold ($L_{\text{torso}} / L_{\text{leg}}$) & Derived from allometric human growth literature \cite{bogin1999, camacho2022}, separating children from adults. \\
+$\tau_{\text{ceph}}$ & $0.80$ & Cephalocaudal ratio threshold ($L_{\text{torso}} / L_{\text{leg}}$) & Derived from allometric human growth literature \cite{bogin1999, mlinaric2024}, separating children from adults. \\
 $\alpha_{\text{EMA}}$ & $0.15$ & Track velocity smoothing factor & Reduces centroid trajectory variance by 61.3\% while avoiding lag during fast walking. \\
 $\theta_{\text{sim}}$ & $0.78$ & Re-ID cosine similarity match threshold & Calibrated on 256-D color histograms to minimize false room-to-room tracklet merges. \\
 \bottomrule
@@ -326,7 +326,7 @@ When clothing or swaddling blankets obscure facial features, the system applies 
 \end{figure}
 
 \subsection{Formulation of Allometric Proportions}
-Let $\mathcal{K} = \{k_i = (x_i, y_i, c_i)\}_{i=1}^{17}$ denote detected 2D skeletal keypoints with confidence $c_i \in [0, 1]$:
+Let $\mathcal{K} = \{k_i = (x_i, y_i, c_i)\}_{i=1}^{17}$ denote detected 2D skeletal keypoints extracted via pose estimation \cite{cao2019openpose} with confidence $c_i \in [0, 1]$:
 \begin{itemize}
     \item \textbf{Head keypoints ($k_1\text{--}k_5$):} $k_1$ (Nose), $k_2$ (Left Eye), $k_3$ (Right Eye), $k_4$ (Left Ear), and $k_5$ (Right Ear).
     \item \textbf{Torso keypoints ($k_6, k_7, k_{12}, k_{13}$):} $k_6$ (Left Shoulder), $k_7$ (Right Shoulder), $k_{12}$ (Left Hip), and $k_{13}$ (Right Hip).
@@ -502,7 +502,7 @@ Cross-camera association combines visual cosine similarity with corridor transit
 where $\Phi_{\text{transit}}(\Delta t, C_A, C_B) = 1.0$ if $\tau_{\min} \le \Delta t \le \tau_{\max}$, and $0.0$ otherwise. Matches above threshold $\theta_{\text{sim}} = 0.78$ link tracks across feeds.
 
 \section{Hardware Vectorization: AVX2 SIMD and ONNX Runtime}
-To run on hospital CPUs without GPUs, model weights and operators compile into the Open Neural Network Exchange (ONNX) format.
+To run on hospital CPUs without GPUs, model weights and operators compile into the Open Neural Network Exchange (ONNX) format using ONNX Runtime \cite{onnxruntime2021}.
 
 On x86\_64 CPUs with Advanced Vector Extensions 2 (AVX2), convolution operations use 256-bit vector registers:
 \begin{equation}
@@ -511,7 +511,7 @@ On x86\_64 CPUs with Advanced Vector Extensions 2 (AVX2), convolution operations
 This instruction performs eight 32-bit floating-point Multiply-Accumulate (MAC) operations in one CPU cycle. Native FP32 AVX2 execution delivers higher throughput than emulated FP16 on hospital CPUs.
 
 \section{Ethical Considerations and Data Governance}
-Deploying computer vision in healthcare environments requires strict data governance and privacy safeguards \cite{milkaite2019, alvarez2024}. This section details administrative approvals, non-interventional waivers, patient privacy safeguards, and the zero-retention edge deployment model.
+Deploying computer vision in healthcare environments requires strict data governance and privacy safeguards \cite{milkaite2019, javaid2024}. This section details administrative approvals, non-interventional waivers, patient privacy safeguards, and the zero-retention edge deployment model.
 
 \subsection{Institutional Approvals and Non-Interventional Waivers}
 The research protocol received administrative permission and operational approval from the management of Komfo Anokye Teaching Hospital (KATH) and the KNUST University Hospital in Kumasi, Ghana.

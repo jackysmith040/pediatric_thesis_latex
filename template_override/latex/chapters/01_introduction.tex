@@ -5,10 +5,10 @@ Modern healthcare systems rely on accurate occupancy and flow data for clinical 
 
 Despite investments in digital record systems, initial waiting area headcount monitoring remains manual. Triage nurses and ward assistants scan crowded waiting areas on foot. They count waiting occupants by hand and verbally ask parents whether accompanying children are patients requiring care or healthy siblings. This manual counting process causes delays in prioritizing vulnerable arrivals. It skews emergency nurse-to-patient staffing ratios and introduces discrepancies into administrative records \cite{keles2023, javaid2024}.
 
-Computer Vision (CV) and Deep Learning (DL) offer tools for non-invasive visual monitoring. Neural networks can convert ceiling CCTV streams into spatial coordinate matrices to detect persons, estimate demographic occupancy, and track corridor density in real time \cite{diop2025, jiang2022}. However, standard pedestrian detectors assume upright, unoccluded adults. Furthermore, computer vision models detect physical bodies. They cannot inherently determine whether a detected child is a patient or sibling, nor whether an adult is a caregiver or nurse. Standard off-the-shelf detectors fail to capture pediatric-specific body proportions, particularly in low-resource clinical settings.
+Computer Vision (CV) and Deep Learning (DL) offer tools for non-invasive visual monitoring. Neural networks convert ceiling CCTV streams into spatial coordinate matrices. They detect persons, estimate demographic occupancy, and track corridor density in real time \cite{diop2025, jiang2022}. However, standard pedestrian detectors assume upright, unoccluded adults. Furthermore, computer vision models detect physical bodies. They cannot inherently determine whether a detected child is a patient or sibling, nor whether an adult is a caregiver or nurse. Standard off-the-shelf detectors fail to capture pediatric-specific body proportions, particularly in low-resource clinical settings.
 
 \section{Motivation and Significance}
-This study addresses the systematic undercounting and misclassification of pediatric persons in crowded healthcare waiting areas. Children under five years move unpredictably and stay close to their caregivers. Standard vision models treat all human bodies as uniform bounding boxes with a typical 1:3 width-to-height ratio. These generic models fail to capture morphological proportions that distinguish children from adults, or small children from carried packages and swaddled bundles \cite{lin2022, liu2020}.
+This study addresses the systematic undercounting and misclassification of pediatric persons in crowded healthcare waiting areas. Children under five years move unpredictably and stay close to their caregivers. Standard vision models treat all human bodies as uniform bounding boxes with a typical 1:3 width-to-height ratio. These generic models fail to capture morphological proportions that distinguish children from adults on embedded platforms \cite{lin2022}, or face features in non-frontal orientations \cite{liu2020}.
 
 This work provides three key contributions:
 \begin{enumerate}[(i)]
@@ -20,7 +20,7 @@ This work provides three key contributions:
 \section{Problem Statement}
 Standard computer vision models fail when detecting and tracking pediatric persons under heavy occlusion, dim lighting, and local carrying practices. We call this the \textbf{``Invisible Child'' Problem}.
 
-In Ghanaian clinics, mothers and caregivers carry infants wrapped tightly to their backs with traditional cloth (\textit{kaba} and slings). Under standard ceiling CCTV cameras:
+In Ghanaian clinics, mothers and caregivers carry infants wrapped tightly to their backs with traditional cloth (\textit{kaba} and slings) \cite{agyepong1992}. Under standard ceiling CCTV cameras:
 \begin{enumerate}[(i)]
     \item The child merges visually with the caregiver's torso, creating one silhouette with shared edge gradients.
     \item Standard Convolutional Neural Network (CNN) detectors suppress the child bounding box during Non-Maximum Suppression (NMS), mistaking the infant for a duplicate detection of the adult.

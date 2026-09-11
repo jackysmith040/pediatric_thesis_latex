@@ -45,16 +45,16 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 ---
 
 ## 🎯 Phase 4: Citations, Bibliography & Abstract Rewrite (Points 43–45, 47)
-- [ ] **4.1 Fix Raw Citation Keys**: Replace raw bracketed keys (`[zheng2020distance]`, `[aykyal2022sahi]`) in Chapter 3 with proper numbered bibtex citations. *(Point 43)*
-- [ ] **4.2 Audit Bibliography Relevance**: Review every citation to verify that cited papers directly support the text claims (Ghanaian carrying practices, clinical workflows, triage bottlenecks). *(Point 44)*
-- [ ] **4.3 Modernize Architecture Citations**: Cite official documentation/papers for YOLO26/ultralytics, ONNX Runtime, OpenVINO, and pose estimation. *(Point 45)*
-- [ ] **4.4 Abstract Overhaul**: Rewrite the abstract incorporating all changes: revised title, multi-stage architecture, person vs patient clarification, reconciled 45/46 count, qualified accuracy figures, and grounded real-time CPU throughput. *(Point 47)*
-- [ ] **4.5 Tectonic Compilation & PyMuPDF Margin Audit**: Recompile full thesis via Tectonic and verify zero margin overflows across all pages.
+- [x] **4.1 Fix Raw Citation Keys**: Replace raw bracketed keys (`[zheng2020distance]`, `[aykyal2022sahi]`) in Chapter 3 with proper numbered bibtex citations. *(Point 43)*
+- [x] **4.2 Audit Bibliography Relevance**: Review every citation to verify that cited papers directly support the text claims (Ghanaian carrying practices, clinical workflows, triage bottlenecks). *(Point 44)*
+- [x] **4.3 Modernize Architecture Citations**: Cite official documentation/papers for YOLO26/ultralytics, ONNX Runtime, OpenVINO, and pose estimation. *(Point 45)*
+- [x] **4.4 Abstract Overhaul**: Rewrite the abstract incorporating all changes: revised title, multi-stage architecture, person vs patient clarification, reconciled 45/46 count, qualified accuracy figures, and grounded real-time CPU throughput. *(Point 47)*
+- [x] **4.5 Tectonic Compilation & PyMuPDF Margin Audit**: Recompile full thesis via Tectonic and verify zero margin overflows across all pages.
 
 ---
 
 ## 🚧 In Progress
-- [ ] Phase 4: Citations, Bibliography & Abstract Rewrite (Points 43–45, 47)
+- [ ] Final Review & Codex Audit
 
 ---
 
@@ -63,3 +63,4 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 - [x] Phase 1: Title, Scope, Terminology & Research Questions (Points 1–5, 16–19, 35–36, 40–42) completely executed and verified on branch `phase-1-remediation`
 - [x] Phase 2: Methodology & Algorithmic Rigor (Data Collection, ONNX Classifier, Threshold Calibration, Ethics Section) completely executed and verified on branch `phase-2-methodology`
 - [x] Phase 3: Results, Benchmarks & Consistency (Points 8–15, 23–25, 29–34) completely executed and verified on branch `phase-3-benchmarks`
+- [x] Phase 4: Citations, Bibliography & Abstract Rewrite (Points 43–45, 47) completely executed and verified on branch `phase-4-citations`
