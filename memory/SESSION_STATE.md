@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-11  
 **Branch:** `phase-1-remediation`  
-**Head Commit:** `e38f1ab`  
+**Head Commit:** `b4d3853`  
 **Build Status:** Clean Tectonic compile (`exit code 0`, 70 pages, 22.11 MiB)  
 **Deliverable PDF:** `output/thesis/Pediatric Person Detection and Counting Using Computer Vision and Multi-Object Tracking in Clinical Environments.pdf`  
 
@@ -10,10 +10,10 @@
 
 ## 1. Summary of Work Completed in This Session
 
-### Phase 1: Title, Scope, Terminology & Research Questions (100% Done)
+### Phase 1: Title, Scope, Terminology & Research Questions (100% Done & Verified)
 1. **Title Updated (Point 1)**: Set to *"Pediatric Person Detection and Counting Using Computer Vision and Multi-Object Tracking in Clinical Environments"*. Removed "Interactive Computer Vision" and "Dynamic Multi-Tracking".
 2. **Architecture Naming (Point 2)**: Standardized to **multi-stage pipeline** across abstract and chapters 1, 3, 5, and appendix.
-3. **Person vs. Patient Framing (Points 3, 4)**: Clarified that computer vision detects physical human bodies (adults and children), not clinical status. Distinguishing sick patients from siblings/visitors requires hospital registration linkage or queue-zone rules.
+3. **Person vs. Patient Framing (Points 3, 4)**: Clarified that computer vision detects physical human bodies (adults and children), not clinical status. Distinguishing sick patients from siblings/visitors requires hospital registration linkage or queue-zone rules. Replaced residual "patient counting" with "demographic occupancy counting" in Chapter 2 and Table 4.5.
 4. **Staff Filtering & Table 4.3 (Point 5)**:
    - Added Section 3.6.1 (`\subsection{Clinical Staff and Non-Patient Zone Filtering}`) defining spatial exclusion polygon $\Omega_{\text{staff}}$ and uniform appearance signatures.
    - Relabeled Table 4.3 entry from "Adult Counter Staff" to `Adult Occupant 3 (Pharmacy Counter)` and added explanatory text.
@@ -21,7 +21,7 @@
    - Defined target clinical cohort: Children under 12 years (focusing on under-fives).
    - Defined allometric computer vision boundary: $R_{\text{ceph}} \ge 0.80$, stature $h_{\text{norm}} \le \theta_{\text{adult}} = 0.32$, $\theta_{\text{child}} = 0.20$.
    - Defined ground-truth protocol: Dual-observer manual review with clinic logbooks.
-6. **Temporal Consensus Smoothing (Points 18, 19)**: Renamed "recursive Bayesian updating" to **dual-horizon temporal consensus smoothing** to match the actual 70/30 equation ($\bar{P}_k(t) = 0.70 \cdot P_{\text{hist}} + 0.30 \cdot P_{\text{roll}}$).
+6. **Weighted Temporal Smoothing (Points 18, 19)**: Replaced inflated "dual-horizon consensus" and underived "Bayesian updating" with plain, honest ASD-STE100 **weighted temporal smoothing** across abstract, RQ4, Chapter 3, Chapter 4, Chapter 5, and Appendix ($\bar{P}_k(t) = 0.70 \cdot P_{\text{hist}} + 0.30 \cdot P_{\text{roll}}$).
 7. **Ratio Disentanglement (Point 16)**: Fixed RQ3 to reference the cephalocaudal torso-to-leg ratio $R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$ ($\tau = 0.80$) instead of confusing it with head-to-body ratios ($1:4$ vs $1:8$).
 8. **Research Questions & Objectives (Points 41, 42)**: Rewrote all five specific objectives and research questions as measurable empirical inquiries.
 9. **Claim Calibration (Points 35, 36, 40, 46)**:
