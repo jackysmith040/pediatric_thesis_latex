@@ -237,7 +237,7 @@ Kindergarten Teacher (Classroom Feed) & 154.5 & 209.5 & \textbf{0.737} & Adult (
 
 These measurements confirm the observed pediatric range $[0.941, 0.982]$ and mature adult range $[0.621, 0.737]$. The minimum separation margin between the lowest child measurement ($0.941$) and highest adult measurement ($0.737$) is $\Delta R_{\min} = 0.204$. Between Toddler 1 and the adult teacher, the separation margin is $\Delta R = 0.245$. Both values exceed the allometric decision boundary $\tau = 0.80$, proving reliable separation.
 
-Table \ref{tab:cephalocaudal_measurements} includes Adult Occupant 3 situated at the pharmacy service counter. The computer vision model classifies this individual as an adult person ($R_{\text{ceph}} = 0.621$). Because persons at service counters may include dispensary workers rather than waiting patients, the deployment pipeline applies the spatial exclusion zone $\Omega_{\text{staff}}$ described in Section \ref{sec:staff_filtering}. The system tracks the occupant inside the counter perimeter, but excludes the track ID from the outpatient waiting queue sent to LHIMS.
+Table \ref{tab:cephalocaudal_measurements} includes Adult Occupant 3 situated at the pharmacy service counter. The computer vision model classifies this individual as an adult person ($R_{\text{ceph}} = 0.621$). Service counter occupants may include dispensary staff rather than waiting patients. Therefore, the pipeline applies the spatial exclusion zone $\Omega_{\text{staff}}$ described in Section \ref{sec:staff_filtering}. The system tracks the occupant inside the counter perimeter, but excludes the track ID from the outpatient waiting queue sent to LHIMS.
 
 \section{Hardware Latency and CPU SIMD Ablation}
 Clinical deployment in resource-constrained environments requires evaluation on standard x86 Central Processing Unit (CPU) hardware. High-end Graphics Processing Units (GPUs) are rarely available in district hospital triage rooms.
@@ -245,7 +245,7 @@ Clinical deployment in resource-constrained environments requires evaluation on 
 \subsection{Operational Definition of Clinical Real-Time Processing}
 The operational definition of real-time processing depends on physical movement dynamics in clinical waiting areas. Pedestrian walking speeds in outpatient waiting rooms rarely exceed $1.2\text{ m/s}$. Patients frequently remain stationary on waiting benches for long periods.
 
-Multi-object tracking requires sufficient frame rates to maintain bounding box overlap across successive frames. For pedestrian speeds below $1.2\text{ m/s}$, an inference throughput of $6.8\text{ to } 9.1\text{ FPS}$ maintains continuous tracklet association. At this rate, the tracker updates patient positions every $110\text{ to } 147\text{ ms}$. This frequency prevents frame buffer backlog on the host CPU. It also provides timely demographic census updates to hospital triage dashboards. Therefore, full 30 FPS processing is unnecessary for clinical waiting queue estimation.
+Multi-object tracking requires sufficient frame rates to maintain bounding box overlap across successive frames. For pedestrian speeds below $1.2\text{ m/s}$, an inference throughput of $6.8\text{ to } 9.1\text{ FPS}$ maintains continuous tracklet association. At this rate, the tracker updates occupant positions every $110\text{ to } 147\text{ ms}$. This frequency prevents frame buffer backlog on the host CPU. It also provides timely demographic census updates to hospital triage dashboards. Therefore, full 30 FPS processing is unnecessary for clinical waiting queue estimation.
 
 \subsection{Cross-Resolution Hardware Latency and Throughput}
 Table \ref{tab:hardware_benchmark} reports inference latency and throughput across four clinical CCTV resolutions on an x86 CPU with native AVX2 SIMD acceleration. Standalone YOLO26s forward inference requires $34.5\text{ ms}$ ($28.94\text{ FPS}$). The full end-to-end pipeline includes image decoding, letterbox transformation, CLAHE enhancement, crop classification, ByteTrack association, and tracklet smoothing. The full pipeline requires $110.2\text{ to } 146.6\text{ ms}$ ($6.8\text{ to } 9.1\text{ FPS}$).
@@ -322,7 +322,7 @@ As shown in Figure \ref{fig:cpu_ablation} and Table \ref{tab:precision_ablation}
 These benchmarks confirm that native FP32 with AVX2 SIMD execution delivers superior real-time throughput on standard hospital CPU hardware.
 
 \section{Discussion of Findings and Clinical Utility}
-The test results show that, in the evaluated clips, adding cephalocaudal allometric constraints and weighted temporal smoothing improves demographic counting accuracy compared with the baseline detector.
+In the evaluated clips, cephalocaudal allometric constraints and temporal smoothing improved demographic counting accuracy compared to baseline detection.
 
 \subsection{Mitigation of the ``Invisible Child'' Problem}
 Standard models often miss infants carried on mothers' backs during Non-Maximum Suppression (NMS). In our pipeline, CLAHE contrast enhancement and SAHI slicing help preserve edge gradients ($+360$ Sobel response) between child and caregiver clothing. Parent-child spatial anchoring maintains the child's trajectory during temporary occlusion, mitigating undercounting in the tested scenes.
@@ -335,6 +335,6 @@ The system formats occupancy data as an anonymous JSON telemetry record:
     & \text{adult\_count}, \text{triage\_queue\_estimate} \}
     \end{aligned}
 \end{equation}
-The telemetry is designed so that it could be integrated with LHIMS through an appropriate application programming interface (API). While this study evaluated optical detection and tracking rather than hospital staffing workflows, real-time demographic counts could support healthcare administrators in monitoring waiting-area density and planning staff deployment.
+The telemetry format supports integration with LHIMS through an application programming interface (API). This study evaluated optical tracking rather than staffing workflows. Even so, demographic counts help administrators monitor waiting-area density and plan staff deployment.
 
 Chapter 5 concludes the thesis, reviews operational limitations, and provides practical deployment recommendations for hospital administrators.

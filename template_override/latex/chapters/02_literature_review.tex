@@ -95,7 +95,7 @@ Zhang et al.\ \cite{zhang2022bytetrack} introduced ByteTrack to solve this issue
 ByteTrack tracks accurately using bounding coordinates alone, avoiding the latency of deep appearance embeddings.
 
 \section{Edge Computing and Model Compression in Healthcare}
-Deploying vision models in developing health facilities introduces strict infrastructure constraints: unstable power, no dedicated GPU servers, and privacy rules that prevent sending raw video to cloud servers \cite{milkaite2019, addotey2023}.
+Deploying vision models in developing clinics introduces strict constraints. Facilities face unstable power, lack GPU servers, and prohibit transmitting raw video to cloud servers \cite{milkaite2019, addotey2023}.
 
 \subsection{Knowledge Distillation Paradigms}
 Knowledge distillation, developed by Hinton et al.\ \cite{hinton2015distilling}, transfers features from a large teacher model into a smaller student model. The loss balances hard ground-truth cross-entropy with softened teacher probabilities scaled by temperature $T$:
@@ -138,7 +138,7 @@ ByteTrack \cite{zhang2022bytetrack} & Two-stage Hungarian matching on $D_{high},
 \section{The Research Gap}
 A review of the literature reveals three clear research gaps:
 \begin{enumerate}[(i)]
-    \item \textbf{The Semantic-Biological Disconnect:} Existing deep learning detectors optimize bounding boxes using geometric criteria (IoU, aspect ratio) alone. Among the studies reviewed in this thesis, we did not identify works that integrate allometric cephalocaudal growth laws ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) directly as a verification rule for pediatric person counting.
+    \item \textbf{The Semantic-Biological Disconnect:} Existing deep learning detectors optimize bounding boxes using geometric criteria (IoU, aspect ratio) alone. Reviewed literature does not integrate allometric cephalocaudal growth laws ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) directly as a verification constraint for pediatric person counting.
     \item \textbf{The Occlusion Feature-Collapse Gap:} Standard models run on downsampled full frames, which removes the fine visual details of carried infants. Among the literature evaluated, combining slicing-aided inference (SAHI) with local contrast enhancement (CLAHE) has not been widely examined for pediatric clinical triage.
     \item \textbf{The Data-Centric Distillation Dilemma:} While knowledge distillation offers compact models, its ability to transfer features for occluded children under clinical distribution shifts remains unproven.
 \end{enumerate}
