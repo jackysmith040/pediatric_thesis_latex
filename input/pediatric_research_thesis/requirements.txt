@@ -1,0 +1,13 @@
+pydantic
+pydantic-settings
+ultralytics
+opencv-python
+nicegui
+torch
+yt-dlp
+cap_from_youtube
+reportlab
+pytest
+supervision
+onnx
+onnxruntime

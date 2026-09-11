@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pediatric Patient Counting Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#ece6ee",
+                        "secondary": "#63597c",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-secondary-fixed": "#1f1635",
+                        "inverse-surface": "#322f35",
+                        "on-primary-fixed": "#22005d",
+                        "inverse-primary": "#cfbcff",
+                        "primary-fixed": "#e9ddff",
+                        "surface-dim": "#ded8e0",
+                        "on-surface-variant": "#494551",
+                        "surface-bright": "#fdf7ff",
+                        "secondary-container": "#e1d4fd",
+                        "surface-tint": "#6750a4",
+                        "outline-variant": "#cbc4d2",
+                        "on-secondary-container": "#645a7d",
+                        "surface": "#fdf7ff",
+                        "secondary-fixed-dim": "#cdc0e9",
+                        "inverse-on-surface": "#f5eff7",
+                        "secondary-fixed": "#e9ddff",
+                        "outline": "#7a7582",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#765b00",
+                        "on-surface": "#1d1b20",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#4f378a",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed-dim": "#e7c365",
+                        "on-secondary-fixed-variant": "#4b4263",
+                        "on-primary-container": "#e0d2ff",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#6750a4",
+                        "on-background": "#1d1b20",
+                        "surface-container": "#f2ecf4",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "background": "#fdf7ff",
+                        "surface-container-highest": "#e6e0e9",
+                        "surface-variant": "#e6e0e9",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f8f2fa",
+                        "tertiary-container": "#c9a74d",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#cfbcff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdf93",
+                        "on-tertiary-container": "#503d00",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "md": "16px",
+                        "margin-desktop": "32px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "margin-mobile": "16px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter", "sans-serif"],
+                        "body-md": ["JetBrains Mono", "monospace"],
+                        "display-lg-mobile": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "data-lg": ["JetBrains Mono", "monospace"],
+                        "label-caps": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "data-lg": ["32px", { "lineHeight": "1", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            -webkit-font-smoothing: antialiased;
+        }
+        .bento-border {
+            border: 1px solid theme('colors.outline-variant');
+        }
+        .tabular-data {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden lg:flex flex-col h-screen fixed left-0 top-0 py-lg bg-surface-container-low border-r border-outline-variant w-64 z-40">
+<div class="px-gutter mb-8">
+<h1 class="font-display-lg text-primary text-2xl font-extrabold tracking-tighter">PEDIATRIC_CORE_V1</h1>
+<div class="mt-4 border-l-2 border-primary pl-2">
+<p class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant">ST. JUDE UNIT 4</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-1">Active Session: Dr. Aris</p>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1 px-4">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2 bg-primary text-on-primary font-bold border-l-4 border-secondary rounded-sm scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-caps text-label-caps uppercase tracking-widest">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-sm border-l-4 border-transparent hover:border-outline-variant" href="#">
+<span class="material-symbols-outlined text-lg">list_alt</span>
+<span class="font-label-caps text-label-caps uppercase tracking-widest">Patient Logs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-sm border-l-4 border-transparent hover:border-outline-variant" href="#">
+<span class="material-symbols-outlined text-lg">map</span>
+<span class="font-label-caps text-label-caps uppercase tracking-widest">Capacity Maps</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-sm border-l-4 border-transparent hover:border-outline-variant" href="#">
+<span class="material-symbols-outlined text-lg">group</span>
+<span class="font-label-caps text-label-caps uppercase tracking-widest">Staffing</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-sm border-l-4 border-transparent hover:border-outline-variant" href="#">
+<span class="material-symbols-outlined text-lg">monitor_heart</span>
+<span class="font-label-caps text-label-caps uppercase tracking-widest">System Health</span>
+</a>
+</div>
+<div class="px-4 mt-auto">
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-error text-on-error font-label-caps text-label-caps uppercase border border-error-container hover:bg-error-container hover:text-error transition-colors rounded-sm">
+<span class="material-symbols-outlined text-sm">warning</span>
+                EMERGENCY_OVERRIDE
+            </button>
+<a class="flex items-center gap-3 px-3 py-2 mt-4 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-sm" href="#">
+<span class="material-symbols-outlined text-lg">logout</span>
+<span class="font-label-caps text-label-caps uppercase tracking-widest">Logout</span>
+</a>
+</div>
+</nav>
+<!-- TopAppBar (Mobile/Desktop Header) -->
+<div class="flex-1 lg:ml-64 flex flex-col min-h-screen">
+<header class="flex justify-between items-center w-full px-gutter h-16 max-w-full mx-auto bg-surface border-b border-outline-variant sticky top-0 z-30">
+<div class="lg:hidden">
+<h1 class="font-display-lg-mobile text-display-lg-mobile font-extrabold text-primary tracking-tighter">PEDIATRIC_CORE_V1</h1>
+</div>
+<div class="hidden lg:block">
+<!-- Empty div for alignment on desktop since title is in sidebar -->
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-sm active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-sm active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-sm active:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas: Bento Grid Layout -->
+<main class="flex-1 p-margin-mobile md:p-margin-desktop overflow-y-auto pb-24 lg:pb-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-0 border border-outline-variant bg-outline-variant grid-lines bg-surface-container-lowest">
+<!-- Primary Section: Capacity (Spans 2x2 on desktop visually) -->
+<section class="md:col-span-8 md:row-span-2 bento-border bg-surface p-6 flex flex-col justify-between min-h-[300px]">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h2 class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant">Current Pediatric Capacity</h2>
+<p class="font-body-md text-body-md text-outline mt-1 text-sm">Real-time telemetry unit 4</p>
+</div>
+<div class="bg-surface-container-high px-3 py-1 rounded-sm border-l-2 border-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps uppercase">Live</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-auto">
+<div class="bg-surface-container-low p-4 border border-outline-variant rounded-sm flex flex-col justify-end">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-2">Children</span>
+<span class="font-body-md font-extrabold text-[56px] leading-none tabular-data text-primary">42</span>
+</div>
+<div class="bg-surface-container-low p-4 border border-outline-variant rounded-sm flex flex-col justify-end">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant mb-2">Adults (Accompanying)</span>
+<span class="font-body-md font-extrabold text-[56px] leading-none tabular-data text-secondary">38</span>
+</div>
+</div>
+</section>
+<!-- Alerts Section -->
+<section class="md:col-span-4 bento-border bg-error-container p-6 flex flex-col gap-4">
+<h2 class="font-label-caps text-label-caps uppercase tracking-widest text-on-error-container flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">warning</span>
+                        System Alerts
+                    </h2>
+<div class="bg-surface p-3 border border-error opacity-90 rounded-sm">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-caps text-label-caps uppercase text-error">Capacity Warning</span>
+<span class="font-body-md text-xs text-outline tabular-data">14:02:11</span>
+</div>
+<p class="font-body-md text-sm text-on-surface">Unit 4 nearing maximum capacity threshold (85%). Prepare overflow protocols.</p>
+</div>
+<div class="bg-surface p-3 border border-outline-variant rounded-sm">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-caps text-label-caps uppercase text-tertiary">Staffing Notice</span>
+<span class="font-body-md text-xs text-outline tabular-data">13:45:00</span>
+</div>
+<p class="font-body-md text-sm text-on-surface">Shift change in 15 minutes. 2 nurses pending sign-in.</p>
+</div>
+</section>
+<!-- Live Video Feed -->
+<section class="md:col-span-4 bento-border bg-surface p-4 flex flex-col">
+<h2 class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant mb-4">Live Video Feed</h2>
+<div class="relative w-full aspect-video bg-inverse-surface rounded-lg border border-outline overflow-hidden">
+<img alt="Hospital corridor feed" class="w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="A clean, modern hospital corridor viewed through a security camera lens. The lighting is bright and clinical, emphasizing the sterile environment. Subtle teal accents are visible on signage. The image has a slightly desaturated, realistic CCTV aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5sPRUQ4fn3NcaKI5gvC-MD_RePH0u659YmYGl3V9b7paSvezYfhZ8kZAfKR4BcltWA31RYKShaRA8zcweHHPY-FaQqA5dlD6TsR2irzVmNbSebgsZbYuT5Jg__xFQGWL81lHHcZbA6sAZzu9dQp_UV5LNEkZd5ZRyJw2l1zXADQfaDFaBJ4P7eeB-WKA4O0Ld25VvocBAmCrK9EW2sDYerfqtdLwjsvvhevvDj6N4AXUz37vkdfHwM-NuP6JHkj1c6UyJtSY5jLs"/>
+<div class="absolute top-2 right-2 bg-error text-on-error px-2 py-1 text-[10px] font-body-md uppercase tabular-data rounded-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-on-error animate-ping"></span> REC
+                        </div>
+<div class="absolute bottom-2 left-2 text-on-error font-body-md text-xs tabular-data opacity-70">
+                            CAM-04 // CORRIDOR B
+                        </div>
+</div>
+</section>
+<!-- System Health Logs -->
+<section class="md:col-span-8 bento-border bg-surface p-6 flex flex-col h-64 md:h-auto">
+<h2 class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant mb-4">System Health Logs</h2>
+<div class="bg-surface-container-lowest border border-outline-variant flex-1 overflow-hidden relative">
+<div class="absolute inset-0 p-3 overflow-y-auto font-body-md text-xs tabular-data text-on-surface-variant flex flex-col gap-1" id="log-container">
+<div class="flex gap-4"><span class="text-outline">14:05:22</span> <span class="text-primary">[INFO]</span> Heart rate monitor connection stable for Bed 12.</div>
+<div class="flex gap-4"><span class="text-outline">14:05:18</span> <span class="text-primary">[INFO]</span> Patient count updated via sensor gateway 3.</div>
+<div class="flex gap-4"><span class="text-outline">14:04:55</span> <span class="text-tertiary">[WARN]</span> Latency spike detected on internal network (45ms).</div>
+<div class="flex gap-4"><span class="text-outline">14:03:10</span> <span class="text-primary">[INFO]</span> Automated capacity report generated successfully.</div>
+<div class="flex gap-4"><span class="text-outline">14:02:11</span> <span class="text-error">[ALERT]</span> Capacity threshold (85%) reached in Unit 4.</div>
+<div class="flex gap-4"><span class="text-outline">14:00:00</span> <span class="text-primary">[SYS]</span> Hourly system diagnostic complete. All systems nominal.</div>
+<div class="flex gap-4"><span class="text-outline">13:58:42</span> <span class="text-primary">[INFO]</span> Dr. Aris authenticated successfully.</div>
+</div>
+</div>
+</section>
+<!-- Staffing Overview -->
+<section class="md:col-span-12 bento-border bg-surface p-6">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant">Staffing Overview</h2>
+<button class="font-label-caps text-label-caps text-primary uppercase border border-primary px-3 py-1 hover:bg-primary hover:text-on-primary transition-colors rounded-sm">View Roster</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+<div class="border border-outline-variant p-3 flex items-center gap-3 bg-surface-container-low rounded-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline">
+<span class="material-symbols-outlined text-outline">person</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps uppercase">Dr. E. Aris</p>
+<p class="font-body-md text-xs text-outline">Attending</p>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-primary"></div>
+</div>
+<div class="border border-outline-variant p-3 flex items-center gap-3 bg-surface-container-low rounded-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline">
+<span class="material-symbols-outlined text-outline">person</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps uppercase">Nrs. M. Chen</p>
+<p class="font-body-md text-xs text-outline">Charge Nurse</p>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-primary"></div>
+</div>
+<div class="border border-outline-variant p-3 flex items-center gap-3 bg-surface-container-low rounded-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline">
+<span class="material-symbols-outlined text-outline">person</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps uppercase">Tech J. Doe</p>
+<p class="font-body-md text-xs text-outline">Telemetry</p>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-tertiary"></div>
+</div>
+<div class="border border-outline-variant p-3 flex items-center gap-3 bg-surface-container-low opacity-60 rounded-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline">
+<span class="material-symbols-outlined text-outline">person</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps uppercase">Nrs. S. Smith</p>
+<p class="font-body-md text-xs text-outline">On Break</p>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-outline"></div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 bg-surface border-t border-outline-variant z-50">
+<!-- Active Tab: Stats (Dashboard equivalent) -->
+<a class="flex flex-col items-center justify-center bg-primary text-on-primary p-2 rounded-lg active:bg-surface-container-highest scale-95 duration-75" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-caps text-[10px] mt-1">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-container-highest scale-95 duration-75" href="#">
+<span class="material-symbols-outlined">videocam</span>
+<span class="font-label-caps text-[10px] mt-1">Feeds</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-container-highest scale-95 duration-75" href="#">
+<span class="material-symbols-outlined">article</span>
+<span class="font-label-caps text-[10px] mt-1">Logs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 active:bg-surface-container-highest scale-95 duration-75" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-[10px] mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple script to flash the borders of the counter blocks to simulate real-time updates
+        setInterval(() => {
+            const counters = document.querySelectorAll('.tabular-data.text-\\[56px\\]');
+            if(counters.length > 0) {
+                const randomCounter = counters[Math.floor(Math.random() * counters.length)];
+                const parent = randomCounter.closest('div');
+                
+                // Flash border
+                const originalBorder = parent.style.borderColor;
+                parent.style.borderColor = '#4f378a'; // primary color
+                parent.style.transition = 'border-color 0.1s ease-out';
+                
+                setTimeout(() => {
+                    parent.style.borderColor = originalBorder;
+                    parent.style.transition = 'border-color 1s ease-in';
+                }, 200);
+            }
+        }, 5000);
+    </script>
+</body></html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Logs - Pediatric Command</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "outline": "#717786",
+                "on-tertiary-fixed": "#3b0900",
+                "on-surface-variant": "#414755",
+                "tertiary-fixed-dim": "#ffb5a0",
+                "surface-container-low": "#f3f3f5",
+                "surface-bright": "#f9f9fb",
+                "on-background": "#1a1c1d",
+                "tertiary": "#ad2c00",
+                "error-container": "#ffdad6",
+                "primary-fixed-dim": "#adc6ff",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-fixed-variant": "#872000",
+                "on-secondary-fixed": "#1b1b1d",
+                "on-secondary-fixed-variant": "#474649",
+                "surface": "#f9f9fb",
+                "error": "#ba1a1a",
+                "secondary": "#5f5e60",
+                "surface-container-lowest": "#ffffff",
+                "surface-container": "#eeeef0",
+                "surface-variant": "#e2e2e4",
+                "secondary-fixed": "#e4e2e4",
+                "on-secondary": "#ffffff",
+                "on-surface": "#1a1c1d",
+                "inverse-on-surface": "#f0f0f2",
+                "tertiary-fixed": "#ffdbd1",
+                "on-error-container": "#93000a",
+                "surface-container-high": "#e8e8ea",
+                "on-primary-container": "#fefcff",
+                "background": "#f9f9fb",
+                "on-primary": "#ffffff",
+                "surface-container-highest": "#e2e2e4",
+                "surface-tint": "#005bc1",
+                "primary-container": "#0070eb",
+                "on-primary-fixed": "#001a41",
+                "on-tertiary-container": "#fffbff",
+                "on-error": "#ffffff",
+                "surface-dim": "#d9dadc",
+                "primary": "#0058bc",
+                "inverse-surface": "#2f3132",
+                "outline-variant": "#c1c6d7",
+                "on-primary-fixed-variant": "#004493",
+                "secondary-container": "#e2dfe1",
+                "inverse-primary": "#adc6ff",
+                "on-secondary-container": "#636264",
+                "tertiary-container": "#d83900",
+                "primary-fixed": "#d8e2ff",
+                "secondary-fixed-dim": "#c8c6c8"
+        },
+        "borderRadius": {
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "3rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "section-gap": "48px",
+                "gutter": "24px",
+                "unit": "8px",
+                "container-margin": "64px"
+        },
+        "fontFamily": {
+                "display-lg": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ],
+                "headline-lg": [
+                        "Inter"
+                ],
+                "label-sm": [
+                        "Inter"
+                ],
+                "headline-sm": [
+                        "Inter"
+                ],
+                "label-lg": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "letterSpacing": "0",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "letterSpacing": "0",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-sm": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "letterSpacing": "0",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-lg": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .dark .glass-panel {
+            background: rgba(47, 49, 50, 0.7);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-low text-on-surface h-screen w-full flex overflow-hidden font-body-md antialiased selection:bg-primary selection:text-on-primary">
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen w-64 border-r border-outline-variant/30 glass-panel z-20">
+<div class="px-gutter py-gutter flex items-center gap-unit">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<div class="font-headline-sm text-headline-sm tracking-tight text-on-surface">Unit Manager</div>
+</div>
+<div class="px-gutter pb-4 text-outline font-label-sm text-label-sm uppercase tracking-widest">
+            Station 04-A
+        </div>
+<div class="flex-1 overflow-y-auto py-2 px-unit">
+<a class="flex items-center gap-3 px-3 py-2.5 mx-1 mb-1 font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-highest/50 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 mx-1 mb-1 font-label-lg text-label-lg bg-primary text-on-primary rounded-lg shadow-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">clinical_notes</span>
+<span>Patient Logs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 mx-1 mb-1 font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-highest/50 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">map</span>
+<span>Capacity Maps</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 mx-1 mb-1 font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-highest/50 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+<span>Staffing</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 mx-1 mb-1 font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-highest/50 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">monitor_heart</span>
+<span>System Health</span>
+</a>
+</div>
+<div class="p-unit mt-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 mx-1 font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-highest/50 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 mx-1 mb-1 font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-highest/50 rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span>Logs</span>
+</a>
+</div>
+</nav>
+<!-- Main Viewport -->
+<div class="flex-1 flex flex-col min-w-0 bg-transparent">
+<!-- TopNavBar (Mobile Header & Global Actions) -->
+<header class="flex justify-between items-center w-full px-gutter h-20 glass-panel border-b border-outline-variant/30 z-10 sticky top-0">
+<div class="md:hidden flex items-center gap-3">
+<button class="p-2 -ml-2 text-on-surface-variant hover:bg-surface-container-highest/50 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+</div>
+<div class="font-headline-md text-headline-md font-semibold tracking-tight text-on-surface hidden md:block">
+                Pediatric Command
+            </div>
+<div class="flex items-center gap-4">
+<button class="bg-error/10 text-error font-label-sm text-label-sm uppercase tracking-widest px-4 py-2 rounded-full border border-error/20 hover:bg-error/20 transition-colors flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></div>
+                    Urgent Alert
+                </button>
+<div class="h-6 w-px bg-outline-variant/50 mx-1"></div>
+<button class="text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-colors duration-200 p-2 rounded-full relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-surface-container-lowest"></span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-colors duration-200 p-2 rounded-full">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-highest/50 hover:text-on-surface transition-colors duration-200 p-1 rounded-full ml-1">
+<img alt="User avatar" class="w-8 h-8 rounded-full border border-outline-variant/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1yE1S4MVO2eSPe0IWS4YvHRSfTNpkbt05uvmd2O4eO4Tt33_NPFIEwOPaRG890Bn1nQvVe7hb3RMgR7GRevD1LgdyySBGGLsiZpJZPLyN8tm2PDPsfOZMZ8iuuD8ZEdOha1YLpdmnxWxdv1GRLE5w1N-5a88qPI38ck-X22X7BJOIN_UqF2I3o8d8gDqIkO6GdG8k69lHKOcyDViBu5ZyBmgVqO5rpg1y-TNAu3Z0suJ1cmpYhF1HD0qbXsKQcGghU0ZENqIv-cE"/>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-auto p-4 md:p-gutter flex flex-col gap-gutter max-w-[1600px] mx-auto w-full">
+<!-- Bento Box Data Container -->
+<div class="flex-1 flex flex-col glass-panel border border-outline-variant/30 rounded-2xl shadow-sm overflow-hidden relative bg-surface-container-lowest/80">
+<!-- Filters Header -->
+<div class="border-b border-outline-variant/30 p-gutter flex flex-wrap gap-gutter items-end justify-between bg-transparent">
+<div class="flex flex-col gap-1">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Patient Logs</h1>
+<span class="font-body-md text-body-md text-on-surface-variant">Real-time detection telemetry</span>
+</div>
+<div class="flex flex-wrap items-end gap-4 font-label-sm text-label-sm">
+<div class="flex flex-col gap-2">
+<label class="text-outline uppercase tracking-wider text-[11px] font-semibold">Time Range</label>
+<div class="flex border border-outline-variant/40 bg-surface/50 rounded-lg focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all overflow-hidden h-10 hover:bg-surface">
+<input class="bg-transparent border-none focus:ring-0 px-3 py-0 font-body-md text-body-md text-on-surface w-40" readonly="" type="text" value="Last 12 Hours"/>
+<button class="px-3 border-l border-outline-variant/40 hover:bg-surface-container-highest/30 flex items-center justify-center text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-outline uppercase tracking-wider text-[11px] font-semibold">Camera Feed</label>
+<div class="relative">
+<select class="border border-outline-variant/40 bg-surface/50 px-3 py-0 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary/10 focus:border-primary/50 h-10 w-48 appearance-none rounded-lg hover:bg-surface transition-all cursor-pointer">
+<option>All Cameras (42)</option>
+<option>NICU-CAM-01</option>
+<option>PICU-CAM-04</option>
+<option>WARD-A-CORRIDOR</option>
+</select>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-6 h-10 rounded-lg font-label-sm hover:bg-primary/90 transition-all shadow-sm hover:shadow active:scale-[0.98] font-medium tracking-wide">
+                            Apply Filters
+                        </button>
+</div>
+</div>
+<!-- Table Data -->
+<div class="flex-1 overflow-auto bg-transparent">
+<table class="w-full text-left border-collapse whitespace-nowrap tabular-nums">
+<thead class="sticky top-0 glass-panel border-b border-outline-variant/30 font-label-sm text-label-sm text-outline uppercase tracking-wider z-10 text-[11px]">
+<tr>
+<th class="p-4 font-semibold w-48">Timestamp (UTC)</th>
+<th class="p-4 font-semibold">Camera ID</th>
+<th class="p-4 font-semibold">Classification</th>
+<th class="p-4 font-semibold">Confidence</th>
+<th class="p-4 font-semibold w-24 text-center">Action</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/50 transition-colors group">
+<td class="p-4 text-on-surface-variant">2023-10-27 14:32:01</td>
+<td class="p-4 font-medium">PICU-CAM-04</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary/40"></div>
+<span class="text-on-surface-variant">Child Detection</span>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant">0.984</td>
+<td class="p-4 text-center">
+<button class="w-8 h-8 rounded-full inline-flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/20 bg-error/5 hover:bg-error/10 transition-colors group">
+<td class="p-4 text-on-surface-variant">2023-10-27 14:31:45</td>
+<td class="p-4 font-medium text-error">NICU-CAM-01</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+<span class="text-error font-medium">Unauthorized Adult</span>
+</div>
+</td>
+<td class="p-4 text-error font-medium">0.992</td>
+<td class="p-4 text-center">
+<button class="w-8 h-8 rounded-full inline-flex items-center justify-center text-error hover:bg-error/20 transition-all opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/50 transition-colors group">
+<td class="p-4 text-on-surface-variant">2023-10-27 14:28:12</td>
+<td class="p-4 font-medium">WARD-A-CORRIDOR</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary/40"></div>
+<span class="text-on-surface-variant">Adult Staff</span>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant">0.871</td>
+<td class="p-4 text-center">
+<button class="w-8 h-8 rounded-full inline-flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/50 transition-colors group">
+<td class="p-4 text-on-surface-variant">2023-10-27 14:25:55</td>
+<td class="p-4 font-medium">PICU-CAM-02</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary/40"></div>
+<span class="text-on-surface-variant">Child Detection</span>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant">0.915</td>
+<td class="p-4 text-center">
+<button class="w-8 h-8 rounded-full inline-flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container-low/50 transition-colors group">
+<td class="p-4 text-on-surface-variant">2023-10-27 14:15:30</td>
+<td class="p-4 font-medium">WARD-B-STAIRS</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary/40"></div>
+<span class="text-on-surface-variant">Adult Visitor</span>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant">0.844</td>
+<td class="p-4 text-center">
+<button class="w-8 h-8 rounded-full inline-flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="border-t border-outline-variant/30 p-4 flex items-center justify-between bg-transparent font-label-sm text-label-sm text-outline tabular-nums">
+<div>Showing 1-5 of 1,204 logs</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low flex items-center justify-center disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-on-surface-variant" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low flex items-center justify-center transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

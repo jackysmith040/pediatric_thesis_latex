@@ -1,0 +1,45 @@
+\chapter{CONCLUSION}
+
+\section{Summary of Findings}
+This thesis developed and validated a dual-stage computer vision and multi-object tracking framework to prevent pediatric undercounting in crowded healthcare clinics. By combining discrete differential geometry, human allometry, margin-expanded crop classification, and temporal Bayesian filtering, the framework mitigates pediatric undercounting and addresses key challenges of the ``Invisible Child'' problem in Ghanaian hospital triage.
+
+The main findings of this work are:
+\begin{enumerate}[(i)]
+    \item \textbf{Separable Convolution Geometry:} Splitting the 2D Sobel gradient operator into rank-1 outer product vectors ($\mathbf{s}_y \otimes \mathbf{d}_x^T$) reduced operations from 9 per pixel to 6 per pixel. This $33.3\%$ decrease in arithmetic overhead maintained edge detection accuracy, with vertical boundary responses reaching $+360$.
+    \item \textbf{Distillation Data Bottleneck:} Tests showed that soft-logit knowledge distillation transfers and amplifies annotation errors from public medical datasets into student models ($F_1 = 0.736$, $\text{MAPE} = 26.2\%$). This confirmed the need to replace distillation with explicit biological constraints.
+    \item \textbf{Image Slicing and Dynamic Range:} Slicing Aided Hyper Inference (SAHI) with $640 \times 640$ tiles ($20\%$ overlap) prevented feature loss for distant children occupying fewer than $32 \times 32$ pixels. CIELAB CLAHE increased local contrast by $+34.2\%$ without altering chromaticity.
+    \item \textbf{Biological Invariance via Allometry:} The 17-point skeletal cephalocaudal ratio $R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$ produced a clear biological gap ($\Delta R \ge 0.245$) between children ($R_{\text{ceph}} \in [0.941, 0.982]$) and adult caregivers ($R_{\text{ceph}} \in [0.621, 0.737]$). Setting threshold $\tau = 0.80$ eliminated adult-child misclassifications across test environments.
+    \item \textbf{Bayesian Tracking and Census Reliability:} Combining ByteTrack association, margin-expanded crop classification, and temporal Bayesian belief updating suppressed single-frame false detections. Across the evaluated 700-frame CCTV benchmark corpus (45 ground-truth occupants), the multi-stage pipeline matched demographic counts without adult-child identity confusion after temporal tracklet consolidation.
+    \item \textbf{CPU Vectorization:} Hardware benchmarks showed that native FP32 ONNX execution with 256-bit AVX2 SIMD instructions achieved $6.8\text{--}8.1$ FPS across native CCTV resolutions ($110\text{--}146$ ms latency). This ran $3.98\times$ faster than emulated FP16 ($298.2$ seconds, $2.3$ FPS), demonstrating that standard hospital CPUs can run the pipeline without discrete GPUs.
+\end{enumerate}
+
+\section{Conclusions}
+This research demonstrates that unconstrained deep neural networks alone are insufficient for hospital triage. Vision models require mathematical and biological constraints derived from image formation and human body growth.
+
+By treating digital images as quantized matrices, applying Complete IoU regression, cropping candidate targets for specialized classification, anchoring infant trajectories to caregivers, and stabilizing tracks with Bayesian filtering, this framework provides a practical, privacy-preserving patient census tool. The system links ceiling CCTV feeds with the Lightwave Health Information Management System (LHIMS) to support hospital operations.
+
+\section{Recommendations for Clinical Deployment}
+To deploy this system in Ghanaian hospitals, we recommend four practical steps:
+\begin{enumerate}[(i)]
+    \item \textbf{Hardware Specifications:} Hospitals should deploy the model on standard edge computers with x86\_64 processors supporting AVX2 SIMD extensions. Running native FP32 ONNX models avoids the overhead of FP16 software emulation and delivers reliable 7--8 FPS edge tracking throughput at low cost.
+    \item \textbf{Camera Mounting and Angles:} CCTV cameras in waiting areas should be mounted at ceiling heights of $2.8\text{--}3.5$ meters with a downward angle of $25^{\circ}\text{--}35^{\circ}$. This angle captures the full torso and leg segments ($L_{\text{torso}}$ and $L_{\text{leg}}$) while reducing perspective distortion.
+    \item \textbf{Patient Privacy Protection:} IT staff must preserve the zero-storage privacy design. Frames must be processed in RAM and discarded immediately. The system should send only anonymized numerical data (timestamps, track IDs, coordinates, and counts) to LHIMS.
+    \item \textbf{Integration with Triage Dashboards:} Census outputs should feed directly into emergency nursing screens. The system should alert staff when pediatric queue numbers exceed thresholds under the South African Triage Scale (SATS).
+\end{enumerate}
+
+\section{Limitations and Future Research}
+
+\subsection{Study Limitations}
+Although this study collected and annotated real-world clinical images, two primary limitations remain:
+\begin{enumerate}[(i)]
+    \item \textbf{Dataset Scale and Occlusion Annotation:} We collected and annotated real-world clinic training images. However, getting a larger training dataset would significantly improve model generalization. In particular, more training images with fine-grained, well-annotated severe occlusions would increase detection recall. Examples include infants carried on caregivers' backs and children hidden in dense queues.
+    \item \textbf{Monocular Depth Ambiguity:} Single 2D CCTV cameras cannot measure 3D spatial depth directly. Heavy body overlaps require heuristic stature scaling and temporal tracking filters rather than exact 3D coordinates.
+\end{enumerate}
+
+\subsection{Future Research Directions}
+We identify three directions for future research:
+\begin{enumerate}[(i)]
+    \item \textbf{Infrared Night Monitoring:} Under zero-lux night lighting, CCTV cameras switch to infrared illumination. This removes color information ($a^*, b^*$). Future work should examine multi-spectral and thermal camera integration.
+    \item \textbf{Campus-Scale Multi-Camera Tracking:} The system implements a lightweight cross-camera tracking plugin using a shared gallery of upper and lower body color histograms. While this operates across adjacent rooms, it depends on consistent clothing appearance and camera color calibration. In large hospitals with varied lighting between halls, waiting corridors, and consultation rooms, appearance matching can degrade. Future work should develop spatio-temporal camera transition models and graph neural networks without biometric facial logging.
+    \item \textbf{3D Depth Sensing:} Adding lightweight stereo or Time-of-Flight (ToF) depth sensors would provide 3D spatial points. This would resolve vertical occlusion in dense queues directly through 3D geometry.
+\end{enumerate}

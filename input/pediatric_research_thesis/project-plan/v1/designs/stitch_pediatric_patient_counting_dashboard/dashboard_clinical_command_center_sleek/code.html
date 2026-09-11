@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pediatric Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        .dark .glass-panel {
+            background-color: rgba(47, 49, 50, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e2e2e4",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#0070eb",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed": "#1b1b1d",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f3132",
+                        "surface-bright": "#f9f9fb",
+                        "secondary": "#5f5e60",
+                        "surface-dim": "#d9dadc",
+                        "primary": "#0058bc",
+                        "on-tertiary-fixed": "#3b0900",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f9f9fb",
+                        "surface-container-highest": "#e2e2e4",
+                        "inverse-on-surface": "#f0f0f2",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#e2dfe1",
+                        "tertiary-fixed-dim": "#ffb5a0",
+                        "outline-variant": "#c1c6d7",
+                        "on-primary-fixed": "#001a41",
+                        "surface-container-low": "#f3f3f5",
+                        "tertiary": "#ad2c00",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#d83900",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary-container": "#fffbff",
+                        "on-surface": "#1a1c1d",
+                        "tertiary-fixed": "#ffdbd1",
+                        "surface-tint": "#005bc1",
+                        "outline": "#717786",
+                        "on-secondary-container": "#636264",
+                        "secondary-fixed": "#e4e2e4",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#eeeef0",
+                        "on-background": "#1a1c1d",
+                        "on-surface-variant": "#414755",
+                        "background": "#f9f9fb",
+                        "surface-container-high": "#e8e8ea",
+                        "secondary-fixed-dim": "#c8c6c8",
+                        "on-primary-fixed-variant": "#004493",
+                        "on-tertiary-fixed-variant": "#872000",
+                        "on-primary-container": "#fefcff",
+                        "on-secondary-fixed-variant": "#474649",
+                        "inverse-primary": "#adc6ff",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "64px",
+                        "section-gap": "48px",
+                        "gutter": "24px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter", "sans-serif"],
+                        "label-lg": ["Inter", "sans-serif"],
+                        "headline-sm": ["Inter", "sans-serif"],
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-sm": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen overflow-x-hidden selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-container-margin h-16 bg-surface/80 backdrop-blur-xl border-b border-white/20 dark:border-outline-variant/10">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-primary-fixed-dim">Pediatric Command Center</span>
+<div class="hidden md:flex items-center gap-6 ml-8">
+<!-- Navigation Links -->
+<a class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 font-label-lg text-label-lg transition-colors duration-200" href="#">Dashboard</a>
+<a class="text-secondary dark:text-on-secondary-fixed-variant hover:text-primary-container dark:hover:text-primary-fixed transition-all font-label-lg text-label-lg" href="#">Patient Logs</a>
+<a class="text-secondary dark:text-on-secondary-fixed-variant hover:text-primary-container dark:hover:text-primary-fixed transition-all font-label-lg text-label-lg" href="#">Capacity Maps</a>
+<a class="text-secondary dark:text-on-secondary-fixed-variant hover:text-primary-container dark:hover:text-primary-fixed transition-all font-label-lg text-label-lg" href="#">Staffing</a>
+<a class="text-secondary dark:text-on-secondary-fixed-variant hover:text-primary-container dark:hover:text-primary-fixed transition-all font-label-lg text-label-lg" href="#">System Health</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<!-- Search Bar: on_right (Implied minimalist approach) -->
+<div class="relative hidden lg:block group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="bg-surface-variant/50 border border-outline-variant/30 rounded-full py-1.5 pl-10 pr-4 text-body-md font-body-md focus:outline-none focus:ring-2 focus:ring-primary-container/50 focus:border-transparent transition-all w-64 placeholder-on-surface-variant/70" placeholder="Search records..." type="text"/>
+</div>
+<button class="p-2 text-secondary hover:text-primary-container dark:hover:text-primary-fixed transition-all rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-secondary hover:text-primary-container dark:hover:text-primary-fixed transition-all rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- SideNavBar (Shared Component) - Rendered only on desktop/tablet as per rules -->
+<div class="hidden md:flex fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex-col p-gutter bg-surface-container-low/60 backdrop-blur-2xl dark:bg-surface-container-highest/40 border-r border-white/20 dark:border-outline-variant/10 z-40">
+<!-- Header -->
+<div class="mb-section-gap pt-4 flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-primary-fixed mb-4 overflow-hidden border border-outline-variant/20 flex items-center justify-center">
+<img alt="Clinician Profile" class="w-full h-full object-cover" data-alt="A close-up, highly detailed portrait of a medical clinician in a modern hospital setting. The lighting is soft and bright, emphasizing a clean, professional aesthetic. The subject is wearing standard clinical attire. The background is a gently blurred, light-mode hospital environment with subtle cool blue and white tones, matching a high-end, minimalist UI design context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjkND-ICksqeISEh_V0FjxewlTlOHEEkAiOaeQEHqGZHB0FGmmu8ksLIjAMfdTSr4d2dv9uW9WHr2hkVOzb-n4j_yBWztrDlNdXNKH0lzJKxMS8uufMLvPHotfhJ2dH_DJHOZihZmEYx8p0LJNFLcJI3Ae6IlRuWcBG43mQRr6kZ5WLSKiM26T08lnR5JAwqZXFg6lrnXEnCLCb8Y0xBBox1Ajcc1Zq5yeoCRLTl06DuzQLjXpvPP92LqwcN5BBnrmdBw74OFN6sI"/>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Unit 4B</h2>
+<p class="font-label-lg text-label-lg text-secondary">Pediatric ICU</p>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 flex flex-col gap-2">
+<!-- Active Tab: Overview (Matches Dashboard intent) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary/10 dark:bg-primary-container/20 text-primary dark:text-primary-fixed-dim rounded-lg font-label-lg text-label-lg scale-98 transition-all duration-150" href="#">
+<span class="material-symbols-outlined icon-fill">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-secondary-fixed-variant hover:bg-surface-variant/50 dark:hover:bg-inverse-surface/30 rounded-lg transition-all font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">monitor_heart</span>
+                Telemetry
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-secondary-fixed-variant hover:bg-surface-variant/50 dark:hover:bg-inverse-surface/30 rounded-lg transition-all font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-secondary-fixed-variant hover:bg-surface-variant/50 dark:hover:bg-inverse-surface/30 rounded-lg transition-all font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">assignment</span>
+                Logs
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary dark:text-on-secondary-fixed-variant hover:bg-surface-variant/50 dark:hover:bg-inverse-surface/30 rounded-lg transition-all font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<!-- CTA -->
+<div class="mt-auto pt-8">
+<button class="w-full py-3 px-4 bg-error text-on-error rounded-full font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 hover:bg-error-container hover:text-on-error-container transition-all shadow-[inset_0_1px_rgba(255,255,255,0.2)]">
+<span class="material-symbols-outlined">emergency</span>
+                Emergency Alert
+            </button>
+</div>
+</div>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-24 md:ml-64 md:px-container-margin px-4 min-h-screen">
+<div class="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Hero Bento Box: Current Pediatric Capacity -->
+<div class="md:col-span-8 glass-panel rounded-xl p-8 flex flex-col justify-between min-h-[320px] relative overflow-hidden group">
+<!-- Background decorative element -->
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-700"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface-variant mb-1">Current Pediatric Capacity</h3>
+<p class="font-body-md text-body-md text-secondary">Unit 4B &amp; Overflow</p>
+</div>
+<div class="px-3 py-1 bg-surface-variant/50 border border-outline-variant/30 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-primary">Live Data</span>
+</div>
+</div>
+<div class="relative z-10 grid grid-cols-2 gap-8 mt-12">
+<div>
+<div class="font-display-lg text-display-lg text-on-surface tabular-nums tracking-tight">42<span class="font-headline-md text-headline-md text-secondary ml-1">/50</span></div>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-tertiary">escalator_warning</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">Children</span>
+</div>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface tabular-nums tracking-tight">18<span class="font-headline-md text-headline-md text-secondary ml-1">/20</span></div>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-secondary">person</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant">Adults/Guardians</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Cinematic Bento Box: Live Video Feed -->
+<div class="md:col-span-4 glass-panel rounded-xl p-1 relative overflow-hidden h-[320px]">
+<div class="absolute top-4 left-4 z-20 px-2 py-1 bg-black/50 backdrop-blur-md rounded border border-white/10 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-label-sm text-label-sm text-white font-bold tracking-wider">LIVE</span>
+</div>
+<div class="w-full h-full rounded-[14px] overflow-hidden bg-inverse-surface relative">
+<!-- Image Placeholder for Video -->
+<img alt="Hospital Corridor Camera" class="w-full h-full object-cover opacity-80" data-alt="A cinematic, slightly desaturated view of a modern hospital corridor serving as a security camera feed. The scene is brightly lit with sterile, cool white lighting, creating a calm yet clinical atmosphere. The walls are pristine white, and the floor is a polished, reflective light gray. The image should look like a high-quality video feed within a premium, light-mode minimalist UI design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqPRPc0CTRmSkdPCqFdAj2mBdfV0vXBe21bdaHXtzYGldFb8mS1LianJv3b0OBluPHXiy5I0rKKTxNA77vF2QQrBQvCeSZrGG-Pt03TlE70xBolmAgsQlAXJQdOhByZif1YZ0NivM5DZwVGpSx_qcSX2Dwr3J6E0r4KKrvJfsJ3ImgcklN1lbAbmyILH-yyH5PdgDAdinhf2l3bQehqbfzkpICdPvAOlXwcxXR9bYqroZ70QMLntl8zaQ-yJWYdbzM6lby2dLiPIA"/>
+<!-- Overlay for "video" feel -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+<div class="absolute bottom-3 left-3 z-20">
+<span class="font-label-sm text-label-sm text-white/80">CAM 04 - West Wing Corridor</span>
+</div>
+</div>
+</div>
+<!-- Bento Box: System Alerts -->
+<div class="md:col-span-4 glass-panel rounded-xl p-6 flex flex-col h-full min-h-[300px]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">System Alerts</h3>
+<button class="text-primary hover:bg-primary/5 p-1 rounded-full transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="flex flex-col gap-4 flex-1">
+<!-- Alert Item -->
+<div class="flex items-start gap-4">
+<div class="mt-0.5 text-error">
+<span class="material-symbols-outlined icon-fill">warning</span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg text-on-surface">Capacity Warning</div>
+<div class="font-body-md text-body-md text-secondary mt-0.5">NICU nearing maximum occupancy. Protocol Alpha initiated.</div>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant/20 my-1"></div>
+<!-- Alert Item -->
+<div class="flex items-start gap-4">
+<div class="mt-0.5 text-tertiary">
+<span class="material-symbols-outlined">group_remove</span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg text-on-surface">Staffing Notice</div>
+<div class="font-body-md text-body-md text-secondary mt-0.5">RN shortage on Floor 3 for upcoming night shift.</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Box: Staffing Overview -->
+<div class="md:col-span-4 glass-panel rounded-xl p-6 flex flex-col h-full min-h-[300px]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">On-Call Specialists</h3>
+<a class="font-label-sm text-label-sm text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Staff Item -->
+<div class="flex items-center justify-between p-2 hover:bg-surface-variant/30 rounded-lg transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Dr. Sarah Jenkins" class="w-10 h-10 rounded-full object-cover border border-outline-variant/20" data-alt="A small, circular avatar portrait of a female doctor looking professional and approachable. The background of the avatar is neutral and light. The image style is realistic, bright, and fits within a high-end, minimalist medical software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCczLrmhMjKGrhs_YUoz6HVTTnqXkSsOa9dsQ-6A2gDMEkVXx5t9uCa4TkuhFBl01i-ObLVEiaH4pCoymQrhm0z7nrqf2tbJKEIH5jymfLUj4pnXozy1OrhzI0UbYPmIDza3kTWoIf66kuLrFMh3jl1wk8RB-AM6IXEGQM9mwc7lHzp5fGAXNoOc_QFmDu0UV3lew1dxpNmKTAskrvsBgpS_9JUz8rntlGvuAorGwcHys693RdyxF-Vs9cDLYKfGCebD8Y-58PnZU"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-white rounded-full"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg text-on-surface">Dr. S. Jenkins</div>
+<div class="font-label-sm text-label-sm text-secondary">Pediatrician</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Staff Item -->
+<div class="flex items-center justify-between p-2 hover:bg-surface-variant/30 rounded-lg transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Dr. Marcus Wei" class="w-10 h-10 rounded-full object-cover border border-outline-variant/20" data-alt="A small, circular avatar portrait of a male specialist looking calm and focused. The background of the avatar is soft and bright. The image style is realistic, clean, and seamlessly integrates into a premium, minimalist clinical dashboard design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN8-vbH6a2TKeTNPUieJoa-msjaxhciPBRoo2mjMV-ImA9lofLOivipxcshaV3UlXhnIxHoRVsOiYFiPycCcRsAizojb52BeSOl3dk_5gZst6vz1hed9amc5pa2xuRp23s9nAsOiUcci_3WGQuGMzSG2x2AUpqj4k395SiNLJlfMIx7slLixLw-sCbk-CPDC5ZE9eJlBTrbGLDnwncS5FFpHDdJAkymYt3vb4rivhPhk-EUXfTizlWgHfuqAUJLW1gw9i57DScvbg"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-yellow-500 border border-white rounded-full"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg text-on-surface">Dr. M. Wei</div>
+<div class="font-label-sm text-label-sm text-secondary">Neonatologist</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Staff Item -->
+<div class="flex items-center justify-between p-2 hover:bg-surface-variant/30 rounded-lg transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center border border-outline-variant/20 text-on-surface-variant font-label-lg">
+                                    EL
+                                </div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-outline border border-white rounded-full"></span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg text-on-surface">E. Larson, RN</div>
+<div class="font-label-sm text-label-sm text-secondary">Charge Nurse</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Bento Box: System Health Logs -->
+<div class="md:col-span-4 glass-panel rounded-xl p-0 flex flex-col h-full min-h-[300px] overflow-hidden">
+<div class="p-6 pb-4 border-b border-outline-variant/10 flex justify-between items-center bg-surface-variant/10">
+<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">terminal</span>
+                        System Logs
+                    </h3>
+</div>
+<div class="flex-1 p-6 font-mono text-[13px] leading-relaxed text-on-surface-variant flex flex-col gap-2 overflow-y-auto bg-surface-bright/30">
+<div class="flex gap-3">
+<span class="text-outline shrink-0">14:02:45</span>
+<span class="text-primary-container">Telemetry_Sync</span>
+<span>Heart rate monitor #422 offline. Attempting reconnect.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-outline shrink-0">14:02:46</span>
+<span class="text-primary-container">Telemetry_Sync</span>
+<span class="text-green-600 dark:text-green-400">Connection restored #422. Data flowing.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-outline shrink-0">14:05:12</span>
+<span class="text-tertiary">Access_Control</span>
+<span>User 'Dr.S.Jenkins' authenticated via biometric.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-outline shrink-0">14:10:00</span>
+<span class="text-secondary">Sys_Routine</span>
+<span>Automated capacity snapshot completed. Database synced.</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

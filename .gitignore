@@ -1,0 +1,58 @@
+# ==============================================================================
+# Beamer & Thesis Automation Pipeline - Git Ignore
+# ==============================================================================
+
+# Python & Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+__pycache__/
+*.py[codz]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Binary Downloads (Compiler binaries downloaded dynamically per OS)
+agent_helper/bin/*
+!agent_helper/bin/.gitkeep
+
+# Generated LaTeX Temporary Cache & Intermediate Build Artifacts
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.run.xml
+*.bcf
+
+# Compressed Archives
+*.zip
+*.tar.gz
+
+# Operating System & Editor Metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project internal setup logs
+llm-conscience/
+llm-conscience

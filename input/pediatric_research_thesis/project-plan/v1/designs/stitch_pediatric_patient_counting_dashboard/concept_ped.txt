@@ -1,0 +1,104 @@
+======= BEGIN OF FILE: Concepts.txt =======
+PRODUCT REQUIREMENTS & PROJECT SPECIFICATION
+Project Title: Pediatric Patient Counting with Interactive Object Detection
+Academic Context: Department of Mathematics, KNUST - Final Year Project (February 2026)
+Core Objective: Resolve the "Invisible Child" phenomenon in resource-constrained hospital waiting environments by accurately enumerating carried, occluded infants using localized Computer Vision and displaying real-time actionable metrics on an administrative dashboard.
+
+======================================================================
+1. SYSTEM ARCHITECTURE & COMMUNICATION CONTRACT
+======================================================================
+To ensure parallel development and system stability, the application is decoupled into two completely autonomous services running locally on a unified Windows environment.
+
++-----------------------------------+             Channel A: HTTP POST (JSON)             +----------------------------------+
+|      Computer Vision Engine       | --------------------------------------------------> |        Laravel Dashboard         |
+|   (Python / FastAPI / YOLO)       |                                                     |   (PHP 8.3+ / Livewire / Restify)|
+|                                   | <-------------------------------------------------- |                                  |
+| Serves Live MJPEG Video Stream    |              Channel B: Direct HTML <img> Embed     | Broadcasts data via WebSockets   |
++-----------------------------------+                                                     +----------------------------------+
+
+Channel A: Telemetry Data API Contract (Restify Optimized)
+---------------------------------------
+* Protocol: HTTP POST
+* Endpoint: http://127.0.0.1:8000/api/restify/traffic-logs
+* Frequency: Dispatched every 3 to 5 seconds.
+* Payload Structure (JSON - Flattened for Database Columns):
+{
+  "timestamp": "2026-06-01 14:30:00",
+  "camera_id": "outpatient_waiting_cctv_01",
+  "current_adults": 12,
+  "current_children": 4,
+  "total_daily_adults": 145,
+  "total_daily_children": 62,
+  "overcrowding_alert": false
+}
+
+Channel B: Live Video Feed Contract
+---------------------------------------
+* Protocol: Motion JPEG (MJPEG) over HTTP
+* Source URL: http://127.0.0.1:5000/video_feed
+* Frontend Implementation: The Laravel dashboard completely bypasses video processing logic. It directly embeds the stream using a native HTML source:
+<img src="http://127.0.0.1:5000/video_feed" alt="Live Pediatric CV Stream" class="w-full h-auto rounded-lg border">
+
+
+======================================================================
+2. COMPONENT SPECIFICATION: MACHINE LEARNING ENGINE (PYTHON)
+======================================================================
+Technical Stack:
+* Language: Python 3.11+
+* Core Frameworks: Ultralytics YOLO, OpenCV, FastAPI, Roboflow Python SDK
+
+User Stories & Functional Tickets:
+
+[EPIC-ML-01]: Data Pipeline & Model Fine-Tuning
+* User Story: As an ML Developer, I want a streamlined pipeline using Roboflow so that I can download an "Adult vs. Child" dataset programmatically and fine-tune a YOLO model without manual file management.
+* Technical Requirements:
+  1. Integrate the Roboflow SDK to pull the public Child Detection Dataset (CDD) using an authorized API key.
+  2. Structure local directories automatically into standard YOLO configuration layout (/train, /val, data.yaml).
+  3. Execute local transfer learning loop using model.train() targeting yolov8n.pt or yolo11n.pt for a minimal computational footprint.
+
+[EPIC-ML-02]: Real-Time Object Tracking & Ingestion
+* User Story: As the CV Core, I want to capture a live video feed from an external smartphone camera stream and track unique identities across frames using the Ultralytics tracking layer.
+* Technical Requirements:
+  1. Connect OpenCV VideoCapture to a virtual webcam interface or local RTSP network URL (e.g., DroidCam server feed).
+  2. Initialize model.track(source=..., stream=True, show=False) utilizing native tracking configurations (e.g., BoT-SORT) to maintain persistent item tracking IDs.
+  3. Filter classification tensors to count instances matching Class: Adult and Class: Child per analytical window.
+
+[EPIC-ML-03]: FastAPI Telemetry Dispatcher & Streaming Server
+* User Story: As the Engine Network Layer, I want to host an MJPEG streaming route and send cyclic telemetry posts to the Laravel API endpoint.
+* Technical Requirements:
+  1. Construct an asynchronous FastAPI application running locally on port 5000.
+  2. Implement a generator endpoint (/video_feed) that yields continuous byte-encoded JPEG frames containing the live YOLO bounding box overlays.
+  3. Create a background worker thread using Python requests or httpx to POST the flattened JSON data payload to the Restify endpoint exactly matching the Channel A API Contract.
+
+
+======================================================================
+3. COMPONENT SPECIFICATION: ADMINISTRATIVE DASHBOARD (LARAVEL)
+======================================================================
+Technical Stack:
+* Language/Environment: PHP 8.3+, Laravel 13, Livewire 4, Laravel Restify, TailwindCSS
+* Local Server Engine: Laravel Herd (Windows native Nginx + PHP stack)
+* Real-Time Layer: Laravel Reverb (Native WebSockets server)
+
+User Stories & Functional Tickets:
+
+[EPIC-DASH-01]: Restify Repository & Data Ingestion
+* User Story: As a Dashboard Backend Developer, I want to use Laravel Restify to instantly generate CRUD operations for the traffic data without writing manual controllers.
+* Technical Requirements:
+  1. Install Laravel Restify and generate a `TrafficLogRepository`.
+  2. Map the repository fields to exactly match the flattened JSON payload from Channel A.
+  3. Configure the Restify repository hooks (e.g., `stored()`) to fire a Laravel Reverb WebSocket event (`TelemetryReceived`) immediately after the CV engine inserts a new row.
+
+[EPIC-DASH-02]: Livewire Real-Time Monitoring Interface
+* User Story: As a Hospital Administrator, I want a reactive interface on an external monitor showing live patient numbers, active video streams, and capacity warnings without manual page refreshes.
+* Technical Requirements:
+  1. Build a Livewire 4 dashboard layout displaying the live stream <img> pointing to port 5000.
+  2. Embed Alpine.js or Livewire listeners on the frontend component to capture the `TelemetryReceived` WebSocket event and morph metrics (Adult Count, Child Count) in real-time.
+  3. Build a UI conditional notification system: If pediatric load exceeds 30% of standard waiting capacity, display an alert badge to staff.
+
+[EPIC-DASH-03]: Automated End-of-Day PDF Analytical Report
+* User Story: As a Clinical Manager, I want an automated daily summary report generated and saved at midnight summarizing pediatric capacity logs to optimize nurse scheduling.
+* Technical Requirements:
+  1. Implement a Laravel Scheduled Task (app/Console/Kernel.php) running at 23:59 daily.
+  2. Use a package like barryvdh/laravel-dompdf to query the `traffic_logs` database table (bypassing Restify for internal server tasks), calculating hourly peak volumes and average counts.
+  3. Output a cleanly styled report layout and store it locally within the application storage disk, optionally generating a mail alert.
+======= END OF FILE: Concepts.txt =======

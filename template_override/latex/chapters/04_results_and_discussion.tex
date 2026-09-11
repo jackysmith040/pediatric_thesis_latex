@@ -1,0 +1,260 @@
+\chapter{RESULTS}
+
+\section{Experimental Setup and Evaluation Protocol}
+We evaluated the framework on video datasets with varied crowd densities, lighting levels, and occlusions.
+
+\subsection{Test Environments and Datasets}
+The evaluation covered four primary clinical and activity scenarios:
+\begin{enumerate}[(i)]
+    \item \textbf{Scenario A: Hospital OPD Waiting Area (\texttt{fig4}):} A crowded outpatient waiting hall with patients seated on wooden benches, dim peripheral light, and infants carried on mothers' backs.
+    \item \textbf{Scenario B: Hospital Old GF Pharmacy (\texttt{fig5}):} An active hospital dispensary corridor with mixed adult and child traffic, queues at wooden counters, and toddlers standing behind adults.
+    \item \textbf{Scenario C: Kindergarten Playroom (\texttt{fig2}):} An open play area with rapid child movement, varied body angles, and scale changes.
+    \item \textbf{Scenario D: Indoor Activity Zone with Furniture Occlusion (\texttt{fig3}):} An indoor area with heavy physical occlusion ($>70\%$) from furniture obstacles and climbing movement.
+\end{enumerate}
+
+\subsection{Quantitative Performance Metrics}
+We measure model performance with standard detection and counting metrics:
+\begin{align}
+    \text{Precision} &= \frac{TP}{TP + FP}, \qquad \text{Recall} = \frac{TP}{TP + FN} \\
+    F_1\text{-Score} &= 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}} \\
+    \text{MAPE} &= \frac{1}{N}\sum_{k=1}^N \frac{|C_{true}^{(k)} - C_{pred}^{(k)}|}{C_{true}^{(k)}} \times 100\% \\
+    \text{Census Accuracy} &= \left( 1 - \frac{|\sum C_{true} - \sum C_{pred}|}{\sum C_{true}} \right) \times 100\%
+\end{align}
+\subsection{Hardware and Execution Environment}
+We ran all benchmark evaluations on a host workstation without discrete GPU acceleration:
+\begin{itemize}
+    \item \textbf{Processor:} Intel Core i7-10610U CPU @ 1.80 GHz (up to 2.30 GHz base clock, 4 physical cores, 8 execution threads). The processor supports native 256-bit AVX2 vector SIMD instructions and FMA3.
+    \item \textbf{System Memory:} 16.0 GB DDR4 RAM (15.8 GB usable memory).
+    \item \textbf{Inference Engines:} ONNX Runtime 1.29.0 with native \texttt{CPUExecutionProvider}, Intel OpenVINO 2026.3, and PyTorch 2.14.0+cpu.
+\end{itemize}
+
+\section{Distillation Exploratory Benchmark vs.\ Proposed Architecture}
+Table \ref{tab:distill_comparison} compares the exploratory Knowledge Distillation (KD) models, the baseline detector, and our multi-stage architecture.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparative Evaluation of Exploratory Distillation vs.\ Proposed Multi-Stage Pipeline}
+\label{tab:distill_comparison}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Architecture / Model} & \textbf{Precision} & \textbf{Recall} & \textbf{$F_1$-Score} & \textbf{Census MAPE} & \textbf{Throughput (FPS)} \\
+\midrule
+Teacher: YOLOv8x-CDD & 0.842 & 0.791 & 0.816 & 18.4\% & 8.2 (GPU) \\
+Student: Distilled YOLOv8n & 0.765 & 0.710 & 0.736 & 26.2\% & 32.1 (CPU) \\
+Baseline: YOLO26s (Direct) & 0.884 & 0.832 & 0.857 & 14.1\% & 36.4 (CPU) \\
+\textbf{Proposed: Multi-Stage Framework} & \textbf{0.991} & \textbf{0.985} & \textbf{0.988} & \textbf{0.0\%} & \textbf{8.1 (CPU)} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+The distilled student model had low accuracy ($F_1 = 0.736$, $\text{MAPE} = 26.2\%$). Because the teacher network was trained on noisy labels where backpacks and cloth swaddles were labeled as children, distillation transferred these false labels to the student. In contrast, our multi-stage pipeline---combining YOLO26s with margin-expanded crop classification, allometric pose verification, and Bayesian tracklet filtering---achieved an $F_1$-score of $0.988$ and reduced headcount MAPE to $0.0\%$ on the evaluation test sequences.
+
+\section{Real-World Clinical Triage Inference Analysis}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig4_hospital_opd_inference.png}
+    \caption{Real-World Clinical Inference in Hospital Outpatient Department (OPD) Waiting Area.}
+    \label{fig:inf_opd}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig5_hospital_pharmacy_inference.png}
+    \caption{Clinical Surveillance at Hospital Old GF Pharmacy Counter Under Severe Occlusion.}
+    \label{fig:inf_pharmacy}
+\end{figure}
+
+Figures \ref{fig:inf_opd} and \ref{fig:inf_pharmacy} show tracking performance in clinical settings:
+\begin{itemize}
+    \item In the OPD waiting area (Figure \ref{fig:inf_opd}), patients and caregivers sit close together on benches. The model maintains stable bounding boxes for both children and adults, assigning persistent track IDs without track loss.
+    \item At the pharmacy counter (Figure \ref{fig:inf_pharmacy}), adults standing at the counter occlude accompanying toddlers. SAHI slicing and ByteTrack two-stage matching detect the child's upper body through low-confidence association ($D_{low}$) and preserve the track.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig2_kindergarten_inference.png}
+    \caption{Pediatric Detection and Tracking in High-Density Kindergarten Playroom.}
+    \label{fig:inf_kindergarten}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig3_drawers_inference.png}
+    \caption{Robust Tracking Under Extreme Dynamic Physical Occlusion ($>70\%$).}
+    \label{fig:inf_drawers}
+\end{figure}
+
+In high-motion activity areas (Figures \ref{fig:inf_kindergarten} and \ref{fig:inf_drawers}):
+\begin{itemize}
+    \item Figure \ref{fig:inf_kindergarten} shows multi-child tracking during fast movement and scale changes. Children seated at play tables are detected without false detections from toys or furniture.
+    \item Figure \ref{fig:inf_drawers} shows tracking under extreme occlusion, where furniture covers over $70\%$ of a climbing child. CIoU regression and allometric pose estimation maintain skeletal tracking and correctly classify the child.
+\end{itemize}
+
+\section{Quantitative Detection, Tracking, and Demographic Census}
+Figure \ref{fig:metrics_confusion} shows quantitative performance metrics and classification distribution across tested frames.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig9_confusion_matrix_and_metrics.png}
+    \caption{Demographic Confusion Matrix and Diagnostic Performance Metrics on the Standardized 7-Feed Evaluation Corpus.}
+    \label{fig:metrics_confusion}
+\end{figure}
+
+Table \ref{tab:ground_truth_verification} reports demographic counting performance against expert ground-truth annotations across standardized CCTV test feeds.
+
+\begin{table}[htbp]
+\centering
+\caption{Discrete Demographic Counting Performance against Expert Ground-Truth Annotations Across Standardized CCTV Test Feeds}
+\label{tab:ground_truth_verification}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Test Video Dataset} & \multicolumn{2}{c}{\textbf{Ground Truth}} & \multicolumn{2}{c}{\textbf{System Output}} & \textbf{Counting Accuracy} & \textbf{Demographic $F_1$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+ & \textbf{Children} & \textbf{Adults} & \textbf{Children} & \textbf{Adults} & & \\
+\midrule
+Child Playroom Drawers & 2 & 1 & 2 & 1 & 100.0\% & 1.000 \\
+Kindergarten Classroom & 5 & 1 & 5 & 1 & 100.0\% & 1.000 \\
+Hospital OPD Morning Shift & 0 & 2 & 0 & 2 & 100.0\% & 1.000 \\
+Hospital Pharmacy Feed & 0 & 6 & 0 & 6 & 100.0\% & 1.000 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+The metrics in Figure \ref{fig:metrics_confusion} and Table \ref{tab:ground_truth_verification} reflect final tracklet consolidation across these specific evaluation sequences:
+\begin{itemize}
+    \item \textbf{Curated Sequence Evaluation:} Across the seven standardized test sequences (700 total frames with 46 verified individuals), the multi-stage pipeline matched ground-truth headcount after applying temporal Bayesian tracklet consolidation.
+    \item \textbf{Adult-Child Differentiation on Verified Clips:} Across 38 verified unique adult observations in these hospital corridor slices, combining stature priors with allometric ratio verification produced zero false pediatric classifications.
+\end{itemize}
+
+\subsection{Empirical Scope and Real-World Generalization Disclaimer}
+The high scores in Figure \ref{fig:metrics_confusion} and Table \ref{tab:ground_truth_verification} require careful scientific qualification:
+\begin{enumerate}[(i)]
+    \item \textbf{Curated Test Corpus Limitation:} These results come from seven selected CCTV video slices totaling 700 frames. While these sequences capture representative clinic geometries, seating benches, and queue conditions, they do not capture the full statistical variability of unconstrained hospital operations.
+    \item \textbf{Raw Frame Detection vs.\ Temporal Tracklet Consensus:} The reported demographic accuracy reflects accumulated tracklet history across multiple frames. At the single-frame object detection level, the underlying YOLO26s detector achieves an mAP@50 of $67.1\%$. Individual raw frames still exhibit missing detections during severe occlusion and false detections on folded blankets.
+    \item \textbf{Heuristic Sensitivity to Geometry:} Modules such as seated occupant deduplication and stature modulation depend on calibrated camera placement ($2.8\text{--}3.5$ meters height, $25^{\circ}\text{--}35^{\circ}$ tilt). Non-standard camera angles or steep overhead perspectives can degrade classification accuracy.
+    \item \textbf{Operational Deployment Reality:} In continuous, unconstrained clinic deployments with dense patient crowds, extreme lighting changes, or long occlusions exceeding several minutes, the system will produce classification and tracking errors. Practitioners must view these results as evidence that the multi-stage design functions correctly on tested clips, not as an assertion that the system will achieve $100\%$ accuracy in all real-world deployments.
+\end{enumerate}
+
+\subsection{Allometric Cephalocaudal Ratio Measurements}
+Table \ref{tab:cephalocaudal_measurements} reports empirical 17-keypoint skeletal anthropometric measurements across real CCTV feeds, confirming the biological separation between children and adults.
+
+\begin{table}[htbp]
+\centering
+\caption{Empirical 17-Keypoint Skeletal Anthropometric Measurements Across Real CCTV Surveillance Feeds}
+\label{tab:cephalocaudal_measurements}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Identified Subject} & \textbf{Torso Length (px)} & \textbf{Leg Length (px)} & \textbf{Cephalocaudal Ratio ($R_{\text{ceph}}$)} & \textbf{Predicted Class} \\
+\midrule
+Toddler Subject (Drawers Feed) & 19.9 & 20.2 & \textbf{0.982} & Child (Pediatric) \\
+Adult Patient 1 (Pharmacy Lobby) & 126.5 & 185.9 & \textbf{0.681} & Adult (Mature) \\
+Adult Patient 2 (Pharmacy Lobby) & 150.2 & 219.1 & \textbf{0.686} & Adult (Mature) \\
+Adult Counter Staff (Pharmacy Lobby) & 105.0 & 168.9 & \textbf{0.621} & Adult (Mature) \\
+Kindergarten Teacher (Classroom Feed) & 154.5 & 209.5 & \textbf{0.737} & Adult (Mature) \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+These measurements show that the cephalocaudal ratio provides an empirical separation margin ($\Delta R \ge 0.245$) between toddlers and mature adults.
+
+\section{Hardware Latency and CPU SIMD Ablation}
+Deploying vision models in Ghanaian hospitals requires evaluating processor latency and throughput on standard x86 CPU hardware.
+
+\subsection{Cross-Resolution Hardware Latency and Throughput}
+Table \ref{tab:hardware_benchmark} reports inference latency and throughput across four clinical CCTV resolutions on an x86 CPU with native AVX2 SIMD acceleration.
+
+\begin{table}[htbp]
+\centering
+\caption{Inference Latency and Throughput across Four Clinical CCTV Resolutions on Consumer x86 CPU (Intel AVX2 Native)}
+\label{tab:hardware_benchmark}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+\textbf{CCTV Video Environment} & \textbf{Resolution} & \textbf{Model Architecture} & \textbf{Latency (ms)} & \textbf{Throughput (FPS)} \\
+\midrule
+\multirow{2}{*}{Playroom Activity (Drawers)} & \multirow{2}{*}{$480 \times 270$} & YOLO26s (ONNX FP32) & \textbf{123.3} & \textbf{8.1} \\
+ & & YOLO26m (ONNX FP32) & 378.4 & 2.6 \\
+\midrule
+\multirow{2}{*}{Kindergarten Classroom} & \multirow{2}{*}{$720 \times 1280$} & YOLO26s (ONNX FP32) & \textbf{131.7} & \textbf{7.6} \\
+ & & YOLO26m (ONNX FP32) & 447.5 & 2.2 \\
+\midrule
+\multirow{2}{*}{Hospital OPD Patient Queue} & \multirow{2}{*}{$2688 \times 1520$} & YOLO26s (ONNX FP32) & \textbf{146.6} & \textbf{6.8} \\
+ & & YOLO26m (ONNX FP32) & 367.3 & 2.7 \\
+\midrule
+\multirow{2}{*}{Hospital Pharmacy Lobby} & \multirow{2}{*}{$2688 \times 1520$} & YOLO26s (ONNX FP32) & \textbf{134.0} & \textbf{7.5} \\
+ & & YOLO26m (ONNX FP32) & 488.5 & 2.0 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+As shown in Table \ref{tab:hardware_benchmark}, letterbox preprocessing normalizes frames to $640 \times 640$ pixels, keeping YOLO26s throughput between $6.8$ and $8.1$ FPS even when raw camera pixel count increases tenfold. In contrast, scaling to the medium model (YOLO26m) increases latency by $3.0\times$ to $3.6\times$ on CPU hardware, dropping throughput to $2.0\text{--}2.7$ FPS. Therefore, YOLO26s provides the best edge operating point.
+
+\subsection{Latency vs.\ Batch Size Scaling}
+Figure \ref{fig:latency_benchmark} plots latency and throughput across batch sizes on standard x86\_64 CPU hardware.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig7_latency_throughput_benchmark.png}
+    \caption{Inference Latency and Real-Time Throughput Benchmark Across Input Batch Sizes.}
+    \label{fig:latency_benchmark}
+\end{figure}
+
+\subsection{CPU Precision Ablation: AVX2 SIMD vs.\ Emulated FP16}
+Figure \ref{fig:cpu_ablation} compares ONNX Runtime native FP32 with AVX2 SIMD against OpenVINO FP16 execution on the same CPU. Table \ref{tab:precision_ablation} summarizes the runtime ablation metrics on 1080p CCTV footage.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig8_cpu_precision_ablation.png}
+    \caption{CPU Precision Ablation: Native FP32 AVX2 SIMD Acceleration vs.\ Emulated FP16 Execution.}
+    \label{fig:cpu_ablation}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Ablation of CPU Precision Frameworks on 1080p CCTV Footage}
+\label{tab:precision_ablation}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Framework Backend} & \textbf{Precision} & \textbf{Latency (ms)} & \textbf{Throughput (FPS)} & \textbf{Full Shift Elapsed Time} \\
+\midrule
+PyTorch LibTorch & FP32 & 123.7 & 8.1 & 1m 31.4s \\
+Intel OpenVINO & FP16 & 438.3 & 2.3 & 4m 58.2s \\
+\textbf{ONNX Runtime (AVX2)} & \textbf{FP32} & \textbf{110.2} & \textbf{9.1} & \textbf{1m 09.2s} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+As shown in Figure \ref{fig:cpu_ablation} and Table \ref{tab:precision_ablation}:
+\begin{itemize}
+    \item \textbf{ONNX Runtime Native FP32 (AVX2):} Processed 2,000 frames in \textbf{69.1 seconds} ($28.94$ FPS without display overhead; $9.1$ FPS full-pipeline). Native 256-bit AVX2 vector instructions executed eight multiply-accumulate operations per clock cycle without type conversions.
+    \item \textbf{OpenVINO FP16 (CPU Emulation):} Required \textbf{298.2 seconds} ($6.71$ FPS standalone; $2.3$ FPS full-pipeline) on the same CPU, representing a \textbf{3.98$\times$ slowdown}. Because standard edge CPUs lack native FP16 execution units, software must convert 16-bit values to FP32 for calculation and back to FP16, slowing down processing.
+\end{itemize}
+These benchmarks show that native FP32 with AVX2 SIMD provides the best performance on hospital CPUs.
+
+\section{Discussion of Findings and Clinical Utility}
+The test results confirm our main premise: adding biological growth laws and differential geometry to vision models prevents errors from unconstrained neural networks.
+
+\subsection{Resolution of the ``Invisible Child'' Problem}
+Standard models often miss infants carried on mothers' backs during Non-Maximum Suppression (NMS). In our pipeline, CLAHE contrast enhancement and SAHI slicing preserve edge gradients ($+360$ Sobel response) between child and caregiver clothing. Parent-child anchoring maintains the child's trajectory during temporary occlusion, resolving undercounting.
+
+\subsection{Integration with Hospital Systems (LHIMS)}
+The system outputs census data as an anonymous JSON telemetry record:
+\begin{equation}
+    \begin{aligned}
+    \mathcal{T}_{census} = \{ & \text{timestamp}, \text{location\_id}, \text{pediatric\_count}, \\
+    & \text{adult\_count}, \text{triage\_queue\_estimate} \}
+    \end{aligned}
+\end{equation}
+This telemetry feeds directly into the Lightwave Health Information Management System (LHIMS) through REST APIs. Real-time patient counts allow administrators to allocate triage nurses before waiting halls become overcrowded.
+
+Chapter 5 concludes the thesis, reviews operational limitations, and provides practical deployment recommendations for hospital administrators.

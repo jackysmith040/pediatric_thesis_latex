@@ -1,0 +1,70 @@
+\documentclass[a4paper,12pt, oneside]{book}
+\usepackage{styles/mystyle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[backend=bibtex]{biblatex}
+\addbibresource{bibliography/references.bib}
+
+\usepackage[
+    pdftitle={Pediatric Patient Detection and Counting with Interactive Computer Vision and Dynamic Multi-Tracking in Clinical Triage Environments},
+    pdfauthor={Fafali Dorkunor, Peter Amoah Mensah},
+    hidelinks
+]{hyperref}
+
+\begin{document}
+
+\include{frontmatter/titlepage}
+
+\frontmatter
+
+\newpage
+\addcontentsline{toc}{chapter}{DECLARATION}
+\include{frontmatter/declaration}
+
+\newpage
+\addcontentsline{toc}{chapter}{DEDICATION}
+\include{frontmatter/dedication}
+
+\newpage
+\addcontentsline{toc}{chapter}{ABSTRACT}
+\include{frontmatter/abstract}
+
+\newpage
+\addcontentsline{toc}{chapter}{ACKNOWLEDGMENT}
+\include{frontmatter/acknowledgment}
+
+\newpage
+\tableofcontents
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF ABBREVIATIONS}
+\include{frontmatter/abbreviations}
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF TABLES}
+\listoftables
+
+\newpage
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
+\listoffigures
+
+\mainmatter
+\include{chapters/01_introduction}
+\include{chapters/02_literature_review}
+\include{chapters/03_methodology}
+\include{chapters/04_results_and_discussion}
+\include{chapters/05_conclusion}
+
+\backmatter
+\newpage
+\addcontentsline{toc}{chapter}{REFERENCES}
+\printbibliography
+
+\appendix
+\include{chapters/appendix}
+
+\end{document}

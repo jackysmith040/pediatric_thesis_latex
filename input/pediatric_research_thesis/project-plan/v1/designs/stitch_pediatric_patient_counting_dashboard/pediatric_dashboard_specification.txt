@@ -1,0 +1,59 @@
+DESIGN SYSTEM & UI/UX SPECIFICATION
+Project: Pediatric Patient Counting Dashboard
+Aesthetic Register: Product (Design SERVES the product)
+Commitment Level: Restrained (Minimalism with precision)
+
+======================================================================
+1. STRATEGIC DESIGN PHILOSOPHY
+======================================================================
+We are designing for cognitive ease in a high-stress clinical environment. The UI must be highly functional, brutal in its clarity, and utilitarian. 
+* Rhythm over Monotony: Spacing must have intentional visual rhythm. Identical padding everywhere creates fatigue.
+* Structural Purity: Cards are the lazy answer. We only use them when they provide a true psychological affordance. Nested cards are entirely banned. Let typography and negative space dictate groupings.
+
+======================================================================
+2. TYPOGRAPHY & FONT PAIRS
+======================================================================
+The dashboard requires highly legible, modern typefaces with large x-heights and open counters for immediate readability from a distance (e.g., on a wall-mounted triage monitor).
+
+[Pair A] The Clinical Modernist
+* Display/Headers: 'Inter' (Tight tracking, bold weight, geometric precision)
+* Body/Data UI: 'JetBrains Mono' (For tabular data, timestamps, and log feeds)
+
+Typographic Rules:
+* Hierarchy: Emphasize via weight or size, never via decorative colors.
+* Legibility Minimum: 16px base font size for accessibility.
+* Leading (Line Height): 1.5 for body text, 1.1 - 1.2 for headings.
+* Metric Alignment: "Tabular figures" (tnum) MUST be enabled in CSS for all real-time counting numbers (Adults/Children) to prevent horizontal jitter when the digits change rapidly.
+
+======================================================================
+3. COLOR SYSTEM (OKLCH COLOR SPACE)
+======================================================================
+Pure black (#000000) and pure white (#FFFFFF) cause eye strain and are strictly banned. All neutrals must be tinted toward the primary brand hue (chroma 0.005–0.01). 
+
+* Base Neutral (Background): Tinted Slate (e.g., OKLCH 98% lightness, 0.005 chroma, 250 hue) - A soft, clinical off-white.
+* Text Neutral (Body): Deep Tinted Slate (e.g., OKLCH 25% lightness). Never #000.
+* Primary Accent (≤ 10% usage): Clinical Teal (OKLCH 65% lightness, 0.15 chroma, 180 hue).
+* Alert/Critical (Overcrowding): Muted Coral/Amber. No pure, aggressive reds.
+
+======================================================================
+4. LAYOUT & INFORMATION ARCHITECTURE
+======================================================================
+* Asymmetric Bento-Box Layout: Abandon identical 3-column card grids. Use varying column spans to establish a clear information architecture. The "Current Pediatric Capacity" takes a massive 2x2 visual span, while minor server logs take a compact 1x1 span.
+* Edges & Elevation: Use clean, 1px solid tinted-neutral borders. No heavy drop shadows.
+
+======================================================================
+5. THE ANTI-PATTERN LIBRARY (THE "DON'TS")
+======================================================================
+To maintain an Impeccable standard, the following generic UI tropes are absolutely banned from the frontend codebase:
+
+* DON'T use side-stripe borders (e.g., a 4px colored border-left on a card/alert). Rewrite with full background tints or leading icons instead.
+* DON'T use Gradient Text (background-clip: text). Clinical data must be solid, high-contrast, and instantly readable.
+* DON'T use Glassmorphism or blurs. They degrade performance on low-end hospital computers and ruin accessibility contrast ratios.
+* DON'T default to Modals. Modals break the user's spatial context. If a user needs to see patient details, use a slide-over panel or inline expansion.
+* DON'T wrap everything in a container. Most UI elements don't need a box around them.
+
+======================================================================
+6. COMPONENT SPECIFICATIONS (LARAVEL LIVEWIRE)
+======================================================================
+* Real-Time Telemetry Counters: Must utilize variable font weights (e.g., 700-800) to emphasize the integer. The label ("Adults", "Children") must sit at a lower visual hierarchy (weight 400, muted neutral color).
+* Video Feed Embed: Clean edge, 8px border-radius, overflow hidden. Rely on a subtle inner border to frame the MJPEG feed.

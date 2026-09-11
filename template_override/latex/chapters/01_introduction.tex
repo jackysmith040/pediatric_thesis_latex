@@ -1,0 +1,74 @@
+\chapter{INTRODUCTION}
+
+\section{Background}
+Modern healthcare systems rely on accurate patient counts for clinical triage, resource allocation, and workflow management. In Ghanaian hospitals, such as Komfo Anokye Teaching Hospital (KATH) and the KNUST University Hospital in Kumasi, the Outpatient Department (OPD) receives most incoming patients \cite{osei2024}. Hundreds of patients arrive daily. Nurses classify patients with the South African Triage Scale (SATS) and register them in the national Lightwave Health Information Management System (LHIMS) \cite{addotey2023}.
+
+Despite investments in digital systems, initial patient counting remains manual. Triage nurses and clerks scan crowded waiting areas on foot. They count waiting patients by hand and ask parents whether accompanying individuals are sick children or siblings. This manual count causes delays in taking vital signs. It skews emergency nurse-to-patient ratios and causes discrepancies in hospital records \cite{keles2023, javaid2024}.
+
+Computer Vision (CV) and Deep Learning (DL) offer tools for non-invasive patient monitoring. Neural networks can convert ceiling CCTV streams into coordinate matrices to count patients and track corridor density in real time \cite{diop2025, jiang2022}. However, standard pedestrian detectors assume upright, unoccluded adults. These assumptions fail in pediatric hospital wards in developing countries.
+
+\section{Motivation and Significance}
+This study addresses the systematic undercounting and misclassification of pediatric patients in crowded waiting areas. Children under five years move unpredictably and stay close to their parents. Standard vision models treat people as standard bounding boxes with a 1:3 width-to-height ratio. These models fail to capture body proportions that distinguish children from adults or small children from carried items \cite{lin2022, liu2020}.
+
+This work provides three key contributions:
+\begin{enumerate}[(i)]
+    \item \textbf{Mathematical and Biological Constraints:} Instead of using unconstrained black-box models, this work combines discrete differential geometry, separable convolution algebra, and cephalocaudal growth laws. These constraints prevent feature collapse in occluded scenes.
+    \item \textbf{Operational Healthcare Efficiency:} Accurate automated census counts feed directly into LHIMS. This helps administrators assign nurses, pediatricians, and supplies during peak clinic hours.
+    \item \textbf{Privacy-Preserving Edge Computing:} The framework runs on local low-power CPU hardware using AVX2 SIMD instructions. It outputs anonymous coordinate vectors without storing facial data or transmitting video to the cloud, satisfying data protection standards \cite{milkaite2019}.
+\end{enumerate}
+
+\section{Problem Statement}
+Standard computer vision models fail when tracking pediatric patients under heavy occlusion, dim lighting, and local carrying practices. We call this the \textbf{``Invisible Child'' Problem}.
+
+In Ghanaian clinics, mothers and caregivers carry infants wrapped tightly to their backs with traditional cloth (\textit{kaba} and slings). Under standard ceiling CCTV cameras:
+\begin{enumerate}[(i)]
+    \item The child merges visually with the caregiver's torso, creating one silhouette with shared edge gradients.
+    \item Standard Convolutional Neural Network (CNN) detectors suppress the child bounding box during Non-Maximum Suppression (NMS), mistaking the infant for a duplicate detection of the adult.
+    \item The child occupies few pixels in the video frame (often below $32 \times 32$ pixels in a $640 \times 480$ stream), causing spatial feature loss in deep convolutional layers.
+    \item Fluorescent lighting, open courtyards, and dense metal benches create harsh shadows and broken edges that degrade gradient filters.
+\end{enumerate}
+
+Manual records and baseline automated counts diverge sharply. This creates a high Mean Absolute Percentage Error (MAPE) and makes general detectors unsuitable for hospital triage.
+
+\section{Aim and Objectives}
+
+\subsection{General Objective}
+The main goal of this study is to formulate, implement, and validate a privacy-preserving computer vision system for automated pediatric patient detection, allometric verification, and multi-object tracking in crowded clinical waiting areas.
+
+\subsection{Specific Objectives}
+To achieve this goal, we set seven specific objectives:
+\begin{enumerate}[(i)]
+    \item Model digital image formation, 8-bit quantization, and separable gradient convolutions for clinical edge detection.
+    \item Examine and quantify why knowledge distillation from heavy teacher networks fails on occluded pediatric data.
+    \item Build a high-resolution inference pipeline using Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI) to detect distant children.
+    \item Build a dual-stage pipeline combining full-frame detection with margin-expanded crop classification to identify pediatric subjects.
+    \item Derive an allometric classification metric based on head-to-body ($H/B$) and torso-to-leg ($L_{torso}/L_{leg}$) ratios from 17-point pose estimation to separate children from adults.
+    \item Build a temporal Bayesian filter that accumulates tracklet evidence across frames to remove false detections and maintain identities during occlusion.
+    \item Test the system on CCTV video from hospital waiting areas, pharmacy queues, and play areas to measure precision, recall, count accuracy, and CPU throughput with AVX2 acceleration.
+\end{enumerate}
+
+\section{Research Questions}
+This work answers five research questions:
+\begin{enumerate}[(i)]
+    \item How can 2D spatial convolution operators be split into rank-1 separable components to minimize arithmetic operations per pixel on hospital CPU hardware?
+    \item Why does standard knowledge distillation fail to transfer features for occluded children, and how does a ground-zero architectural formulation resolve this?
+    \item Can biological allometric ratios, specifically cephalocaudal proportions ($R_c \approx 0.25$ versus $R_a \approx 0.125$), provide a clean threshold ($\tau = 0.80$) to distinguish children from adults under varied clothing and shadows?
+    \item How does recursive Bayesian updating over temporal tracklets reduce single-frame detection noise and prevent identity switches during occlusion?
+    \item What is the trade-off between floating-point formats (FP32 AVX2 SIMD versus FP16 emulation) in terms of latency, memory use, and detection accuracy on hospital CPUs?
+\end{enumerate}
+
+\section{Delimitation and Scope}
+This study combines applied mathematics, computer vision, and healthcare operations. We evaluate data from ambulatory triage areas, waiting corridors, and consultation halls at KATH and the KNUST Hospital in Kumasi, Ghana.
+
+The scope is limited to non-invasive optical counting and tracking. The system does not process diagnostic medical scans (such as X-rays, CT, or MRI) and does not diagnose disease. We exclude facial recognition and biometric identity logging to protect patient privacy. All tracking and census metrics rely solely on anonymous bounding box centroids and skeletal coordinates.
+
+\section{Organization of the Thesis}
+This thesis contains five chapters:
+\begin{itemize}
+    \item \textbf{Chapter 2 (Literature Review):} Traces object detection from hand-crafted features to deep neural networks, reviews pediatric anthropometry and occlusion handling, and defines the research gap.
+    \item \textbf{Chapter 3 (Methodology):} Formulates the dual-stage architecture, digital quantization, separable convolutions, CIoU regression, margin-expanded crop classification, allometric growth ratios, and Bayesian tracking.
+    \item \textbf{Chapter 4 (Results):} Reports empirical benchmarks in clinical waiting areas and pharmacy counters, presents detection and counting metrics, and evaluates CPU acceleration benchmarks.
+    \item \textbf{Chapter 5 (Conclusion):} Summarizes the main findings, describes practical limitations, provides deployment recommendations for hospital administrators, and outlines future research directions.
+\end{itemize}
+
+Chapter 2 reviews the existing literature on object detection, pedestrian tracking, and pediatric anthropometry to establish the theoretical background for this study.

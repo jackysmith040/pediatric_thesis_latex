@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pediatric Capacity Dashboard</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration (Provided) -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#e1d4fd",
+                      "secondary-fixed": "#e9ddff",
+                      "on-tertiary-fixed-variant": "#594400",
+                      "inverse-on-surface": "#f5eff7",
+                      "surface-container-highest": "#e6e0e9",
+                      "on-secondary": "#ffffff",
+                      "on-background": "#1d1b20",
+                      "primary": "#4f378a",
+                      "on-primary": "#ffffff",
+                      "background": "#fdf7ff",
+                      "surface-variant": "#e6e0e9",
+                      "on-surface": "#1d1b20",
+                      "on-primary-fixed": "#22005d",
+                      "tertiary-fixed-dim": "#e7c365",
+                      "on-secondary-fixed-variant": "#4b4263",
+                      "secondary": "#63597c",
+                      "secondary-fixed-dim": "#cdc0e9",
+                      "on-secondary-container": "#645a7d",
+                      "tertiary-container": "#c9a74d",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#fdf7ff",
+                      "primary-container": "#6750a4",
+                      "surface-container-low": "#f8f2fa",
+                      "outline": "#7a7582",
+                      "on-error": "#ffffff",
+                      "inverse-primary": "#cfbcff",
+                      "inverse-surface": "#322f35",
+                      "outline-variant": "#cbc4d2",
+                      "surface-container-high": "#ece6ee",
+                      "primary-fixed-dim": "#cfbcff",
+                      "on-tertiary-fixed": "#241a00",
+                      "on-tertiary": "#ffffff",
+                      "surface-tint": "#6750a4",
+                      "surface": "#fdf7ff",
+                      "primary-fixed": "#e9ddff",
+                      "surface-container": "#f2ecf4",
+                      "on-surface-variant": "#494551",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-dim": "#ded8e0",
+                      "error": "#ba1a1a",
+                      "tertiary": "#765b00",
+                      "on-secondary-fixed": "#1f1635",
+                      "on-primary-fixed-variant": "#4f378a",
+                      "on-primary-container": "#e0d2ff",
+                      "tertiary-fixed": "#ffdf93",
+                      "on-tertiary-container": "#503d00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "xs": "4px",
+                      "gutter": "16px",
+                      "base": "4px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xl": "32px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "data-lg": [
+                              "JetBrains Mono"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "JetBrains Mono"
+                      ],
+                      "display-lg-mobile": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "data-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased selection:bg-primary-container selection:text-on-primary-container pb-20">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim text-primary dark:text-primary-fixed-dim w-full top-0 sticky border-b border-outline-variant dark:border-outline z-40 flex items-center justify-between px-margin-mobile py-sm w-full transition-colors duration-100 ease-in-out">
+<button aria-label="Clinical Notes" class="flex items-center justify-center w-10 h-10 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-100 ease-in-out">
+<span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant" data-icon="clinical_notes">clinical_notes</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile font-label-caps text-label-caps tracking-widest text-primary dark:text-primary-fixed text-center flex-1">PEDIATRIC COMMAND</h1>
+<button aria-label="Notifications" class="flex items-center justify-center w-10 h-10 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-100 ease-in-out">
+<span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant" data-icon="notifications">notifications</span>
+</button>
+</header>
+<main class="w-full max-w-full overflow-x-hidden flex flex-col">
+<!-- Critical Alert Banner -->
+<div class="w-full bg-error text-on-error px-margin-mobile py-sm flex items-start gap-sm border-b border-error-container">
+<span class="material-symbols-outlined mt-xs" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps">CRITICAL ALERT</span>
+<span class="font-body-md text-body-md mt-xs">Neonatal unit nearing full capacity. Divert protocols on standby. Immediate triage required.</span>
+</div>
+</div>
+<!-- Telemetry Bento Grid -->
+<section class="grid grid-cols-2 w-full border-b border-outline-variant">
+<!-- Total Admitted (Full Width) -->
+<div class="col-span-2 bg-surface p-margin-mobile border-b border-outline-variant flex flex-col gap-sm relative overflow-hidden group">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL ADMITTED</span>
+<div class="flex items-end gap-sm">
+<span class="font-data-lg text-data-lg text-on-surface tabular-nums tracking-tighter">142</span>
+<span class="font-body-md text-body-md text-primary mb-1 flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span> +5%
+                    </span>
+</div>
+<!-- Subtle indicator stripe -->
+<div class="absolute left-0 top-0 bottom-0 w-[4px] bg-primary"></div>
+</div>
+<!-- Children (Half Width) -->
+<div class="col-span-1 bg-surface p-margin-mobile border-r border-outline-variant flex flex-col gap-sm">
+<span class="font-label-caps text-label-caps text-on-surface-variant">CHILDREN</span>
+<span class="font-data-lg text-data-lg text-on-surface tabular-nums tracking-tighter">87</span>
+</div>
+<!-- Adults (Half Width) -->
+<div class="col-span-1 bg-surface p-margin-mobile flex flex-col gap-sm">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ADULTS</span>
+<span class="font-data-lg text-data-lg text-on-surface tabular-nums tracking-tighter">55</span>
+</div>
+<!-- Available Beds (Full Width) -->
+<div class="col-span-2 bg-surface p-margin-mobile border-t border-outline-variant flex justify-between items-center">
+<div class="flex flex-col gap-xs">
+<span class="font-label-caps text-label-caps text-on-surface-variant">AVAILABLE BEDS</span>
+<span class="font-body-md text-body-md text-error font-bold">12 REMAINING</span>
+</div>
+<div class="flex gap-xs">
+<div class="w-8 h-8 bg-error-container border border-error flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-[16px]" data-icon="bed">bed</span>
+</div>
+<div class="w-8 h-8 bg-surface-variant border border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]" data-icon="bed">bed</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Live Video Feed Section -->
+<section class="w-full mt-gutter border-y border-outline-variant bg-surface flex flex-col">
+<div class="px-margin-mobile py-sm border-b border-outline-variant flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="videocam">videocam</span> LIVE FEED: WARD 3
+                </span>
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-error">REC</span>
+</div>
+</div>
+<div class="relative w-full aspect-video bg-inverse-surface border-b border-outline-variant overflow-hidden group cursor-pointer">
+<img alt="Live hospital ward feed" class="w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="A sterile, high-tech hospital ward seen through a security camera feed. The lighting is clinical, cool, and somewhat harsh, casting stark shadows. Medical equipment frames the edges of the shot, emphasizing the utilitarian, life-saving environment. The color palette is restricted to cool grays, sterile whites, and deep blacks, aligning with a restrained minimalist, hyper-functional aesthetic. The mood is tense but highly controlled and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeNj3XisUUY2ycac4mRBOXBPia8BfFR7o1MgckNFVaHMnTRy4lHs21CRk-9ZlLfy5RDMdbCCfEgxsHr7M7RhmpP9OQ_a_ZchOoqW0KlrYu7f8LE-IUrhgcogOeRL8bDJzsqtbxlTepY-533sSkVXxa954mWwb4HGe85MgiD8xKa_mZHJ7gi7gQu43ckhVcnI0MJzxMvHun47-iuurGE8XV7vvvZhqUvx5jxoG63Mbc1RBQTw2wTRQ-j3xtd5QgvUM2eH8AIK2vAlM"/>
+<!-- Overlay Data -->
+<div class="absolute inset-0 p-sm flex flex-col justify-between pointer-events-none">
+<div class="flex justify-between w-full">
+<span class="font-body-md text-body-md text-on-secondary bg-inverse-surface/50 px-xs py-1 tabular-nums text-[12px]">CAM-03</span>
+<span class="font-body-md text-body-md text-on-secondary bg-inverse-surface/50 px-xs py-1 tabular-nums text-[12px]">14:22:05 UTC</span>
+</div>
+<div class="flex justify-start w-full">
+<span class="font-label-caps text-label-caps text-primary bg-primary-container px-sm py-1 border border-primary">MOTION DETECTED</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Action / Triage Section -->
+<section class="w-full px-margin-mobile py-lg">
+<button class="w-full bg-primary text-on-primary font-label-caps text-label-caps py-md border border-primary hover:bg-primary-container hover:text-on-primary-container transition-colors duration-100 ease-in-out flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined" data-icon="add_moderator">add_moderator</span>
+                INITIATE TRIAGE OVERRIDE
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface dark:bg-surface-dim text-primary dark:text-primary-fixed-dim font-label-caps text-label-caps fixed bottom-0 w-full z-50 border-t border-outline-variant dark:border-outline flex justify-around items-stretch h-16">
+<!-- Active Tab: STATS -->
+<button class="flex flex-col items-center justify-center bg-primary text-on-primary dark:bg-primary-fixed-dim dark:text-on-primary-fixed p-sm flex-1 transition-colors duration-100 ease-in-out">
+<span class="material-symbols-outlined mb-1" data-icon="monitoring" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+            STATS
+        </button>
+<!-- Inactive Tab: FEEDS -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-sm flex-1 hover:bg-surface-container-low dark:hover:bg-surface-container-high active:bg-primary-container dark:active:bg-on-primary-fixed-variant transition-colors duration-100 ease-in-out">
+<span class="material-symbols-outlined mb-1" data-icon="rss_feed">rss_feed</span>
+            FEEDS
+        </button>
+<!-- Inactive Tab: LOGS -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-sm flex-1 hover:bg-surface-container-low dark:hover:bg-surface-container-high active:bg-primary-container dark:active:bg-on-primary-fixed-variant transition-colors duration-100 ease-in-out">
+<span class="material-symbols-outlined mb-1" data-icon="history_edu">history_edu</span>
+            LOGS
+        </button>
+<!-- Inactive Tab: PROFILE -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-sm flex-1 hover:bg-surface-container-low dark:hover:bg-surface-container-high active:bg-primary-container dark:active:bg-on-primary-fixed-variant transition-colors duration-100 ease-in-out">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+            PROFILE
+        </button>
+</nav>
+</body></html>

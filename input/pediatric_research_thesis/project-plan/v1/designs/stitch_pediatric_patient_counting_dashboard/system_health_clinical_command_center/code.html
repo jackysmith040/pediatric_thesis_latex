@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PEDIATRIC COMMAND - System Health</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#e1d4fd",
+                    "secondary-fixed": "#e9ddff",
+                    "on-tertiary-fixed-variant": "#594400",
+                    "inverse-on-surface": "#f5eff7",
+                    "surface-container-highest": "#e6e0e9",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#1d1b20",
+                    "primary": "#4f378a",
+                    "on-primary": "#ffffff",
+                    "background": "#fdf7ff",
+                    "surface-variant": "#e6e0e9",
+                    "on-surface": "#1d1b20",
+                    "on-primary-fixed": "#22005d",
+                    "tertiary-fixed-dim": "#e7c365",
+                    "on-secondary-fixed-variant": "#4b4263",
+                    "secondary": "#63597c",
+                    "secondary-fixed-dim": "#cdc0e9",
+                    "on-secondary-container": "#645a7d",
+                    "tertiary-container": "#c9a74d",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#fdf7ff",
+                    "primary-container": "#6750a4",
+                    "surface-container-low": "#f8f2fa",
+                    "outline": "#7a7582",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#cfbcff",
+                    "inverse-surface": "#322f35",
+                    "outline-variant": "#cbc4d2",
+                    "surface-container-high": "#ece6ee",
+                    "primary-fixed-dim": "#cfbcff",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#6750a4",
+                    "surface": "#fdf7ff",
+                    "primary-fixed": "#e9ddff",
+                    "surface-container": "#f2ecf4",
+                    "on-surface-variant": "#494551",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-dim": "#ded8e0",
+                    "error": "#ba1a1a",
+                    "tertiary": "#765b00",
+                    "on-secondary-fixed": "#1f1635",
+                    "on-primary-fixed-variant": "#4f378a",
+                    "on-primary-container": "#e0d2ff",
+                    "tertiary-fixed": "#ffdf93",
+                    "on-tertiary-container": "#503d00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "32px",
+                    "xs": "4px",
+                    "gutter": "16px",
+                    "base": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "data-lg": [
+                            "JetBrains Mono"
+                    ],
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "JetBrains Mono"
+                    ],
+                    "display-lg-mobile": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "data-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg-mobile": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "800"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex antialiased">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 border-r border-outline-variant bg-surface dark:bg-surface-dim shrink-0">
+<div class="p-lg border-b border-outline-variant">
+<h1 class="font-headline-md text-headline-md text-primary">PEDIATRIC COMMAND</h1>
+</div>
+<div class="p-md border-b border-outline-variant flex items-center gap-md">
+<div class="w-10 h-10 bg-surface-container-highest rounded-full flex items-center justify-center overflow-hidden border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+</div>
+<div>
+<div class="font-label-caps text-label-caps text-on-surface">Unit Manager</div>
+<div class="font-body-md text-body-md text-on-surface-variant text-sm mt-xs">Station 04-A</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-md flex flex-col gap-xs px-sm">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-highest dark:hover:bg-on-surface-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-highest dark:hover:bg-on-surface-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined">clinical_notes</span>
+<span class="font-label-caps text-label-caps">Patient Logs</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-highest dark:hover:bg-on-surface-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-label-caps text-label-caps">Capacity Maps</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-highest dark:hover:bg-on-surface-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-caps text-label-caps">Staffing</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary border-l-4 border-primary transition-all duration-75" href="#">
+<span class="material-symbols-outlined">monitor_heart</span>
+<span class="font-label-caps text-label-caps">System Health</span>
+</a>
+</div>
+<div class="p-md border-t border-outline-variant flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-highest dark:hover:bg-on-surface-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-caps text-label-caps">Support</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-highest dark:hover:bg-on-surface-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-caps text-label-caps">Logs</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+<!-- TopNavBar (Mobile only for full brand, but serves as header on desktop here based on layout preference) -->
+<header class="flex justify-between items-center w-full px-md h-16 bg-surface dark:bg-surface-dim border-b border-outline-variant md:hidden shrink-0">
+<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary dark:text-primary-fixed">PEDIATRIC COMMAND</div>
+<div class="flex items-center gap-sm">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors duration-100">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors duration-100">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto flex flex-col gap-md">
+<!-- Page Header -->
+<div class="flex justify-between items-end border-b border-outline-variant pb-sm">
+<div>
+<h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-background">SYSTEM HEALTH</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Real-time infrastructure telemetry.</p>
+</div>
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-primary">LIVE</span>
+</div>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-px bg-outline-variant border border-outline-variant">
+<!-- CV Engine Node -->
+<div class="bg-surface col-span-1 md:col-span-8 p-md md:p-lg flex flex-col">
+<div class="flex justify-between items-start mb-md">
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">CV ENGINE</h3>
+<div class="font-body-md text-body-md text-on-background text-sm">Python / FastAPI</div>
+</div>
+<div class="bg-surface-container-high px-sm py-xs flex items-center gap-sm border-l-2 border-primary">
+<span class="font-label-caps text-label-caps text-on-surface">STATUS: HEALTHY</span>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md mt-auto">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-xs">CPU LOAD</span>
+<span class="font-data-lg text-data-lg text-on-background">42%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-xs">RAM USAGE</span>
+<span class="font-data-lg text-data-lg text-on-background">8.4G</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-xs">API LATENCY</span>
+<span class="font-data-lg text-data-lg text-on-background">24ms</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-xs">GPU UTIL</span>
+<span class="font-data-lg text-data-lg text-on-background">78%</span>
+</div>
+</div>
+</div>
+<!-- Laravel Dashboard Node -->
+<div class="bg-surface col-span-1 md:col-span-4 p-md md:p-lg flex flex-col">
+<div class="flex justify-between items-start mb-md">
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">DASHBOARD CORE</h3>
+<div class="font-body-md text-body-md text-on-background text-sm">Laravel 11 / Reverb</div>
+</div>
+<div class="bg-surface-container-high px-sm py-xs flex items-center gap-sm border-l-2 border-primary">
+<span class="font-label-caps text-label-caps text-on-surface">STATUS: HEALTHY</span>
+</div>
+</div>
+<div class="flex flex-col gap-md mt-auto">
+<div class="flex justify-between items-end border-b border-outline-variant pb-xs">
+<span class="font-label-caps text-label-caps text-on-surface-variant">WSS CONNECTIONS</span>
+<span class="font-data-lg text-data-lg text-on-background text-2xl">1,042</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant pb-xs">
+<span class="font-label-caps text-label-caps text-on-surface-variant">DB LATENCY</span>
+<span class="font-data-lg text-data-lg text-on-background text-2xl">12ms</span>
+</div>
+</div>
+</div>
+<!-- Log Stream -->
+<div class="bg-surface col-span-1 md:col-span-12 p-0 flex flex-col min-h-[300px]">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">RECENT EVENT LOGS</h3>
+<button class="font-label-caps text-label-caps text-primary uppercase border border-outline-variant px-sm py-xs hover:bg-surface-container transition-colors">EXPORT</button>
+</div>
+<div class="flex-1 overflow-x-auto bg-background">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="p-sm font-label-caps text-label-caps text-on-surface-variant">TIMESTAMP</th>
+<th class="p-sm font-label-caps text-label-caps text-on-surface-variant">NODE</th>
+<th class="p-sm font-label-caps text-label-caps text-on-surface-variant">LEVEL</th>
+<th class="p-sm font-label-caps text-label-caps text-on-surface-variant">MESSAGE</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-sm text-on-background">
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+<td class="p-sm text-on-surface-variant">2023-10-27T14:32:01Z</td>
+<td class="p-sm">cv-worker-01</td>
+<td class="p-sm"><span class="bg-surface-container-high px-xs py-base border-l-2 border-outline">INFO</span></td>
+<td class="p-sm">Model inference completed in 45ms.</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+<td class="p-sm text-on-surface-variant">2023-10-27T14:31:55Z</td>
+<td class="p-sm">laravel-web-02</td>
+<td class="p-sm"><span class="bg-error-container text-on-error-container px-xs py-base border-l-2 border-error">WARN</span></td>
+<td class="p-sm">High memory usage detected (85%).</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+<td class="p-sm text-on-surface-variant">2023-10-27T14:31:40Z</td>
+<td class="p-sm">reverb-ws-01</td>
+<td class="p-sm"><span class="bg-surface-container-high px-xs py-base border-l-2 border-outline">INFO</span></td>
+<td class="p-sm">Client disconnected: id_9842.</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest">
+<td class="p-sm text-on-surface-variant">2023-10-27T14:30:12Z</td>
+<td class="p-sm">db-primary</td>
+<td class="p-sm"><span class="bg-surface-container-high px-xs py-base border-l-2 border-outline">INFO</span></td>
+<td class="p-sm">Checkpoint executed successfully.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

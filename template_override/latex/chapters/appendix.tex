@@ -1,0 +1,44 @@
+\chapter{APPENDIX}
+
+\section{Open-Source Code Repositories}
+To support reproducibility and clinical deployment, we make all project source code, models, and benchmark pipelines available on GitHub.
+
+\begin{enumerate}[(i)]
+    \item \textbf{Primary Production Pipeline (Dual-Stage System):}
+    \begin{itemize}
+        \item \textbf{Repository:} \nolinkurl{jackysmith040/pediatric_final_year_project}
+        \item \textbf{Access Link:} \url{https://github.com/jackysmith040/pediatric_final_year_project}
+        \item \textbf{Description:} Contains the full dual-stage implementation. Combines full-frame YOLO26s detection, ByteTrack tracking, margin-expanded $224 \times 224$ crop classification (\texttt{Pediatric-Model-ONNX}), and Bayesian stature consensus filtering.
+    \end{itemize}
+
+    \item \textbf{Knowledge Distillation and Dataset Exploration:}
+    \begin{itemize}
+        \item \textbf{Repository:} \nolinkurl{jackysmith040/pediatric_research_thesis}
+        \item \textbf{Access Link:} \url{https://github.com/jackysmith040/pediatric_research_thesis}
+        \item \textbf{Description:} Contains exploratory models and benchmark comparisons. Evaluates soft-logit distillation from heavy teacher networks, DINOv3 feature transfer, and dataset annotation noise.
+    \end{itemize}
+
+    \item \textbf{Vision Prototyping and Slicing Laboratory:}
+    \begin{itemize}
+        \item \textbf{Repository:} \nolinkurl{jackysmith040/pediatric_research_lab}
+        \item \textbf{Access Link:} \url{https://github.com/jackysmith040/pediatric_research_lab}
+        \item \textbf{Description:} Contains standalone vision experiments. Includes Slicing Aided Hyper Inference (SAHI) slicing pipelines, CIELAB CLAHE equalizers, and separable convolution edge filters.
+    \end{itemize}
+
+    \item \textbf{Pediatric Counting Baseline System:}
+    \begin{itemize}
+        \item \textbf{Repository:} \nolinkurl{jackysmith040/pediatric_counting_final_year_project}
+        \item \textbf{Access Link:} \url{https://github.com/jackysmith040/pediatric_counting_final_year_project}
+        \item \textbf{Description:} Contains earlier multi-object tracking baselines, initial camera ingestion modules, and preliminary clinical headcount evaluation scripts.
+    \end{itemize}
+\end{enumerate}
+
+\section{Hardware and Software Deployment Environment}
+All benchmarks reported in this thesis ran on standard x86 CPU edge hardware without a discrete graphics processing unit:
+\begin{itemize}
+    \item \textbf{Processor:} Intel Core i7-10610U CPU @ 1.80 GHz (up to 2.30 GHz, 4 physical cores, 8 threads, Comet Lake).
+    \item \textbf{SIMD Instruction Extensions:} 256-bit Advanced Vector Extensions 2 (AVX2) and FMA3.
+    \item \textbf{System Memory:} 16.0 GB DDR4 RAM (15.8 GB usable memory).
+    \item \textbf{Inference Engine:} ONNX Runtime 1.29.0 with native \texttt{CPUExecutionProvider}.
+    \item \textbf{Video Acceleration:} Direct letterbox normalization to $640 \times 640$ pixels preserving input aspect ratios.
+\end{itemize}
