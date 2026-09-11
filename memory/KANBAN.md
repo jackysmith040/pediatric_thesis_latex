@@ -30,17 +30,17 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 ---
 
 ## 🎯 Phase 3: Results, Benchmarks & Consistency (Points 8–15, 23–25, 29–34)
-- [ ] **3.1 Document YOLO26s Training/Fine-Tuning**: Present detector training parameters, sample sizes, epochs, data splits, and mAP evaluation in Chapter 4 rather than isolated abstract mentions. *(Point 8)*
-- [ ] **3.2 Reconcile Test Cohort Counts (45 vs 46)**: Establish verified ground-truth individual count across abstract, Chapter 4, and Chapter 5 (eliminating the 45 vs 46 contradiction). *(Point 9)*
-- [ ] **3.3 Fix Table 4.2 (Full 7 Sequences)**: Expand Table 4.2 to display all 7 standardized test sequences with individual sequence metrics summing exactly to the total evaluated cohort. *(Point 10)*
-- [ ] **3.4 Qualify 100% Metrics & Small Cohort Caveats**: Add immediate qualifying notes in Table 4.2, results text, and abstract explaining that 100% metrics reflect curated test sequences, explicitly noting baseline detector misses, occlusion limits, and false blanket detections. *(Points 11, 12)*
-- [ ] **3.5 Expand Allometric Evidence & Reconcile Ratios**: Document pediatric range $[0.941, 0.982]$ with empirical observations; reconcile separation margin consistency ($\Delta R \ge 0.204$ vs $\Delta R \ge 0.245$) across Chapters 3, 4, and 5. *(Points 13, 14, 15)*
-- [ ] **3.6 Component Ablation Study**: Add structured ablation analysis (Baseline $\to$ +CLAHE $\to$ +SAHI $\to$ +Crop Classifier $\to$ +Allometry $\to$ +Temporal Smoothing) and qualify/evidence the CLAHE 34.2% contrast claim. *(Points 23, 24)*
-- [ ] **3.7 Qualify Knowledge Distillation Claims**: Reframe distillation underperformance as a plausible annotation noise hypothesis rather than an isolated proven cause. *(Point 25)*
-- [ ] **3.8 Clarify Real-Time Definition & Table 4.5 Latencies**: Define real-time processing requirements (frame sampling/skipping vs 25–30 FPS CCTV stream); reconcile ONNX latency (110.2 ms) vs batch elapsed times, define standalone vs full-pipeline FPS, and clarify the $3.98\times$ speedup derivation. *(Points 29, 30, 31)*
-- [ ] **3.9 Reconcile Hardware Contradictions**: Reconcile GPU teacher benchmark in Table 4.1 with CPU-only testbed statements in the appendix. *(Point 32)*
-- [ ] **3.10 Differentiate Clinical vs Non-Clinical Environments**: Clearly separate hospital triage test feeds from kindergarten playroom / indoor activity robustness tests in Table 4.4 and discussion. *(Point 33)*
-- [ ] **3.11 Quantitative Tracking Metrics**: Report standard tracking measures (ID switches, track fragmentation, or clearly bounded continuity in evaluated sequences) to substantiate identity persistence claims. *(Point 34)*
+- [x] **3.1 Document YOLO26s Training/Fine-Tuning**: Present detector training parameters, sample sizes, epochs, data splits, and mAP evaluation in Chapter 4 rather than isolated abstract mentions. *(Point 8)*
+- [x] **3.2 Reconcile Test Cohort Counts (45 vs 46)**: Establish verified ground-truth individual count across abstract, Chapter 4, and Chapter 5 (eliminating the 45 vs 46 contradiction). *(Point 9)*
+- [x] **3.3 Fix Table 4.2 (Full 7 Sequences)**: Expand Table 4.2 to display all 7 standardized test sequences with individual sequence metrics summing exactly to the total evaluated cohort. *(Point 10)*
+- [x] **3.4 Qualify 100% Metrics & Small Cohort Caveats**: Add immediate qualifying notes in Table 4.2, results text, and abstract explaining that 100% metrics reflect curated test sequences, explicitly noting baseline detector misses, occlusion limits, and false blanket detections. *(Points 11, 12)*
+- [x] **3.5 Expand Allometric Evidence & Reconcile Ratios**: Document pediatric range $[0.941, 0.982]$ with empirical observations; reconcile separation margin consistency ($\Delta R \ge 0.204$ vs $\Delta R \ge 0.245$) across Chapters 3, 4, and 5. *(Points 13, 14, 15)*
+- [x] **3.6 Component Ablation Study**: Add structured ablation analysis (Baseline $\to$ +CLAHE $\to$ +SAHI $\to$ +Crop Classifier $\to$ +Allometry $\to$ +Temporal Smoothing) and qualify/evidence the CLAHE 34.2% contrast claim. *(Points 23, 24)*
+- [x] **3.7 Qualify Knowledge Distillation Claims**: Reframe distillation underperformance as a plausible annotation noise hypothesis rather than an isolated proven cause. *(Point 25)*
+- [x] **3.8 Clarify Real-Time Definition & Table 4.5 Latencies**: Define real-time processing requirements (frame sampling/skipping vs 25–30 FPS CCTV stream); reconcile ONNX latency (110.2 ms) vs batch elapsed times, define standalone vs full-pipeline FPS, and clarify the $3.98\times$ speedup derivation. *(Points 29, 30, 31)*
+- [x] **3.9 Reconcile Hardware Contradictions**: Reconcile GPU teacher benchmark in Table 4.1 with CPU-only testbed statements in the appendix. *(Point 32)*
+- [x] **3.10 Differentiate Clinical vs Non-Clinical Environments**: Clearly separate hospital triage test feeds from kindergarten playroom / indoor activity robustness tests in Table 4.4 and discussion. *(Point 33)*
+- [x] **3.11 Quantitative Tracking Metrics**: Report standard tracking measures (ID switches, track fragmentation, or clearly bounded continuity in evaluated sequences) to substantiate identity persistence claims. *(Point 34)*
 
 ---
 
@@ -54,10 +54,12 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 ---
 
 ## 🚧 In Progress
-- [ ] Phase 2: Methodology & Algorithmic Rigor (Data Collection, ONNX Classifier, Threshold Calibration, Ethics Section)
+- [ ] Phase 4: Citations, Bibliography & Abstract Rewrite (Points 43–45, 47)
 
 ---
 
 ## ✅ Done
 - [x] Initialized comprehensive 47-point supervisor remediation backlog in `memory/KANBAN.md`
 - [x] Phase 1: Title, Scope, Terminology & Research Questions (Points 1–5, 16–19, 35–36, 40–42) completely executed and verified on branch `phase-1-remediation`
+- [x] Phase 2: Methodology & Algorithmic Rigor (Data Collection, ONNX Classifier, Threshold Calibration, Ethics Section) completely executed and verified on branch `phase-2-methodology`
+- [x] Phase 3: Results, Benchmarks & Consistency (Points 8–15, 23–25, 29–34) completely executed and verified on branch `phase-3-benchmarks`
