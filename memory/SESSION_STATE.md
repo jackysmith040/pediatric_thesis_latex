@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-11  
 **Branch:** `phase-1-remediation`  
-**Head Commit:** `872cc36`  
+**Head Commit:** `8499894`  
 **Build Status:** Clean Tectonic compile (`exit code 0`, 70 pages, 22.11 MiB)  
 **Deliverable PDF:** `output/thesis/Pediatric Person Detection and Counting Using Computer Vision and Multi-Object Tracking in Clinical Environments.pdf`  
 
