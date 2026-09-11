@@ -248,7 +248,7 @@ In standalone pre-pipeline validation testing on the held-out test split, the cl
     \item \textbf{Macro F1-Score:} $92.4\%$
     \item \textbf{Area Under ROC Curve (AUC-ROC):} $0.968$
 \end{itemize}
-The crop model executes in $1.8\text{--}2.4\text{ ms}$ per crop on host CPUs under ONNX Runtime. It outputs a raw demographic child probability:
+Because crop splitting occurred randomly across sequential video frames, these validation metrics are likely optimistic. Shared clothing and lighting attributes across training and testing partitions can inflate scores compared to sequence-independent evaluation. The crop model executes in $1.8\text{--}2.4\text{ ms}$ per crop on host CPUs under ONNX Runtime. It outputs a raw demographic child probability:
 \begin{equation}
     P_{\text{model}} = \operatorname{Softmax}(\mathbf{z}_{\text{crop}})_{\text{child}} \in [0, 1]
 \end{equation}
@@ -534,6 +534,6 @@ To mitigate these privacy risks by design, the framework implements a zero-reten
     \item \textbf{De-Identification via Abstract Geometry:} The system converts human bodies into abstract 17-point skeletal coordinate tuples $\mathbf{k}_j = (x_j, y_j)$ and bounding box centroids. These numerical coordinates preserve allometric morphology while discarding texture, color, and facial identity.
     \item \textbf{Encrypted Telemetry Outputs:} The system outputs only anonymous numerical occupancy telemetry (such as timestamped demographic headcounts). Telemetry logs are stored on local hospital storage drives with AES-256 encryption.
 \end{enumerate}
-Under General Data Protection Regulation (GDPR) Recital 26, anonymous aggregated counts that cannot identify a natural person fall outside biometric privacy restrictions.
+The system design minimizes the exposure of directly identifying visual information by processing video locally and transmitting only derived telemetry.
 
 Chapter 4 evaluates this multi-stage pipeline across clinical video feeds and benchmarks its execution speed on edge CPU hardware.

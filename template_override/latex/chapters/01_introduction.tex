@@ -14,7 +14,7 @@ This work provides three key contributions:
 \begin{enumerate}[(i)]
     \item \textbf{Mathematical and Biological Constraints:} Instead of relying solely on black-box models, this work applies discrete differential operators, rank-1 tensor separability, and cephalocaudal growth priors. These geometric constraints stabilize demographic classification in occluded scenes.
     \item \textbf{Operational Healthcare Telemetry:} Objective automated person counts provide real-time waiting-room occupancy telemetry designed to interface with hospital information systems (such as LHIMS). Computer vision detects physical bodies rather than clinical illness. However, accurate demographic counts provide baseline crowding data to help administrators allocate triage staff and supplies during peak clinic hours.
-    \item \textbf{Privacy-Preserving Edge Computing:} The framework runs on local low-power CPU hardware using AVX2 SIMD instructions. It outputs anonymous coordinate vectors without storing facial data or transmitting raw video to cloud servers, satisfying strict patient data protection standards \cite{milkaite2019}.
+    \item \textbf{Privacy-Preserving Edge Computing:} The framework runs on local low-power CPU hardware using AVX2 SIMD instructions. It outputs anonymous coordinate vectors without storing facial data or transmitting raw video to cloud servers. This design minimizes the exposure of directly identifying visual information \cite{milkaite2019}.
 \end{enumerate}
 
 \section{Problem Statement}
@@ -50,9 +50,9 @@ To achieve this goal, we set seven specific objectives:
 \section{Research Questions}
 This work answers five research questions:
 \begin{enumerate}[(i)]
-    \item How does rank-1 separable convolution filtering compare with 2D spatial convolution in arithmetic complexity and pixel-level compute latency on edge hardware?
+    \item How does rank-1 separable convolution filtering compare with 2D spatial convolution in arithmetic complexity and computational workload on edge hardware?
     \item What factors contribute to the lower performance of soft-logit knowledge distillation on occluded pediatric data, and does a dedicated crop classification stage improve demographic precision?
-    \item To what extent does the skeletal cephalocaudal ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$) provide a measurable separation margin between pre-pubescent children and adults across varying camera viewing angles?
+    \item To what extent does the skeletal cephalocaudal ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$) provide a measurable separation margin between pre-pubescent children and adults under the evaluated camera geometries and viewing conditions?
     \item How effectively does weighted temporal smoothing reduce single-frame posture noise and maintain tracklet demographic identity during temporary occlusions?
     \item What are the empirical trade-offs between native FP32 AVX2 SIMD execution and emulated FP16 execution in inference latency and memory throughput on standard hospital CPUs?
 \end{enumerate}

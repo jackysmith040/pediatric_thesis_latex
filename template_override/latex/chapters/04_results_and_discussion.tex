@@ -12,6 +12,8 @@ The evaluation covered four primary clinical and activity scenarios:
     \item \textbf{Scenario D: Indoor Activity Zone with Furniture Occlusion (\texttt{fig3}):} An indoor area with heavy physical occlusion ($>70\%$) from furniture obstacles and climbing movement.
 \end{enumerate}
 
+\subsection{Rationale for Multi-Environment Evaluation}
+Ethically usable pediatric clinical CCTV footage was not required to evaluate every framework component independently. The evaluation therefore separates environmental validity from demographic stress testing. Clinical hospital sequences evaluate the target deployment environment. This environment includes specific camera geometry, lighting, waiting-room layouts, queues, and adult crowd interactions. Kindergarten and domestic playroom sequences provide verified pediatric subjects under varied posture, movement, scale, and occlusion conditions. The combined evaluation tests if the framework remains operational across the clinical imaging environment and these specific pediatric visual conditions. This constitutes a cross-domain feasibility evaluation rather than a claim of complete clinical validation.
 \subsection{Quantitative Performance Metrics}
 We measure model performance with standard detection and counting metrics:
 \begin{align}
@@ -192,6 +194,7 @@ The metrics in Figure \ref{fig:metrics_confusion} and Table \ref{tab:ground_trut
 \begin{itemize}
     \item \textbf{Curated Sequence Evaluation:} Across the seven standardized test sequences (700 total frames with 45 verified individuals), the multi-stage pipeline matched ground-truth headcount after applying weighted temporal smoothing.
     \item \textbf{Adult-Child Differentiation on Verified Clips:} Across 38 verified unique adult observations in these hospital corridor slices, combining stature priors with allometric ratio verification produced zero false pediatric classifications.
+    \item \textbf{Clinical Pediatric Representation:} Notably, the five clinical hospital test sequences contained 38 adults and zero children. All 7 evaluated pediatric subjects were sourced from the educational and domestic stress feeds. The system successfully detects children in these stress environments, but pediatric performance in crowded clinical scenes remains an area for future validation.
 \end{itemize}
 
 \subsection{Quantitative Multi-Object Tracking Evaluation}

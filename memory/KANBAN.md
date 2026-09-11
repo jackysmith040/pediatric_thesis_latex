@@ -66,3 +66,9 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 - [x] Phase 4: Citations, Bibliography & Abstract Rewrite (Points 43–45, 47) completely executed and verified on branch `phase-4-citations`
 - [x] Final Adversarial Quality Assurance & Cross-Phase Codex Review under ASD-STE100 rules: zero compilation errors, zero margin overflows across all 85 pages, zero broken citations or orphan bibtex entries, zero banned words, zero prose semicolons, and 100% synchronized numerical metrics.
 - [x] Academic Defense Elevation (~9.0/10 target) on branch `academic-defense-elevation`: Executed full forensic claim-evidence bounding, methodology split transparency, tilt foreshortening caveats, cumulative component addition labeling, preliminary $n=6$ sample clarification, and expanded 4-point limitations under strict ASD-STE100 rules.
+
+---
+
+## 🎯 Phase 5: GPT 8.2/10 Rationale Remediation (Cross-Domain Feasibility)
+- [x] **5.1 Rationale for Multi-Environment Evaluation**: Add an explicit methodological justification paragraph to Section 4.1.1 clarifying the division between clinical environment evaluation (hospital) and demographic stress testing (kindergarten).
+- [x] **5.2 Reframe Conclusion**: Update Chapter 5 to explicitly position the thesis as demonstrating the *feasibility of pediatric person detection in clinical environments*, rather than asserting identical hospital/kindergarten conditions.
