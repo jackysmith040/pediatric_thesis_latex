@@ -11,10 +11,10 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 - [x] **1.3 Conceptual Shift: "Patient" $\to$ "Person"**: Clarify across Chapters 1–5 that computer vision detects *pediatric vs adult persons*, not clinical status. Clarify that patient identification requires registration linkage or queue-zone rules. *(Points 3, 4)*
 - [x] **1.4 Staff & Clinic Filtering**: Explain how staff (e.g., Table 4.3 "Adult Counter Staff") are handled/filtered or categorized as non-patients prior to LHIMS dispatch. *(Point 5)*
 - [x] **1.5 Define Pediatric Cohort**: Define pediatric age threshold (e.g. under-five vs child $\le 12$) in Chapter 1 & 3, and state how ground-truth age labels were established. *(Point 17)*
-- [/] **1.6 Refactor Temporal Filtering (Bayesian $\to$ Temporal Smoothing)**: Rename "recursive Bayesian updating" to *temporal consensus filtering / weighted temporal smoothing* unless formal Bayes prior/likelihood is derived. Update equations and Research Question 4 accordingly. *(Points 18, 19)*
-- [ ] **1.7 Disentangle Ratios in RQ3**: Disentangle head-to-body ratio ($R_c \approx 0.25, R_a \approx 0.125$) from cephalocaudal torso-to-leg ratio ($R_{\text{ceph}}$ with threshold $\tau = 0.80$). *(Point 16)*
-- [ ] **1.8 Refactor RQs & Research Objectives**: Rewrite non-empirical/leading questions (e.g. separable convolution arithmetic) into measurable empirical questions evaluating occlusion, classification, tracking, and edge throughput. Refocus objectives accordingly. *(Points 41, 42)*
-- [ ] **1.9 Scope & Claim Calibration**: Soften LHIMS integration to "designed to interface via REST APIs", qualify decision-support claims ("could support staffing decisions"), and moderate research gap assertions to "Among the studies reviewed in this thesis...". *(Points 35, 36, 40, 46)*
+- [x] **1.6 Refactor Temporal Filtering (Bayesian $\to$ Temporal Smoothing)**: Rename "recursive Bayesian updating" to *temporal consensus filtering / weighted temporal smoothing* unless formal Bayes prior/likelihood is derived. Update equations and Research Question 4 accordingly. *(Points 18, 19)*
+- [x] **1.7 Disentangle Ratios in RQ3**: Disentangle head-to-body ratio ($R_c \approx 0.25, R_a \approx 0.125$) from cephalocaudal torso-to-leg ratio ($R_{\text{ceph}}$ with threshold $\tau = 0.80$). *(Point 16)*
+- [x] **1.8 Refactor RQs & Research Objectives**: Rewrite non-empirical/leading questions (e.g. separable convolution arithmetic) into measurable empirical questions evaluating occlusion, classification, tracking, and edge throughput. Refocus objectives accordingly. *(Points 41, 42)*
+- [x] **1.9 Scope & Claim Calibration**: Soften LHIMS integration to "designed to interface via REST APIs", qualify decision-support claims ("could support staffing decisions"), and moderate research gap assertions to "Among the studies reviewed in this thesis...". *(Points 35, 36, 40, 46)*
 
 ---
 
@@ -54,9 +54,10 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 ---
 
 ## 🚧 In Progress
-- [ ] Phase 1: Planning and structuring Title, Scope, Terminology & Research Questions fixes
+- [ ] Phase 2: Methodology & Algorithmic Rigor (Data Collection, ONNX Classifier, Threshold Calibration, Ethics Section)
 
 ---
 
 ## ✅ Done
 - [x] Initialized comprehensive 47-point supervisor remediation backlog in `memory/KANBAN.md`
+- [x] Phase 1: Title, Scope, Terminology & Research Questions (Points 1–5, 16–19, 35–36, 40–42) completely executed and verified on branch `phase-1-remediation`

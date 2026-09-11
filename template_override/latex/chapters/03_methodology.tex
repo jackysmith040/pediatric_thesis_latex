@@ -5,7 +5,7 @@ This chapter presents a multi-stage, privacy-preserving computer vision framewor
 \begin{enumerate}[(i)]
     \item \textbf{Stage 1: Full-Frame Spatial Detection and Tracking:} Input video frames pass through Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI). A YOLO26s-ONNX detector predicts person bounding boxes. A ByteTrack tracker matches targets using an 8D Kalman filter, history-prioritized containment resolution, and anatomical seated occupant deduplication.
     \item \textbf{Stage 2: Margin-Expanded Crop Classification:} Candidate bounding boxes undergo margin expansion ($\alpha = 0.10$) and isotropic letterboxing to $224 \times 224$ pixels with neutral gray padding. A dedicated secondary ONNX crop classifier predicts raw demographic class probabilities.
-    \item \textbf{Stage 3: Bayesian Prior and Multi-Modal Consensus Fusion:} Raw model probabilities are modulated by a normalized height stature prior ($\theta_{\text{adult}} = 0.32$) and smoothed across time via dual-horizon consensus weighting (70\% historical consensus and 30\% rolling window). Ambiguous detections are resolved using 17-point skeletal pose estimation to evaluate the cephalocaudal torso-to-leg growth ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$).
+    \item \textbf{Stage 3: Physical Prior and Temporal Consensus Fusion:} Raw model probabilities are modulated by a normalized height stature prior ($\theta_{\text{adult}} = 0.32$, $\theta_{\text{child}} = 0.20$) and smoothed across time via dual-horizon consensus weighting (70\% historical consensus and 30\% rolling window). Ambiguous detections are resolved using 17-point skeletal pose estimation to evaluate the cephalocaudal torso-to-leg growth ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$).
     \item \textbf{Cross-Camera Re-Identification Plugin:} An optional decoupled plugin extracts dual-zone upper and lower color signatures to link occupant trajectories across hospital rooms without cloud processing.
 \end{enumerate}
 
@@ -210,10 +210,10 @@ The standardized $224 \times 224 \times 3$ crop passes into a specialized second
     P_{\text{model}} = \operatorname{Softmax}(\mathbf{z}_{\text{crop}})_{\text{child}} \in [0, 1]
 \end{equation}
 
-\section{Stage 3: Bayesian Prior and Multi-Modal Consensus Fusion}
-Single-frame classifier scores fluctuate under camera noise, perspective tilt, and motion blur. Stage 3 stabilizes classifications by fusing physical priors and temporal consensus.
+\section{Stage 3: Physical Stature Prior and Temporal Consensus Fusion}
+Single-frame classifier scores fluctuate under camera noise, perspective tilt, and motion blur. Stage 3 stabilizes classifications by fusing physical stature priors and temporal consensus smoothing.
 
-\subsection{Bayesian Height Prior and Stature Modulation}
+\subsection{Normalized Height Prior and Stature Modulation}
 Let normalized bounding box height relative to total frame height be:
 \begin{equation}
     h_{\text{norm}} = \frac{h}{H}
@@ -238,7 +238,7 @@ where $M = 15$. A tracklet is confirmed as pediatric when $\bar{P}_k(t) \ge 0.60
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{images/fig10_tracklet_bayesian_convergence.png}
-    \caption{Temporal Bayesian Tracklet Belief Update: Posterior Probability Convergence Over Frames.}
+    \caption{Dual-Horizon Temporal Consensus Weighting: Probability Stabilization Over Frames.}
     \label{fig:bayesian_convergence}
 \end{figure}
 

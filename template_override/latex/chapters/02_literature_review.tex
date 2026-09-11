@@ -138,8 +138,8 @@ ByteTrack \cite{zhang2022bytetrack} & Two-stage Hungarian matching on $D_{high},
 \section{The Research Gap}
 A review of the literature reveals three clear research gaps:
 \begin{enumerate}[(i)]
-    \item \textbf{The Semantic-Biological Disconnect:} Existing deep learning detectors optimize bounding boxes using geometric criteria (IoU, aspect ratio) alone. No prior work integrates allometric cephalocaudal growth laws ($H/B$ and $L_{torso}/L_{leg}$) directly as a verification rule for pediatric patient counting.
-    \item \textbf{The Occlusion Feature-Collapse Gap:} Standard models run on downsampled full frames, which removes the fine visual details of carried infants. Slicing-aided inference (SAHI) and contrast enhancement (CLAHE) have not been combined for pediatric clinical triage.
+    \item \textbf{The Semantic-Biological Disconnect:} Existing deep learning detectors optimize bounding boxes using geometric criteria (IoU, aspect ratio) alone. Among the studies reviewed in this thesis, we did not identify works that integrate allometric cephalocaudal growth laws ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) directly as a verification rule for pediatric person counting.
+    \item \textbf{The Occlusion Feature-Collapse Gap:} Standard models run on downsampled full frames, which removes the fine visual details of carried infants. Among the literature evaluated, combining slicing-aided inference (SAHI) with local contrast enhancement (CLAHE) has not been widely examined for pediatric clinical triage.
     \item \textbf{The Data-Centric Distillation Dilemma:} While knowledge distillation offers compact models, its ability to transfer features for occluded children under clinical distribution shifts remains unproven.
 \end{enumerate}
 

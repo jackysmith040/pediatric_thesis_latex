@@ -244,19 +244,19 @@ As shown in Figure \ref{fig:cpu_ablation} and Table \ref{tab:precision_ablation}
 These benchmarks show that native FP32 with AVX2 SIMD provides the best performance on hospital CPUs.
 
 \section{Discussion of Findings and Clinical Utility}
-The test results confirm our main premise: adding biological growth laws and differential geometry to vision models prevents errors from unconstrained neural networks.
+The test results show that, in the evaluated clips, adding cephalocaudal allometric constraints and temporal consensus filtering improves demographic counting accuracy compared with the baseline detector.
 
-\subsection{Resolution of the ``Invisible Child'' Problem}
-Standard models often miss infants carried on mothers' backs during Non-Maximum Suppression (NMS). In our pipeline, CLAHE contrast enhancement and SAHI slicing preserve edge gradients ($+360$ Sobel response) between child and caregiver clothing. Parent-child anchoring maintains the child's trajectory during temporary occlusion, resolving undercounting.
+\subsection{Mitigation of the ``Invisible Child'' Problem}
+Standard models often miss infants carried on mothers' backs during Non-Maximum Suppression (NMS). In our pipeline, CLAHE contrast enhancement and SAHI slicing help preserve edge gradients ($+360$ Sobel response) between child and caregiver clothing. Parent-child spatial anchoring maintains the child's trajectory during temporary occlusion, mitigating undercounting in the tested scenes.
 
-\subsection{Integration with Hospital Systems (LHIMS)}
-The system outputs census data as an anonymous JSON telemetry record:
+\subsection{Design for Hospital System Integration (LHIMS)}
+The system formats occupancy data as an anonymous JSON telemetry record:
 \begin{equation}
     \begin{aligned}
     \mathcal{T}_{census} = \{ & \text{timestamp}, \text{location\_id}, \text{pediatric\_count}, \\
     & \text{adult\_count}, \text{triage\_queue\_estimate} \}
     \end{aligned}
 \end{equation}
-This telemetry feeds directly into the Lightwave Health Information Management System (LHIMS) through REST APIs. Real-time patient counts allow administrators to allocate triage nurses before waiting halls become overcrowded.
+The telemetry is designed so that it could be integrated with LHIMS through an appropriate application programming interface (API). While this study evaluated optical detection and tracking rather than hospital staffing workflows, real-time demographic counts could support healthcare administrators in monitoring waiting-area density and planning staff deployment.
 
 Chapter 5 concludes the thesis, reviews operational limitations, and provides practical deployment recommendations for hospital administrators.

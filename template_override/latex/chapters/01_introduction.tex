@@ -38,23 +38,23 @@ The main goal of this study is to formulate, implement, and validate a privacy-p
 \subsection{Specific Objectives}
 To achieve this goal, we set seven specific objectives:
 \begin{enumerate}[(i)]
-    \item Model digital image formation, 8-bit quantization, and separable gradient convolutions for clinical edge detection.
-    \item Examine and quantify why knowledge distillation from heavy teacher networks fails on occluded pediatric data.
-    \item Build a high-resolution inference pipeline using Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI) to detect distant children.
+    \item Formulate discrete image representations and separable gradient convolutions to evaluate pixel-level edge computation on clinical hardware.
+    \item Examine and quantify the empirical limitations of soft-logit knowledge distillation on occluded pediatric benchmark data.
+    \item Build a high-resolution inference pipeline combining Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI) to detect small and occluded persons.
     \item Build a multi-stage pipeline combining full-frame person detection, margin-expanded crop classification, and allometric verification to identify pediatric subjects.
-    \item Derive an allometric classification metric based on head-to-body ($H/B$) and torso-to-leg ($L_{torso}/L_{leg}$) ratios from 17-point pose estimation to separate children from adults.
-    \item Build a temporal consensus filter that accumulates tracklet evidence across frames to remove false detections and maintain identities during occlusion.
-    \item Test the system on CCTV video from hospital waiting areas, pharmacy queues, and play areas to measure precision, recall, count accuracy, and CPU throughput with AVX2 acceleration.
+    \item Derive and validate a cephalocaudal allometric classification metric ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) from 17-point pose estimation to separate children from adults.
+    \item Develop a dual-horizon temporal consensus filter that stabilizes demographic classifications across tracklet frames and prevents identity flips.
+    \item Evaluate the multi-stage system across clinical and educational CCTV test feeds to quantify counting accuracy, tracking continuity, and CPU throughput under AVX2 SIMD acceleration.
 \end{enumerate}
 
 \section{Research Questions}
 This work answers five research questions:
 \begin{enumerate}[(i)]
-    \item How can 2D spatial convolution operators be split into rank-1 separable components to minimize arithmetic operations per pixel on hospital CPU hardware?
-    \item Why does standard knowledge distillation fail to transfer features for occluded children, and how does a ground-zero architectural formulation resolve this?
-    \item Can biological allometric ratios, specifically cephalocaudal proportions ($R_c \approx 0.25$ versus $R_a \approx 0.125$), provide a clean threshold ($\tau = 0.80$) to distinguish children from adults under varied clothing and shadows?
-    \item How does recursive Bayesian updating over temporal tracklets reduce single-frame detection noise and prevent identity switches during occlusion?
-    \item What is the trade-off between floating-point formats (FP32 AVX2 SIMD versus FP16 emulation) in terms of latency, memory use, and detection accuracy on hospital CPUs?
+    \item How does rank-1 separable convolution filtering compare with 2D spatial convolution in arithmetic complexity and pixel-level compute latency on edge hardware?
+    \item What factors contribute to the lower performance of soft-logit knowledge distillation on occluded pediatric data, and does a dedicated crop classification stage improve demographic precision?
+    \item To what extent does the skeletal cephalocaudal ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$) provide a measurable separation margin between pre-pubescent children and adults across varying camera viewing angles?
+    \item How effectively does dual-horizon temporal consensus smoothing reduce single-frame posture noise and maintain tracklet demographic identity during temporary occlusions?
+    \item What are the empirical trade-offs between native FP32 AVX2 SIMD execution and emulated FP16 execution in inference latency and memory throughput on standard hospital CPUs?
 \end{enumerate}
 
 \section{Delimitation and Scope}
