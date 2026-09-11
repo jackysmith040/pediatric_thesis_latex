@@ -8,7 +8,7 @@ The main findings of this work are:
     \item \textbf{Separable Convolution Geometry:} Splitting the 2D Sobel gradient operator into rank-1 outer product vectors ($\mathbf{s}_y \otimes \mathbf{d}_x^T$) reduced operations from 9 per pixel to 6 per pixel. This $33.3\%$ decrease in arithmetic overhead maintained edge detection accuracy, with vertical boundary responses reaching $+360$.
     \item \textbf{Distillation Data Bottleneck:} Tests showed that soft-logit knowledge distillation transfers and amplifies annotation errors from public medical datasets into student models ($F_1 = 0.736$, $\text{MAPE} = 26.2\%$). This confirmed the need to replace distillation with explicit biological constraints.
     \item \textbf{Image Slicing and Dynamic Range:} Slicing Aided Hyper Inference (SAHI) with $640 \times 640$ tiles ($20\%$ overlap) prevented feature loss for distant children occupying fewer than $32 \times 32$ pixels. CIELAB CLAHE increased local contrast by $+34.2\%$ without altering chromaticity.
-    \item \textbf{Biological Invariance via Allometry:} The skeletal cephalocaudal ratio $R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$ produced a distinct biological gap ($\Delta R_{\min} = 0.204$). Pediatric values ($0.941\text{--}0.982$) remained clearly above adult values ($0.621\text{--}0.737$). Setting threshold $\tau = 0.80$ eliminated demographic misclassifications.
+    \item \textbf{Biological Invariance via Allometry:} The skeletal cephalocaudal ratio $R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$ produced a distinct biological gap ($\Delta R_{\min} = 0.204$). Pediatric values ($0.941\text{--}0.982$) remained clearly above adult values ($0.621\text{--}0.737$). Setting threshold $\tau = 0.80$ separated demographic classes across the evaluated benchmark.
     \item \textbf{Tracking and Counting Reliability:} Combining ByteTrack association, margin-expanded crop classification, and weighted temporal smoothing suppressed single-frame false detections. Across the evaluated 700-frame CCTV benchmark corpus (45 ground-truth occupants), the multi-stage pipeline matched demographic counts without adult-child identity confusion after temporal tracklet consolidation.
     \item \textbf{CPU Vectorization:} Hardware benchmarks showed that native FP32 ONNX execution with AVX2 SIMD instructions achieved $6.8\text{--}9.1$ FPS across CCTV resolutions ($110.2\text{--}146.6$ ms latency). This ran $3.98\times$ faster in pipeline latency than emulated FP16 ($438.3$ ms, $2.3$ FPS). It demonstrates that standard hospital CPUs can run the pipeline without discrete GPUs.
 \end{enumerate}
@@ -30,10 +30,12 @@ To deploy this system in Ghanaian hospitals, we recommend four practical steps:
 \section{Limitations and Future Research}
 
 \subsection{Study Limitations}
-Although this study collected and annotated real-world clinical images, two primary limitations remain:
+This study identifies four primary limitations:
 \begin{enumerate}[(i)]
-    \item \textbf{Dataset Scale and Occlusion Annotation:} We collected and annotated real-world clinic training images. However, getting a larger training dataset would significantly improve model generalization. In particular, more training images with fine-grained, well-annotated severe occlusions would increase detection recall. Examples include infants carried on caregivers' backs and children hidden in dense queues.
-    \item \textbf{Monocular Depth Ambiguity:} Single 2D CCTV cameras cannot measure 3D spatial depth directly. Heavy body overlaps require heuristic stature scaling and temporal tracking filters rather than exact 3D coordinates.
+    \item \textbf{Dataset Scale and Sequence Correlation:} We collected and annotated real-world clinic training images. However, random crop splitting across sequential frames risks correlation in clothing and lighting. Expanding to multi-hospital datasets with sequence-independent splitting remains necessary.
+    \item \textbf{Sample Size of Allometric Observations:} The skeletal cephalocaudal ratio was evaluated on an empirical sample ($n=6$ subjects). While findings match developmental anthropology, measuring larger cohorts across varied postures remains future work.
+    \item \textbf{Curated Evaluation Corpus Scope:} The $100.0\%$ headcount accuracy reflects consolidated tracklets on a curated 700-frame benchmark (45 occupants). Raw single-frame detection achieves $67.1\%$ mAP@50. Unconstrained hospital queues with extreme crowding will experience tracking fragmentations.
+    \item \textbf{Monocular Depth and Tilt Ambiguity:} Single 2D CCTV cameras cannot measure 3D spatial depth directly. Non-vertical body tilt or bending introduces angular foreshortening that degrades 2D ratio estimates.
 \end{enumerate}
 
 \subsection{Future Research Directions}

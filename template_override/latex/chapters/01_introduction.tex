@@ -12,7 +12,7 @@ This study addresses the systematic undercounting and misclassification of pedia
 
 This work provides three key contributions:
 \begin{enumerate}[(i)]
-    \item \textbf{Mathematical and Biological Constraints:} Instead of relying solely on unconstrained black-box models, this work combines discrete differential geometry, separable convolution algebra, and cephalocaudal growth laws. These geometric constraints stabilize demographic classification in occluded scenes.
+    \item \textbf{Mathematical and Biological Constraints:} Instead of relying solely on black-box models, this work applies discrete differential operators, rank-1 tensor separability, and cephalocaudal growth priors. These geometric constraints stabilize demographic classification in occluded scenes.
     \item \textbf{Operational Healthcare Telemetry:} Objective automated person counts provide real-time waiting-room occupancy telemetry designed to interface with hospital information systems (such as LHIMS). Computer vision detects physical bodies rather than clinical illness. However, accurate demographic counts provide baseline crowding data to help administrators allocate triage staff and supplies during peak clinic hours.
     \item \textbf{Privacy-Preserving Edge Computing:} The framework runs on local low-power CPU hardware using AVX2 SIMD instructions. It outputs anonymous coordinate vectors without storing facial data or transmitting raw video to cloud servers, satisfying strict patient data protection standards \cite{milkaite2019}.
 \end{enumerate}
@@ -42,7 +42,7 @@ To achieve this goal, we set seven specific objectives:
     \item Examine and quantify the empirical limitations of soft-logit knowledge distillation on occluded pediatric benchmark data.
     \item Build a high-resolution pipeline combining CLAHE enhancement and SAHI slicing to detect small and occluded persons.
     \item Build a multi-stage pipeline combining full-frame person detection, margin-expanded crop classification, and allometric verification to identify pediatric subjects.
-    \item Derive and validate a cephalocaudal allometric classification metric ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) from 17-point pose estimation to separate children from adults.
+    \item Formulate and empirically evaluate a cephalocaudal allometric classification metric ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) from 17-point pose estimation to differentiate observed children from adults.
     \item Develop a weighted temporal filter that stabilizes demographic classifications across tracklet frames and prevents identity flips.
     \item Evaluate the multi-stage system across clinical and educational CCTV test feeds to quantify counting accuracy, tracking continuity, and CPU throughput under AVX2 SIMD acceleration.
 \end{enumerate}

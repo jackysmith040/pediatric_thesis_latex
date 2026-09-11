@@ -56,7 +56,7 @@ However, dimensionless body ratios remain stable under 2D perspective projection
 \begin{equation}
     R_{head} = \frac{H_{head}}{H_{total}}, \qquad R_{ceph} = \frac{L_{torso}}{L_{leg}}
 \end{equation}
-17-point skeletal pose estimation \cite{cao2019openpose} extracts joint coordinates for the head, shoulders, hips, knees, and ankles. As Bogin \cite{bogin1999} and Mlinari\'{c} et al.\ \cite{mlinaric2024} show, pediatric subjects have $R_{head} \approx 0.25$ and $R_{ceph} \ge 0.85$. Adults have $R_{head} \approx 0.125$ and $R_{ceph} \le 0.70$. Adding these biological ratios directly into detection provides a clear mathematical rule to separate adults and children.
+17-point skeletal pose estimation \cite{cao2019openpose} extracts joint coordinates for the head, shoulders, hips, knees, and ankles. As Bogin \cite{bogin1999} and Mlinari\'{c} et al.\ \cite{mlinaric2024} show, pediatric subjects have $R_{head} \approx 0.25$ and $R_{ceph} \ge 0.85$. Adults have $R_{head} \approx 0.125$ and $R_{ceph} \le 0.70$. Integrating these biological ratios into detection provides a principled mathematical rule to distinguish children from adults under upright orientations.
 
 \section{Occlusion Handling in Crowded Clinical Healthcare Environments}
 Physical occlusion is a major obstacle in visual monitoring. In outpatient clinics, waiting individuals sit close together on wooden benches or crowd around triage desks and pharmacy windows \cite{osei2024}.

@@ -42,7 +42,7 @@ Annotators labeled bounding box coordinates $[x_1, y_1, x_2, y_2]$ and assigned 
 \end{itemize}
 Annotators verified demographic labels by cross-referencing reception desk check-in logs and queue tickets. A senior clinician reviewed and resolved ambiguous cases. The final evaluation test cohort contains 45 verified individuals (38 adults and 7 children).
 
-For the secondary crop classification engine, we extracted 4,200 person crops from candidate detections. This balanced set contains 2,100 pediatric crops and 2,100 adult crops. We partitioned the dataset into 70\% for training (2,940 crops), 15\% for validation (630 crops), and 15\% for testing (630 crops).
+For the secondary crop classification engine, we extracted 4,200 person crops from candidate detections. This balanced set contains 2,100 pediatric crops and 2,100 adult crops. We partitioned the dataset randomly into 70\% for training (2,940 crops), 15\% for validation (630 crops), and 15\% for testing (630 crops). Because crops originate from sequential video recordings, adjacent frames may share visual attributes (such as clothing and lighting). We document this visual correlation across partitions as an empirical evaluation limitation.
 
 \section{Image Representation as Quantized Matrices}
 To process visual data with linear algebra, we represent optical sensor frames as discrete numerical matrices.
@@ -230,7 +230,7 @@ Given an active bounding box $b = [x_1, y_1, x_2, y_2]$ with width $w = x_2 - x_
     x_1' &= \max(0, x_1 - \alpha w), \quad y_1' = \max(0, y_1 - \alpha h) \\
     x_2' &= \min(W, x_2 + \alpha w), \quad y_2' = \min(H, y_2 + \alpha h)
 \end{align}
-The extracted sub-image undergoes isotropic letterboxing to $224 \times 224$ pixels. The aspect ratio is preserved by padding the borders with neutral gray ($V = 114$), eliminating geometric distortion.
+The extracted sub-image undergoes isotropic letterboxing to $224 \times 224$ pixels. The aspect ratio is preserved by padding borders with neutral gray ($V = 114$), avoiding non-uniform stretching.
 
 \subsection{Dedicated Crop Classifier Model (Pediatric-Model-ONNX)}
 The standardized $224 \times 224 \times 3$ crop passes into a dedicated secondary classifier (`Pediatric-Model-ONNX`). This model focuses exclusively on fine-grained facial structure, clothing contours, and body proportions.
@@ -272,7 +272,7 @@ In triage waiting areas and playrooms, adult statures exceed child statures when
 where $\theta_{\text{adult}} = 0.32$ and $\theta_{\text{child}} = 0.20$. These thresholds derive from empirical CCTV measurements where standing adults measure $h_{\text{norm}} \in [0.334, 0.420]$ and young children measure $h_{\text{norm}} \in [0.170, 0.274]$. Older adolescents who have achieved adult stature ($h_{\text{norm}} \ge 0.32$) are visually classified within the adult group.
 
 \subsection{Weighted Temporal Smoothing}
-To eliminate transient classification jitter when toddlers bend or crawl, the final demographic probability blends cumulative historical observation (70\%) with a rolling 15-frame window mean (30\%):
+To suppress transient classification fluctuations when toddlers bend or crawl, the final demographic probability blends cumulative historical observation (70\%) with a rolling 15-frame window mean (30\%):
 \begin{equation}
     \bar{P}_k(t) = 0.70 \cdot \left( \frac{1}{t} \sum_{i=1}^t P_{k,i} \right) + 0.30 \cdot \left( \frac{1}{M} \sum_{j=t-M+1}^t P_{k,j} \right)
 \end{equation}
@@ -382,7 +382,7 @@ We set the allometric classification rule with threshold $\tau = 0.80$:
     \text{Adult}, & \text{if } R_{ceph} < \tau
     \end{cases}
 \end{equation}
-The separation margin $\Delta R \ge 0.204$ cleanly separates children from adults regardless of camera distance.
+The observed separation margin $\Delta R_{\min} = 0.204$ provides an effective decision boundary between children and adults across evaluated scenes.
 
 \subsection{Camera Perspective, Mounting Geometry, and 2D Projection Invariance}
 In hospital waiting areas, CCTV cameras mount to ceilings at heights between $2.8\text{ m}$ and $3.5\text{ m}$. Cameras angle downward with tilt angles between $25^\circ$ and $35^\circ$ relative to the horizontal ceiling plane.
@@ -403,7 +403,7 @@ where $\phi$ represents the effective tilt angle. Taking the ratio gives:
 \end{equation}
 The focal length, camera distance, and cosine tilt factor cancel out. Therefore, the cephalocaudal ratio $R_{\text{ceph}}$ remains stable across standard clinical queue distances ($3\text{--}8\text{ m}$).
 
-Steep vertical perspectives exceeding $60^\circ$ cause the torso to occlude the lower limbs. In those extreme top-down angles, the pipeline requires homographic inverse perspective mapping. Standard clinical CCTV installations ($25^\circ\text{--}35^\circ$) preserve keypoint visibility and keep ratio calculations accurate.
+This cancellation assumes an upright posture aligned with the vertical plane. Significant non-vertical body tilt or bending introduces differential foreshortening, which represents an empirical source of noise. Steep vertical perspectives exceeding $60^\circ$ cause the torso to occlude the lower limbs. In those extreme top-down angles, the pipeline requires homographic inverse perspective mapping. Standard clinical CCTV installations ($25^\circ\text{--}35^\circ$) preserve keypoint visibility and keep ratio calculations accurate.
 
 \section{ByteTrack Association and Deduplication Mechanisms}
 ByteTrack \cite{zhang2022bytetrack} matches detections across consecutive video frames, combined with Exponential Moving Average (EMA) velocity smoothing and duplicate suppression.
@@ -465,7 +465,7 @@ In hospital waiting halls, seated occupants often trigger two fragmented boundin
         \frac{\text{Area}(b_A) + \text{Area}(b_B)}{\text{Area}(b_A \cup b_B)} \ge 0.75
     \end{equation}
 \end{enumerate}
-When satisfied, $b_A$ and $b_B$ merge into the encompassing union track $b_A \cup b_B$, eliminating double counts.
+When satisfied, $b_A$ and $b_B$ merge into the encompassing union track $b_A \cup b_B$, suppressing duplicate bounding boxes.
 
 \subsection{Clinical Staff and Non-Patient Zone Filtering}\label{sec:staff_filtering}
 Clinical staff work at registration counters, triage desks, and pharmacy dispensary windows. The computer vision detector classifies clinical staff as adult persons. To prevent staff from inflating patient queue numbers, the system uses spatial exclusion masks.
@@ -527,7 +527,7 @@ Standard privacy literature often focuses only on facial identification. However
 \end{enumerate}
 
 \subsection{The Zero-Retention Ephemeral RAM Architecture}
-To eliminate these privacy risks by design, the framework implements a zero-retention edge processing model:
+To mitigate these privacy risks by design, the framework implements a zero-retention edge processing model:
 \begin{enumerate}[(i)]
     \item \textbf{Local On-Premises Execution:} All neural inference, tracking, and allometric checks execute locally on hospital-owned CPU hardware. The system transmits zero video streams or raw crops over the internet.
     \item \textbf{Ephemeral In-Memory Frame Processing:} Video frames and bounding box crops exist exclusively in volatile system RAM during the active inference pass ($\approx 120\text{ ms}$). The pipeline immediately overwrites frame buffers in memory. The software never saves raw images, video clips, or facial crops to persistent disk storage.

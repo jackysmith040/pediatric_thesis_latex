@@ -84,7 +84,7 @@ Table \ref{tab:component_ablation} reports incremental ablation results across t
 
 \begin{table}[htbp]
 \centering
-\caption{Cumulative Component Ablation Study on the Standardized Evaluation Corpus}
+\caption{Cumulative Component Addition Study on the Standardized Evaluation Corpus}
 \label{tab:component_ablation}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccc}
@@ -102,7 +102,7 @@ Table \ref{tab:component_ablation} reports incremental ablation results across t
 }
 \end{table}
 
-As shown in Table \ref{tab:component_ablation}, each module provides measurable gains. Adding CLAHE contrast enhancement with clip limit $\beta = 2.0$ increases local boundary edge gradients by an average of $34.2\%$ in underexposed CCTV corridors. This contrast boost improves person proposal recall from $83.2\%$ to $86.5\%$. SAHI patch slicing recovers small occluded infants, raising recall to $91.2\%$. Secondary crop classification, allometric verification, and weighted temporal smoothing eliminate false demographic identity switches, achieving a final headcount MAPE of $0.0\%$ on the evaluation clips.
+As shown in Table \ref{tab:component_ablation}, each module provides measurable gains. Adding CLAHE contrast enhancement with clip limit $\beta = 2.0$ increases local boundary edge gradients by an average of $34.2\%$ in underexposed CCTV corridors. This contrast boost improves person proposal recall from $83.2\%$ to $86.5\%$. SAHI patch slicing recovers small occluded infants, raising recall to $91.2\%$. Secondary crop classification, allometric verification, and weighted temporal smoothing suppress false demographic identity switches. This yields a headcount MAPE of $0.0\%$ across the evaluated clips.
 
 \section{Real-World Clinical Triage Inference Analysis}
 
@@ -217,7 +217,7 @@ Table \ref{tab:cephalocaudal_measurements} reports empirical 17-keypoint skeleta
 
 \begin{table}[htbp]
 \centering
-\caption{Empirical 17-Keypoint Skeletal Anthropometric Measurements Across Real CCTV Surveillance Feeds}
+\caption{Empirical 17-Keypoint Skeletal Anthropometric Measurements Across Real CCTV Surveillance Feeds ($n=6$ Sample)}
 \label{tab:cephalocaudal_measurements}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lcccc}
@@ -235,7 +235,7 @@ Kindergarten Teacher (Classroom Feed) & 154.5 & 209.5 & \textbf{0.737} & Adult (
 }
 \end{table}
 
-These measurements confirm the observed pediatric range $[0.941, 0.982]$ and mature adult range $[0.621, 0.737]$. The minimum separation margin between the lowest child measurement ($0.941$) and highest adult measurement ($0.737$) is $\Delta R_{\min} = 0.204$. Between Toddler 1 and the adult teacher, the separation margin is $\Delta R = 0.245$. Both values exceed the allometric decision boundary $\tau = 0.80$, proving reliable separation.
+These measurements reflect the observed pediatric range $[0.941, 0.982]$ and mature adult range $[0.621, 0.737]$. The minimum separation margin between the lowest child measurement ($0.941$) and highest adult measurement ($0.737$) is $\Delta R_{\min} = 0.204$. Between Toddler 1 and the adult teacher, the separation margin is $\Delta R = 0.245$. Both values exceed the allometric decision boundary $\tau = 0.80$. This provides preliminary empirical support for the proposed separation threshold within the observed cases.
 
 Table \ref{tab:cephalocaudal_measurements} includes Adult Occupant 3 situated at the pharmacy service counter. The computer vision model classifies this individual as an adult person ($R_{\text{ceph}} = 0.621$). Service counter occupants may include dispensary staff rather than waiting patients. Therefore, the pipeline applies the spatial exclusion zone $\Omega_{\text{staff}}$ described in Section \ref{sec:staff_filtering}. The system tracks the occupant inside the counter perimeter, but excludes the track ID from the outpatient waiting queue sent to LHIMS.
 
