@@ -13,8 +13,8 @@
 ## 👥 Authors & Supervision
 
 - **Candidate Authors**:
-  - **Fafali Dorkunor** (Index Number: `20912614`)
-  - **Peter Amoah Mensah** (Index Number: `20889789`)
+  - **Fafali Dorkunor**
+  - **Peter Amoah Mensah**
 - **Academic Supervisors**:
   - **Prof. Peter Amoako-Yirenkyi** (*Department of Mathematics, KNUST*)
   - **Prof. Charles Sebil** (*Department of Mathematics, KNUST*)
