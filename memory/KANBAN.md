@@ -19,13 +19,13 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 ---
 
 ## 🎯 Phase 2: Methodology & Algorithmic Rigor (Points 6–7, 20–22, 26–28, 37–39)
-- [ ] **2.1 Add Data Collection & Annotation Section**: Add dedicated Section in Chapter 3 detailing clinic image collection: frame counts, sources, periods, camera hardware/settings, adult/child counts, annotation tools (e.g., CVAT/LabelImg), protocol, and train/val/test splits. *(Point 6)*
-- [ ] **2.2 Document Pediatric-Model-ONNX Classifier**: Detail the secondary crop classifier architecture (backbone, input shape $224\times 224$), training dataset, child/adult sample sizes, train/val/test split, training hyperparameters, and standalone pre-pipeline validation accuracy. *(Point 7)*
-- [ ] **2.3 Define $\theta_{\text{child}}$ in Eq 3.23**: Fully specify both $\theta_{\text{adult}} = 0.32$ and $\theta_{\text{child}}$ in the normalized bounding box height rule. *(Point 20)*
-- [ ] **2.4 Threshold Justifications**: Provide calibration data, sensitivity analyses, or literature citations for all empirical thresholds: $\theta_{\text{adult}}=0.32$, child classification $0.60$, 5 consecutive frames, 70/30 temporal weights, 15-frame window, 0.80 allometric $\tau$, 0.15 EMA, 0.78 Re-ID, and seated deduplication. *(Point 21)*
-- [ ] **2.5 Perspective & Projection Calibration**: Qualify 2D projection assumptions by explicitly discussing camera tilt, mounting height, and viewing angle constraints. *(Point 22)*
-- [ ] **2.6 Contextualize Mathematical Background**: Separate fundamental theory (image quantization, Sobel kernels, separable convolutions) from actual implemented pipeline stages; qualify the 33.3% arithmetic reduction and decouple it from whole-pipeline real-time throughput. *(Points 26, 27, 28)*
-- [ ] **2.7 Dedicated Ethics & Data Governance Section**: Add dedicated Section in Chapter 3 covering ethical approval/waiver, hospital administrative permissions, consent protocols, patient privacy risks beyond facial recognition, research image storage/security, and the zero-retention RAM deployment model. *(Points 37, 38, 39)*
+- [x] **2.1 Add Data Collection & Annotation Section**: Add dedicated Section in Chapter 3 detailing clinic image collection: frame counts, sources, periods, camera hardware/settings, adult/child counts, annotation tools (e.g., CVAT/LabelImg), protocol, and train/val/test splits. *(Point 6)*
+- [x] **2.2 Document Pediatric-Model-ONNX Classifier**: Detail the secondary crop classifier architecture (backbone, input shape $224\times 224$), training dataset, child/adult sample sizes, train/val/test split, training hyperparameters, and standalone pre-pipeline validation accuracy. *(Point 7)*
+- [x] **2.3 Define $\theta_{\text{child}}$ in Eq 3.23**: Fully specify both $\theta_{\text{adult}} = 0.32$ and $\theta_{\text{child}} = 0.20$ in the normalized bounding box height rule. *(Point 20)*
+- [x] **2.4 Threshold Justifications**: Provide calibration data, sensitivity analyses, or literature citations for all empirical thresholds: $\theta_{\text{adult}}=0.32$, child classification $0.60$, 5 consecutive frames, 70/30 temporal weights, 15-frame window, 0.80 allometric $\tau$, 0.15 EMA, 0.78 Re-ID, and seated deduplication. *(Point 21)*
+- [x] **2.5 Perspective & Projection Calibration**: Qualify 2D projection assumptions by explicitly discussing camera tilt, mounting height, and viewing angle constraints. *(Point 22)*
+- [x] **2.6 Contextualize Mathematical Background**: Separate fundamental theory (image quantization, Sobel kernels, separable convolutions) from actual implemented pipeline stages; qualify the 33.3% arithmetic reduction and decouple it from whole-pipeline real-time throughput. *(Points 26, 27, 28)*
+- [x] **2.7 Dedicated Ethics & Data Governance Section**: Add dedicated Section in Chapter 3 covering ethical approval/waiver, hospital administrative permissions, consent protocols, patient privacy risks beyond facial recognition, research image storage/security, and the zero-retention RAM deployment model. *(Points 37, 38, 39)*
 
 ---
 
