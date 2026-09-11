@@ -238,8 +238,8 @@ Intel OpenVINO & FP16 & 438.3 & 2.3 & 4m 58.2s \\
 
 As shown in Figure \ref{fig:cpu_ablation} and Table \ref{tab:precision_ablation}:
 \begin{itemize}
-    \item \textbf{ONNX Runtime Native FP32 (AVX2):} Processed 2,000 frames in \textbf{69.1 seconds} ($28.94$ FPS without display overhead; $9.1$ FPS full-pipeline). Native 256-bit AVX2 vector instructions executed eight multiply-accumulate operations per clock cycle without type conversions.
-    \item \textbf{OpenVINO FP16 (CPU Emulation):} Required \textbf{298.2 seconds} ($6.71$ FPS standalone; $2.3$ FPS full-pipeline) on the same CPU, representing a \textbf{3.98$\times$ slowdown}. Because standard edge CPUs lack native FP16 execution units, software must convert 16-bit values to FP32 for calculation and back to FP16, slowing down processing.
+    \item \textbf{ONNX Runtime Native FP32 (AVX2):} Processed 2,000 frames in \textbf{69.1 seconds} ($28.94$ FPS without display overhead, $9.1$ FPS full-pipeline). Native 256-bit AVX2 vector instructions executed eight multiply-accumulate operations per clock cycle without type conversions.
+    \item \textbf{OpenVINO FP16 (CPU Emulation):} Required \textbf{298.2 seconds} ($6.71$ FPS standalone, $2.3$ FPS full-pipeline) on the same CPU, representing a \textbf{3.98$\times$ slowdown}. Because standard edge CPUs lack native FP16 execution units, software must convert 16-bit values to FP32 for calculation and back to FP16, slowing down processing.
 \end{itemize}
 These benchmarks show that native FP32 with AVX2 SIMD provides the best performance on hospital CPUs.
 

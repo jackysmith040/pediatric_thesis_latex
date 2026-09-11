@@ -5,7 +5,7 @@ Modern healthcare systems rely on accurate occupancy and flow data for clinical 
 
 Despite investments in digital record systems, initial waiting area headcount monitoring remains manual. Triage nurses and ward assistants scan crowded waiting areas on foot. They count waiting occupants by hand and verbally ask parents whether accompanying children are patients requiring care or healthy siblings. This manual counting process causes delays in prioritizing vulnerable arrivals. It skews emergency nurse-to-patient staffing ratios and introduces discrepancies into administrative records \cite{keles2023, javaid2024}.
 
-Computer Vision (CV) and Deep Learning (DL) offer tools for non-invasive visual monitoring. Neural networks can convert ceiling CCTV streams into spatial coordinate matrices to detect persons, estimate demographic occupancy, and track corridor density in real time \cite{diop2025, jiang2022}. However, standard pedestrian detectors assume upright, unoccluded adults. Furthermore, computer vision models detect physical bodies; they cannot inherently determine whether a detected child is a patient or sibling, nor whether an adult is a caregiver or nurse. Standard off-the-shelf detectors fail to capture pediatric-specific body proportions, particularly in low-resource clinical settings.
+Computer Vision (CV) and Deep Learning (DL) offer tools for non-invasive visual monitoring. Neural networks can convert ceiling CCTV streams into spatial coordinate matrices to detect persons, estimate demographic occupancy, and track corridor density in real time \cite{diop2025, jiang2022}. However, standard pedestrian detectors assume upright, unoccluded adults. Furthermore, computer vision models detect physical bodies. They cannot inherently determine whether a detected child is a patient or sibling, nor whether an adult is a caregiver or nurse. Standard off-the-shelf detectors fail to capture pediatric-specific body proportions, particularly in low-resource clinical settings.
 
 \section{Motivation and Significance}
 This study addresses the systematic undercounting and misclassification of pediatric persons in crowded healthcare waiting areas. Children under five years move unpredictably and stay close to their caregivers. Standard vision models treat all human bodies as uniform bounding boxes with a typical 1:3 width-to-height ratio. These generic models fail to capture morphological proportions that distinguish children from adults, or small children from carried packages and swaddled bundles \cite{lin2022, liu2020}.
@@ -13,7 +13,7 @@ This study addresses the systematic undercounting and misclassification of pedia
 This work provides three key contributions:
 \begin{enumerate}[(i)]
     \item \textbf{Mathematical and Biological Constraints:} Instead of relying solely on unconstrained black-box models, this work combines discrete differential geometry, separable convolution algebra, and cephalocaudal growth laws. These geometric constraints stabilize demographic classification in occluded scenes.
-    \item \textbf{Operational Healthcare Telemetry:} Objective automated person counts provide real-time waiting-room occupancy telemetry designed to interface with hospital information systems (such as LHIMS). While computer vision detects physical bodies rather than clinical illness, accurate pediatric and adult counts provide baseline crowding data that helps administrators allocate triage staff, pediatricians, and supplies during peak clinic hours.
+    \item \textbf{Operational Healthcare Telemetry:} Objective automated person counts provide real-time waiting-room occupancy telemetry designed to interface with hospital information systems (such as LHIMS). Computer vision detects physical bodies rather than clinical illness. However, accurate demographic counts provide baseline crowding data to help administrators allocate triage staff and supplies during peak clinic hours.
     \item \textbf{Privacy-Preserving Edge Computing:} The framework runs on local low-power CPU hardware using AVX2 SIMD instructions. It outputs anonymous coordinate vectors without storing facial data or transmitting raw video to cloud servers, satisfying strict patient data protection standards \cite{milkaite2019}.
 \end{enumerate}
 
@@ -33,14 +33,14 @@ Manual records and baseline automated counts diverge sharply. This creates a hig
 \section{Aim and Objectives}
 
 \subsection{General Objective}
-The main goal of this study is to formulate, implement, and validate a privacy-preserving computer vision system for automated pediatric person detection, allometric verification, and multi-object tracking in clinical environments.
+The main goal of this study is to formulate, implement, and validate a privacy-preserving computer vision system for automated pediatric person detection, allometric verification, and multi-object tracking.
 
 \subsection{Specific Objectives}
 To achieve this goal, we set seven specific objectives:
 \begin{enumerate}[(i)]
     \item Formulate discrete image representations and separable gradient convolutions to evaluate pixel-level edge computation on clinical hardware.
     \item Examine and quantify the empirical limitations of soft-logit knowledge distillation on occluded pediatric benchmark data.
-    \item Build a high-resolution inference pipeline combining Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI) to detect small and occluded persons.
+    \item Build a high-resolution pipeline combining CLAHE enhancement and SAHI slicing to detect small and occluded persons.
     \item Build a multi-stage pipeline combining full-frame person detection, margin-expanded crop classification, and allometric verification to identify pediatric subjects.
     \item Derive and validate a cephalocaudal allometric classification metric ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) from 17-point pose estimation to separate children from adults.
     \item Develop a weighted temporal filter that stabilizes demographic classifications across tracklet frames and prevents identity flips.
@@ -60,7 +60,7 @@ This work answers five research questions:
 \section{Delimitation and Scope}
 This study combines applied mathematics, computer vision, and healthcare operations. We evaluate data from ambulatory triage areas, waiting corridors, and consultation halls at KATH and the KNUST Hospital in Kumasi, Ghana.
 
-The scope is limited to non-invasive optical detection, demographic classification, and tracking of pediatric and adult persons. In this study, the pediatric cohort operationally includes children under 12 years of age, with primary focus on children under 5 years who experience carrying occlusion. The computer vision model separates individuals by physical allometry. Pre-pubescent children exhibit large cephalocaudal ratios ($R_{\text{ceph}} \ge 0.80$) and shorter normalized stature ($\theta_{\text{adult}} = 0.32$). Post-pubescent adolescents who have attained adult height and limb proportions are grouped with the adult class by visual sensors. Ground-truth demographic labels were established by two independent observers who reviewed video recordings alongside clinic reception registers.
+The scope is limited to non-invasive optical detection, demographic classification, and tracking of pediatric and adult persons. In this study, the pediatric cohort operationally includes children under 12 years of age. The primary focus is children under five years who experience carrying occlusion. The computer vision model separates individuals by physical allometry. Pre-pubescent children exhibit large cephalocaudal ratios ($R_{\text{ceph}} \ge 0.80$) and shorter normalized stature ($\theta_{\text{adult}} = 0.32$). Post-pubescent adolescents who have attained adult height and limb proportions are grouped with the adult class by visual sensors. Ground-truth demographic labels were established by two independent observers who reviewed video recordings alongside clinic reception registers.
 
 The system does not assess clinical acuity or determine patient status independently of hospital workflow records. True patient identification requires linking optical counts with registration or queue-zone management rules. We exclude facial recognition and biometric identity logging to protect patient privacy. All tracking and occupancy metrics rely solely on anonymous bounding box centroids and skeletal coordinates.
 

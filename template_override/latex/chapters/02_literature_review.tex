@@ -38,9 +38,9 @@ To separate children from adults without relying on variable clothing patterns, 
 \subsection{The Cephalocaudal Growth Gradient}
 Human physical growth does not follow uniform isometric expansion. It follows allometric scaling rules \cite{bogin1999}. Allometry describes the relative growth rate of body parts compared to total body size:
 \begin{equation}
-    y = b \cdot x^{\alpha} \quad \iff \quad \ln(y) = \ln(b) + \alpha \ln(x)
+    Y = a X^\alpha \implies \ln Y = \ln a + \alpha \ln X
 \end{equation}
-Here, $\alpha$ is the allometric growth coefficient. When $\alpha = 1$, growth is isometric; when $\alpha < 1$, growth is negative allometric; when $\alpha > 1$, growth is positive allometric.
+Here, $\alpha$ is the allometric growth coefficient. When $\alpha = 1$, growth is isometric. When $\alpha < 1$, growth is negative allometric. When $\alpha > 1$, growth is positive allometric.
 
 Human growth follows the \textbf{cephalocaudal principle}, where growth progresses from head to feet \cite{bogin1999, mlinaric2024}:
 \begin{itemize}
@@ -126,10 +126,10 @@ Table \ref{tab:lit_comparison} summarizes the main detection and tracking approa
 \textbf{Method} & \textbf{Core Mechanism} & \textbf{Key Strengths} & \textbf{Clinical Limitations} \\
 \midrule
 Viola-Jones / HOG \cite{viola2001} & Haar wavelets / Gradient histograms + SVM & Low computational latency & Fails under non-rigid pose and cloth occlusion. \\
-Faster R-CNN \cite{ouyang2015} & Two-stage RPN + RoI Align & High localization accuracy & Slow ($<8$ FPS); high memory use. \\
+Faster R-CNN \cite{ouyang2015} & Two-stage RPN + RoI Align & High localization accuracy & Slow ($<8$ FPS), high memory use. \\
 Standard YOLO \cite{diop2025, redmon2016yolo} & Single-stage anchor-free regression & Real-time inference speed & Merges carried infants into caregiver bounding boxes. \\
-DeepSORT \cite{wojke2017deepsort} & Kalman filter + Deep Re-ID embeddings & Handles brief occlusions & Appearance features fail on identical cloth; high CPU load. \\
-ByteTrack \cite{zhang2022bytetrack} & Two-stage Hungarian matching on $D_{high}, D_{low}$ & Recovers blurred targets without Re-ID & Lacks age awareness; requires secondary classification head. \\
+DeepSORT \cite{wojke2017deepsort} & Kalman filter + Deep Re-ID embeddings & Handles brief occlusions & Appearance features fail on identical cloth, high CPU load. \\
+ByteTrack \cite{zhang2022bytetrack} & Two-stage Hungarian matching on $D_{high}, D_{low}$ & Recovers blurred targets without Re-ID & Lacks age awareness, requires secondary classification head. \\
 \bottomrule
 \end{tabular}%
 }
