@@ -49,7 +49,7 @@ Baseline: YOLO26s (Direct) & 0.884 & 0.832 & 0.857 & 14.1\% & 36.4 (CPU) \\
 }
 \end{table}
 
-The distilled student model had low accuracy ($F_1 = 0.736$, $\text{MAPE} = 26.2\%$). Because the teacher network was trained on noisy labels where backpacks and cloth swaddles were labeled as children, distillation transferred these false labels to the student. In contrast, our multi-stage pipeline---combining YOLO26s with margin-expanded crop classification, allometric pose verification, and Bayesian tracklet filtering---achieved an $F_1$-score of $0.988$ and reduced headcount MAPE to $0.0\%$ on the evaluation test sequences.
+The distilled student model had low accuracy ($F_1 = 0.736$, $\text{MAPE} = 26.2\%$). Because the teacher network was trained on noisy labels where backpacks and cloth swaddles were labeled as children, distillation transferred these false labels to the student. In contrast, our multi-stage pipeline---combining YOLO26s with margin-expanded crop classification, allometric pose verification, and weighted temporal smoothing---achieved an $F_1$-score of $0.988$ and reduced headcount MAPE to $0.0\%$ on the evaluation test sequences.
 
 \section{Real-World Clinical Triage Inference Analysis}
 
@@ -127,7 +127,7 @@ Hospital Pharmacy Feed & 0 & 6 & 0 & 6 & 100.0\% & 1.000 \\
 
 The metrics in Figure \ref{fig:metrics_confusion} and Table \ref{tab:ground_truth_verification} reflect final tracklet consolidation across these specific evaluation sequences:
 \begin{itemize}
-    \item \textbf{Curated Sequence Evaluation:} Across the seven standardized test sequences (700 total frames with 46 verified individuals), the multi-stage pipeline matched ground-truth headcount after applying temporal Bayesian tracklet consolidation.
+    \item \textbf{Curated Sequence Evaluation:} Across the seven standardized test sequences (700 total frames with 46 verified individuals), the multi-stage pipeline matched ground-truth headcount after applying weighted temporal smoothing.
     \item \textbf{Adult-Child Differentiation on Verified Clips:} Across 38 verified unique adult observations in these hospital corridor slices, combining stature priors with allometric ratio verification produced zero false pediatric classifications.
 \end{itemize}
 
@@ -135,7 +135,7 @@ The metrics in Figure \ref{fig:metrics_confusion} and Table \ref{tab:ground_trut
 The high scores in Figure \ref{fig:metrics_confusion} and Table \ref{tab:ground_truth_verification} require careful scientific qualification:
 \begin{enumerate}[(i)]
     \item \textbf{Curated Test Corpus Limitation:} These results come from seven selected CCTV video slices totaling 700 frames. While these sequences capture representative clinic geometries, seating benches, and queue conditions, they do not capture the full statistical variability of unconstrained hospital operations.
-    \item \textbf{Raw Frame Detection vs.\ Temporal Tracklet Consensus:} The reported demographic accuracy reflects accumulated tracklet history across multiple frames. At the single-frame object detection level, the underlying YOLO26s detector achieves an mAP@50 of $67.1\%$. Individual raw frames still exhibit missing detections during severe occlusion and false detections on folded blankets.
+    \item \textbf{Raw Frame Detection vs.\ Temporal Tracklet Smoothing:} The reported demographic accuracy reflects accumulated tracklet history across multiple frames. At the single-frame object detection level, the underlying YOLO26s detector achieves an mAP@50 of $67.1\%$. Individual raw frames still exhibit missing detections during severe occlusion and false detections on folded blankets.
     \item \textbf{Heuristic Sensitivity to Geometry:} Modules such as seated occupant deduplication and stature modulation depend on calibrated camera placement ($2.8\text{--}3.5$ meters height, $25^{\circ}\text{--}35^{\circ}$ tilt). Non-standard camera angles or steep overhead perspectives can degrade classification accuracy.
     \item \textbf{Operational Deployment Reality:} In continuous, unconstrained clinic deployments with dense patient crowds, extreme lighting changes, or long occlusions exceeding several minutes, the system will produce classification and tracking errors. Practitioners must view these results as evidence that the multi-stage design functions correctly on tested clips, not as an assertion that the system will achieve $100\%$ accuracy in all real-world deployments.
 \end{enumerate}
@@ -187,7 +187,7 @@ Table \ref{tab:hardware_benchmark} reports inference latency and throughput acro
 \multirow{2}{*}{Kindergarten Classroom} & \multirow{2}{*}{$720 \times 1280$} & YOLO26s (ONNX FP32) & \textbf{131.7} & \textbf{7.6} \\
  & & YOLO26m (ONNX FP32) & 447.5 & 2.2 \\
 \midrule
-\multirow{2}{*}{Hospital OPD Patient Queue} & \multirow{2}{*}{$2688 \times 1520$} & YOLO26s (ONNX FP32) & \textbf{146.6} & \textbf{6.8} \\
+\multirow{2}{*}{Hospital OPD Waiting Queue} & \multirow{2}{*}{$2688 \times 1520$} & YOLO26s (ONNX FP32) & \textbf{146.6} & \textbf{6.8} \\
  & & YOLO26m (ONNX FP32) & 367.3 & 2.7 \\
 \midrule
 \multirow{2}{*}{Hospital Pharmacy Lobby} & \multirow{2}{*}{$2688 \times 1520$} & YOLO26s (ONNX FP32) & \textbf{134.0} & \textbf{7.5} \\
@@ -244,7 +244,7 @@ As shown in Figure \ref{fig:cpu_ablation} and Table \ref{tab:precision_ablation}
 These benchmarks show that native FP32 with AVX2 SIMD provides the best performance on hospital CPUs.
 
 \section{Discussion of Findings and Clinical Utility}
-The test results show that, in the evaluated clips, adding cephalocaudal allometric constraints and temporal consensus filtering improves demographic counting accuracy compared with the baseline detector.
+The test results show that, in the evaluated clips, adding cephalocaudal allometric constraints and weighted temporal smoothing improves demographic counting accuracy compared with the baseline detector.
 
 \subsection{Mitigation of the ``Invisible Child'' Problem}
 Standard models often miss infants carried on mothers' backs during Non-Maximum Suppression (NMS). In our pipeline, CLAHE contrast enhancement and SAHI slicing help preserve edge gradients ($+360$ Sobel response) between child and caregiver clothing. Parent-child spatial anchoring maintains the child's trajectory during temporary occlusion, mitigating undercounting in the tested scenes.

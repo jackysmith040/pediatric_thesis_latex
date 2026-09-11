@@ -43,7 +43,7 @@ To achieve this goal, we set seven specific objectives:
     \item Build a high-resolution inference pipeline combining Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI) to detect small and occluded persons.
     \item Build a multi-stage pipeline combining full-frame person detection, margin-expanded crop classification, and allometric verification to identify pediatric subjects.
     \item Derive and validate a cephalocaudal allometric classification metric ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) from 17-point pose estimation to separate children from adults.
-    \item Develop a dual-horizon temporal consensus filter that stabilizes demographic classifications across tracklet frames and prevents identity flips.
+    \item Develop a weighted temporal filter that stabilizes demographic classifications across tracklet frames and prevents identity flips.
     \item Evaluate the multi-stage system across clinical and educational CCTV test feeds to quantify counting accuracy, tracking continuity, and CPU throughput under AVX2 SIMD acceleration.
 \end{enumerate}
 
@@ -53,7 +53,7 @@ This work answers five research questions:
     \item How does rank-1 separable convolution filtering compare with 2D spatial convolution in arithmetic complexity and pixel-level compute latency on edge hardware?
     \item What factors contribute to the lower performance of soft-logit knowledge distillation on occluded pediatric data, and does a dedicated crop classification stage improve demographic precision?
     \item To what extent does the skeletal cephalocaudal ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$) provide a measurable separation margin between pre-pubescent children and adults across varying camera viewing angles?
-    \item How effectively does dual-horizon temporal consensus smoothing reduce single-frame posture noise and maintain tracklet demographic identity during temporary occlusions?
+    \item How effectively does weighted temporal smoothing reduce single-frame posture noise and maintain tracklet demographic identity during temporary occlusions?
     \item What are the empirical trade-offs between native FP32 AVX2 SIMD execution and emulated FP16 execution in inference latency and memory throughput on standard hospital CPUs?
 \end{enumerate}
 
@@ -62,7 +62,7 @@ This study combines applied mathematics, computer vision, and healthcare operati
 
 The scope is limited to non-invasive optical detection, demographic classification, and tracking of pediatric and adult persons. In this study, the pediatric cohort operationally includes children under 12 years of age, with primary focus on children under 5 years who experience carrying occlusion. The computer vision model separates individuals by physical allometry. Pre-pubescent children exhibit large cephalocaudal ratios ($R_{\text{ceph}} \ge 0.80$) and shorter normalized stature ($\theta_{\text{adult}} = 0.32$). Post-pubescent adolescents who have attained adult height and limb proportions are grouped with the adult class by visual sensors. Ground-truth demographic labels were established by two independent observers who reviewed video recordings alongside clinic reception registers.
 
-The system does not assess clinical acuity or determine patient status independently of hospital workflow records; true patient identification requires linking optical counts with registration or queue-zone management rules. We exclude facial recognition and biometric identity logging to protect patient privacy. All tracking and occupancy metrics rely solely on anonymous bounding box centroids and skeletal coordinates.
+The system does not assess clinical acuity or determine patient status independently of hospital workflow records. True patient identification requires linking optical counts with registration or queue-zone management rules. We exclude facial recognition and biometric identity logging to protect patient privacy. All tracking and occupancy metrics rely solely on anonymous bounding box centroids and skeletal coordinates.
 
 \section{Organization of the Thesis}
 This thesis contains five chapters:
