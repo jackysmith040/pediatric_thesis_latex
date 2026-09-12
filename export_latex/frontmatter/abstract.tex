@@ -1,0 +1,12 @@
+\begin{center}
+    {\bfseries\Large ABSTRACT}
+\end{center}
+\vspace{0.4cm}
+
+\begin{spacing}{1.25}
+Accurate demographic counts are essential for clinical triage and resource allocation in hospital outpatient departments (OPDs). In Ghanaian hospitals, such as Komfo Anokye Teaching Hospital and KNUST University Hospital, pediatric counts remain manual. Local infant carrying practices, such as carrying swaddled babies on mothers' backs, cause severe occlusion in ceiling CCTV feeds. Standard computer vision detectors merge carried infants into caregiver bounding boxes. This causes systematic pediatric undercounting.
+
+This thesis formulates and evaluates a privacy-preserving multi-stage computer vision architecture for pediatric person detection, tracking, and demographic counting. The system identifies demographic persons (adults and children) rather than clinical patient status. In Stage 1, an off-the-shelf YOLO26s detector extracts person proposals using CLAHE contrast enhancement and SAHI patch slicing. An 8D Kalman filter and ByteTrack association maintain trajectory identities across frames. In Stage 2, candidate boxes undergo margin-expanded letterbox cropping ($224 \times 224$ pixels). A dedicated ONNX classifier then predicts demographic class probabilities. In Stage 3, the pipeline modulates predictions using normalized bounding box stature priors ($\theta_{\text{adult}} = 0.32$). It combines weighted temporal smoothing with 17-point skeletal cephalocaudal ratio verification ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$).
+
+The primary detector achieved a peak single-frame mAP@50 of $67.1\%$, outperforming the baseline detector ($53.4\%$). On a curated 700-frame CCTV evaluation test set (45 ground-truth individuals across 7 sequences), the multi-stage system achieved $0.0\%$ headcount MAPE. On standard x86 CPU hardware without discrete GPUs, native ONNX FP32 execution with AVX2 SIMD achieved $6.8\text{ to } 9.1\text{ FPS}$ ($110.2\text{ ms}$ latency). This represents a $3.98\times$ latency speedup over emulated FP16. The pipeline outputs anonymous numerical telemetry designed to interface with hospital systems via REST APIs. These demographic counts provide objective queue data to support clinical triage management.
+\end{spacing}

@@ -34,7 +34,7 @@ To support reproducibility and clinical deployment, we make all project source c
 \end{enumerate}
 
 \section{Hardware and Software Deployment Environment}
-All benchmarks reported in this thesis ran on standard x86 CPU edge hardware without a discrete graphics processing unit:
+The final end-to-end pipeline benchmarks ran on standard x86 CPU edge hardware without a discrete graphics processing unit. In contrast, teacher model training and distillation used a GPU via Molab (Marimo online notebook):
 \begin{itemize}
     \item \textbf{Processor:} Intel Core i7-10610U CPU @ 1.80 GHz (up to 2.30 GHz, 4 physical cores, 8 threads, Comet Lake).
     \item \textbf{SIMD Instruction Extensions:} 256-bit Advanced Vector Extensions 2 (AVX2) and FMA3.

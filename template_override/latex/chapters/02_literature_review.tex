@@ -1,7 +1,7 @@
 \chapter{LITERATURE REVIEW}
 
 \section{Introduction}
-Automated demographic occupancy counting in hospitals requires three fields of study: computer vision object detection, developmental allometry, and multi-object tracking. This chapter reviews the literature across these three areas. It evaluates how vision models handle human detection under heavy crowd density and occlusion. It analyzes biological growth rules that govern human body proportions. It reviews multi-target tracking algorithms. Finally, it identifies the research gaps that motivate this thesis.
+Automated demographic occupancy counting in hospitals requires three fields of study: computer vision object detection, developmental allometry, and multi-object tracking. This chapter reviews the literature across these three areas. It evaluates how vision models handle human detection under heavy crowd density and obstructions. It analyzes biological growth rules that govern human body proportions. It reviews multi-target tracking algorithms. Finally, it identifies the research gaps that motivate this thesis.
 
 \section{Evolution of Object Detection in Computer Vision}
 Object detection evolved through two main phases: hand-crafted feature extractors and deep convolutional networks.
@@ -17,7 +17,7 @@ Later methods used gradient statistics, such as the Histogram of Oriented Gradie
 \end{enumerate}
 
 \subsection{Two-Stage Deep Detectors: Region-Based CNNs}
-Deep Convolutional Neural Networks (CNNs), starting with AlexNet and formalized for detection in R-CNN, improved feature representation. Deep Residual Learning (ResNet) \cite{he2016resnet} introduced identity shortcut connections to solve vanishing gradients. Two-stage detectors divide object detection into two steps:
+Deep Convolutional Neural Networks (CNNs), starting with AlexNet and formalized for detection in R-CNN, improved feature representation. Deep Residual Learning (ResNet) \cite{he2016resnet} introduced identity shortcut connections to mitigate vanishing gradients. Two-stage detectors divide object detection into two steps:
 \begin{enumerate}[(i)]
     \item \textbf{Region Proposal Generation:} Finding class-agnostic regions of interest (RoIs) using Selective Search or Region Proposal Networks (RPN) in Faster R-CNN.
     \item \textbf{Classification and Bounding Box Refinement:} Extracting feature vectors via RoI Pooling or RoI Align and feeding them into fully connected layers for classification and coordinate regression.
@@ -30,7 +30,7 @@ To increase throughput, Redmon et al.\ \cite{redmon2016yolo} introduced the ``Yo
 
 Later architectures, including modern anchor-free models (such as YOLOv8 and YOLO26s), added Path Aggregation Networks (PANet), Cross-Stage Partial (CSP) connections, and Task-Aligned Assigners \cite{jiang2022, jocher2023ultralytics}. These features fuse shallow high-resolution layers with deep semantic layers.
 
-However, standard detectors trained on benchmarks like MS COCO group all humans into one ``person'' class. When fine-tuned on pediatric datasets such as the Child Detection Dataset (CDD) \cite{diop2025}, these models struggle with close physical proximity. Recent medical vision models have explored infant monitoring and spasm detection in specialized clinical wards \cite{diop2024}. Yet they often merge an infant carried on a mother's back into the adult's bounding box.
+However, standard detectors trained on benchmarks like MS COCO group all humans into one ``person'' class. When fine-tuned on pediatric datasets such as the Child Detection Dataset (CDD) \cite{diop2025}, these models struggle with close physical proximity. Recent medical vision models explore neonatal monitoring in specialized clinical wards \cite{diop2024}. Yet in unconstrained environments, standard detectors often merge a smaller pediatric person positioned near an adult into a single bounding box.
 
 \section{Pediatric Anthropometry and Developmental Allometry}
 Early computer vision studies estimated age groups from facial geometry \cite{kwon1999, liu2020}. However, facial features are frequently invisible in downward-tilted ceiling cameras. To separate children from adults reliably, vision models can evaluate whole-body allometric growth rules from physical anthropology \cite{bogin1999}.
@@ -44,7 +44,7 @@ Here, $\alpha$ is the allometric growth coefficient. When $\alpha = 1$, growth i
 
 Human growth follows the \textbf{cephalocaudal principle}, where growth progresses from head to feet \cite{bogin1999, mlinaric2024}:
 \begin{itemize}
-    \item \textbf{Cranial (Head) Development:} The skull and brain develop early. At birth, the infant head makes up approximately one-quarter ($25\%$) of total body height.
+    \item \textbf{Cranial (Head) Development:} The skull and brain develop early. In early developmental stages, the pediatric head makes up approximately one-quarter ($25\%$) of total body height.
     \item \textbf{Somatic and Limb Development:} Postnatal growth centers on limb elongation, particularly the lower legs (femur, tibia, and fibula).
     \item \textbf{Adult Proportions:} By adulthood, limb growth reduces the head-to-body proportion to about one-eighth ($12.5\% - 13.3\%$) of total stature \cite{mlinaric2024}.
 \end{itemize}
@@ -56,24 +56,25 @@ However, dimensionless body ratios remain stable under 2D perspective projection
 \begin{equation}
     R_{head} = \frac{H_{head}}{H_{total}}, \qquad R_{ceph} = \frac{L_{torso}}{L_{leg}}
 \end{equation}
-17-point skeletal pose estimation \cite{cao2019openpose} extracts joint coordinates for the head, shoulders, hips, knees, and ankles. As Bogin \cite{bogin1999} and Mlinari\'{c} et al.\ \cite{mlinaric2024} show, pediatric subjects have $R_{head} \approx 0.25$ and $R_{ceph} \ge 0.85$. Adults have $R_{head} \approx 0.125$ and $R_{ceph} \le 0.70$. Integrating these biological ratios into detection provides a principled mathematical rule to distinguish children from adults under upright orientations.
+17-point skeletal pose estimation \cite{cao2019openpose} extracts joint coordinates for the head, shoulders, hips, knees, and ankles. As Mlinari\'{c} et al.\ \cite{mlinaric2024} show, pediatric subjects have a head-to-body proportion of $R_{head} \approx 0.25$, whereas adults have $R_{head} \approx 0.125$. Furthermore, following the somatic growth principles outlined by Bogin \cite{bogin1999}, the torso-to-leg ratio ($R_{ceph}$) provides an additional metric: children exhibit $R_{ceph} \ge 0.85$, while adults exhibit $R_{ceph} \le 0.70$. Integrating these biological ratios into detection provides a principled mathematical rule to distinguish children from adults under upright orientations.
 
-\section{Occlusion Handling in Crowded Clinical Healthcare Environments}
-Physical occlusion is a major obstacle in visual monitoring. In outpatient clinics, waiting individuals sit close together on wooden benches or crowd around triage desks and pharmacy windows \cite{osei2024}.
+\section{CCTV Perspective Distortion and Data Quality}
+Standard pedestrian datasets assume standard frontal viewpoints. In clinical waiting rooms, cameras mount to the ceiling to capture wide areas. This steep perspective alters the physical geometry of human bodies \cite{osei2024}.
 
-\subsection{Taxonomy of Occlusion}
-In hospital surveillance, occlusions fall into two groups:
+\subsection{Challenges of Ceiling Camera Angles}
+Ceiling cameras introduce three major data quality issues for deep learning models:
 \begin{enumerate}[(i)]
-    \item \textbf{Static Environmental Occlusion:} Physical fixtures, including desks, registration counters, pillars, and carts, block occupant torsos and legs.
-    \item \textbf{Dynamic Inter-Object Occlusion:} Walking or seated occupants block each other. In Ghana, mothers carry infants wrapped against their bodies \cite{agyepong1992}. This causes up to $80\%$ visual occlusion of the child \cite{ouyang2015}.
+    \item \textbf{Foreshortening:} The camera angle compresses vertical height. A standing adult viewed from above looks artificially short.
+    \item \textbf{Physical Obstructions:} Physical fixtures like registration counters block occupant torsos and legs.
+    \item \textbf{Dataset Mismatch:} Public object detection datasets lack overhead training images. Training a network on frontal images causes inference failures on ceiling videos.
 \end{enumerate}
 
-\subsection{Algorithmic Strategies for Occlusion Robustness}
-To handle heavy occlusion, modern vision research uses three methods:
+\subsection{Decoupled Architectural Strategies}
+To address data mismatch and perspective distortion, modern vision research separates tasks:
 \begin{itemize}
-    \item \textbf{Intersection-over-Union (IoU) Loss Functions:} Standard bounding box regression used $\ell_1$ or $\ell_2$ coordinate errors, which do not reflect box overlap. Complete IoU (CIoU) \cite{zheng2020ciou} penalizes area overlap error, centroid distance, and aspect ratio differences. This stabilizes gradient updates under heavy overlap.
-    \item \textbf{Slicing Aided Hyper Inference (SAHI):} In wide camera views, small children occupy small pixel patches (for example, $24 \times 24$ pixels). Downsampling an entire frame causes these small targets to disappear in pooling layers. Akyon et al.\ \cite{akyon2022sahi} introduced SAHI. SAHI cuts frames into overlapping high-resolution tiles, runs inference on each tile, and merges boxes with Non-Maximum Suppression. This preserves small targets.
-    \item \textbf{Luminance Equalization with CLAHE:} Fluorescent lamps, dark skin tones, and dim corners reduce image contrast. Contrast Limited Adaptive Histogram Equalization (CLAHE) \cite{pizer1987clahe} enhances contrast in localized tiles and limits noise amplification along boundaries.
+    \item \textbf{Base Person Detection:} Generic base models (like the YOLO family) detect human shapes reliably, even from steep angles. They isolate the person from the background.
+    \item \textbf{Targeted Crop Classification:} Secondary models process the extracted bounding box crops. This step separates the problem of spatial detection from the problem of demographic classification.
+    \item \textbf{Intersection-over-Union (IoU) Loss Functions:} Complete IoU (CIoU) \cite{zheng2020ciou} penalizes area overlap error and centroid distance. This stabilizes bounding boxes when people sit closely together.
 \end{itemize}
 
 \section{Multi-Object Tracking and Temporal Association}
@@ -83,14 +84,14 @@ Single-frame detection alone cannot maintain an accurate count. A tracking syste
 Multi-object tracking (MOT) typically uses the \textit{Tracking-by-Detection} approach. In this setup, a detector outputs bounding boxes in frame $t$. An association algorithm then matches these boxes to active tracks from earlier frames $1, \dots, t-1$.
 
 \subsection{Evolution from SORT to ByteTrack}
-Bewley et al.\ \cite{bewley2016sort} created Simple Online and Realtime Tracking (SORT). SORT uses a linear constant-velocity Kalman filter to predict positions and uses the Hungarian algorithm to match boxes by IoU distance. Beyond standard Kalman filtering, researchers have examined centroid-based tracking \cite{ralhan2023} and hierarchical graph structures \cite{koshkina2025} for identity persistence across occlusions. SORT is fast (over 200 FPS), but it drops lost tracks after only a few occluded frames.
+Bewley et al.\ \cite{bewley2016sort} created Simple Online and Realtime Tracking (SORT). SORT uses a linear constant-velocity Kalman filter to predict positions and uses the Hungarian algorithm to match boxes by IoU distance. Beyond standard Kalman filtering, researchers examine centroid-based tracking \cite{ralhan2023} and hierarchical graph structures \cite{koshkina2025} for identity persistence across physical obstructions. SORT is fast (over 200 FPS), but it drops lost tracks after only a few obstructed frames.
 
 Wojke et al.\ \cite{wojke2017deepsort} introduced DeepSORT. DeepSORT adds appearance embeddings from a deep Re-ID network to the matching cost. However, extracting embeddings for every box slows down CPU inference. Furthermore, when mothers and children wear identical patterned cloth, appearance embeddings become too similar, leading to ID switches.
 
-Zhang et al.\ \cite{zhang2022bytetrack} introduced ByteTrack to solve this issue. Instead of dropping low-confidence boxes, ByteTrack matches in two stages:
+Zhang et al.\ \cite{zhang2022bytetrack} introduced ByteTrack to address this issue. Instead of dropping low-confidence boxes, ByteTrack matches in two stages:
 \begin{enumerate}[(i)]
     \item It first matches high-confidence detections ($D_{high}$) to active tracks using spatial IoU and motion models.
-    \item It then matches remaining tracks against low-confidence detections ($D_{low}$). This recovers occluded or blurred targets without creating false trajectories.
+    \item It then matches remaining tracks against low-confidence detections ($D_{low}$). This recovers obstructed or blurred targets without creating false trajectories.
 \end{enumerate}
 ByteTrack tracks accurately using bounding coordinates alone, avoiding the latency of deep appearance embeddings.
 
@@ -102,7 +103,7 @@ Knowledge distillation, developed by Hinton et al.\ \cite{hinton2015distilling},
 \begin{equation}
     \mathcal{L}_{KD} = (1 - \lambda) \mathcal{L}_{CE}(y, \sigma(z_s)) + \lambda T^2 \mathcal{L}_{KL}\left(\sigma\left(\frac{z_s}{T}\right), \sigma\left(\frac{z_t}{T}\right)\right)
 \end{equation}
-While distillation works well for image classification, applying it to dense object detection in specialized clinical domains presents challenges. As shown in Chapter 3, distillation quality depends directly on training data annotations. Noisy bounding boxes and occlusion in the student dataset cause the student network to copy and amplify errors from the teacher.
+While distillation works well for image classification, applying it to dense object detection in specialized clinical domains presents challenges. As shown in Chapter 3, distillation quality depends directly on training data annotations. Noisy bounding boxes and crowd overlap in the student dataset cause the student network to copy and amplify errors from the teacher.
 
 \subsection{Hardware SIMD Acceleration and ONNX Runtime}
 Hospital edge devices require real-time CPU execution without discrete GPUs. Modern frameworks deploy models using ONNX Runtime \cite{onnxruntime2021} and Intel OpenVINO \cite{openvino2023} with SIMD acceleration.
@@ -125,10 +126,10 @@ Table \ref{tab:lit_comparison} summarizes the main detection and tracking approa
 \toprule
 \textbf{Method} & \textbf{Core Mechanism} & \textbf{Key Strengths} & \textbf{Clinical Limitations} \\
 \midrule
-Viola-Jones / HOG \cite{viola2001} & Haar wavelets / Gradient histograms + SVM & Low computational latency & Fails under non-rigid pose and cloth occlusion. \\
+Viola-Jones / HOG \cite{viola2001} & Haar wavelets / Gradient histograms + SVM & Low computational latency & Fails under non-rigid pose and physical obstruction. \\
 Faster R-CNN \cite{ouyang2015} & Two-stage RPN + RoI Align & High localization accuracy & Slow ($<8$ FPS), high memory use. \\
-Standard YOLO \cite{diop2025, redmon2016yolo} & Single-stage anchor-free regression & Real-time inference speed & Merges carried infants into caregiver bounding boxes. \\
-DeepSORT \cite{wojke2017deepsort} & Kalman filter + Deep Re-ID embeddings & Handles brief occlusions & Appearance features fail on identical cloth, high CPU load. \\
+Standard YOLO \cite{diop2025, redmon2016yolo} & Single-stage anchor-free regression & Real-time inference speed & Merges closely grouped persons when trained on generic COCO datasets. \\
+DeepSORT \cite{wojke2017deepsort} & Kalman filter + Deep Re-ID embeddings & Handles brief obstructions & Appearance features fail on identical cloth, high CPU load. \\
 ByteTrack \cite{zhang2022bytetrack} & Two-stage Hungarian matching on $D_{high}, D_{low}$ & Recovers blurred targets without Re-ID & Lacks age awareness, requires secondary classification head. \\
 \bottomrule
 \end{tabular}%
@@ -138,9 +139,9 @@ ByteTrack \cite{zhang2022bytetrack} & Two-stage Hungarian matching on $D_{high},
 \section{The Research Gap}
 A review of the literature reveals three clear research gaps:
 \begin{enumerate}[(i)]
-    \item \textbf{The Semantic-Biological Disconnect:} Existing deep learning detectors optimize bounding boxes using geometric criteria (IoU, aspect ratio) alone. Reviewed literature does not integrate allometric cephalocaudal growth laws ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) directly as a verification constraint for pediatric person counting.
-    \item \textbf{The Occlusion Feature-Collapse Gap:} Standard models run on downsampled full frames, which removes the fine visual details of carried infants. Among the literature evaluated, combining slicing-aided inference (SAHI) with local contrast enhancement (CLAHE) has not been widely examined for pediatric clinical triage.
-    \item \textbf{The Data-Centric Distillation Dilemma:} While knowledge distillation offers compact models, its ability to transfer features for occluded children under clinical distribution shifts remains unproven.
+    \item \textbf{The Semantic-Biological Disconnect:} Existing detectors optimize bounding boxes using geometric criteria alone. The literature does not integrate allometric cephalocaudal growth laws ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) to separate children from adults.
+    \item \textbf{The Clinical Training Data Bottleneck:} Public object detection datasets lack steep CCTV camera angles and sufficient examples of heavy crowd density. This data deficiency makes it difficult to learn reliable demographic patterns for clinical triage environments.
+    \item \textbf{The Architectural Pivot:} Because the underlying data lacks sufficient clinical viewpoints, advanced architectural techniques like knowledge distillation cannot overcome the data bottleneck. This necessitates a decoupled approach that separates generic spatial detection from targeted demographic classification.
 \end{enumerate}
 
 Addressing these three gaps forms the primary contribution of this thesis, detailed in Chapter 3.

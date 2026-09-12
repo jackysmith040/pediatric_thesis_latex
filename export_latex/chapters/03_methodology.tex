@@ -1,0 +1,541 @@
+\chapter{METHODOLOGY}
+
+\section{Methodological Overview}
+This chapter presents a multi-stage, privacy-preserving computer vision framework. The framework detects and counts pediatric and adult persons in hospital outpatient waiting environments under dense crowding and variable lighting. The architecture integrates full-frame detection, secondary crop classification, and biological verification, as illustrated in Figure \ref{fig:system_arch}:
+\begin{enumerate}[(i)]
+    \item \textbf{Stage 1: Base Model Person Detection:} The system passes video frames to a generic YOLO26s base model \cite{ultralytics2026yolo26}. This model detects all human shapes and ignores non-human objects. A ByteTrack tracker then links these bounding boxes across frames.
+    \item \textbf{Stage 2: Fine-Tuned Demographic Classification:} The system extracts bounding box crops of detected persons. It expands the margins and pads them to $224 \times 224$ pixels. A fine-tuned model (\texttt{Pediatric-Model-ONNX}) processes these crops to predict demographic class probabilities.
+    \item \textbf{Stage 3: Allometric Verification and Temporal Smoothing:} The system modulates raw probabilities using a physical height prior. It applies weighted temporal smoothing to stabilize classifications. The system addresses ambiguous cases using 17-point skeletal pose estimation to check the cephalocaudal torso-to-leg ratio ($R_{\text{ceph}}$).
+    \item \textbf{Cross-Camera Re-Identification:} An optional decoupled plugin extracts color signatures to link trajectories across hospital rooms.
+\end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig1_system_architecture.png}
+    \caption{Multi-Stage Pediatric Person Detection, Tracking, and Occupancy Counting Architecture.}
+    \label{fig:system_arch}
+\end{figure}
+
+\section{Data Collection and Annotation Protocol}
+This section describes the video data sources, camera hardware, annotation tools, and labeling protocols used in this study.
+
+\subsection{Recording Environments and Camera Hardware}
+We recorded video feeds across four real-world environments in Kumasi, Ghana:
+\begin{enumerate}[(i)]
+    \item \textbf{Hospital Outpatient Department (OPD) Waiting Lobby:} Ambulatory pediatric waiting hall at Komfo Anokye Teaching Hospital (KATH).
+    \item \textbf{Hospital Pharmacy Dispensary Corridor:} Medicine collection queue and seating area at KNUST University Hospital.
+    \item \textbf{Kindergarten Early Learning Classroom:} Indoor classroom with dynamic group play and moving toddlers.
+    \item \textbf{Domestic Playroom:} Indoor activity area with floor obstructions, low furniture, and reaching toddlers.
+\end{enumerate}
+
+Recordings took place between June 12 and July 28, 2024. Clinical feeds were captured during peak outpatient hours between 07:30 and 14:00 GMT.
+
+Video data were acquired using ceiling-mounted high-resolution optical cameras (Hikvision DS-2CD2143G2-I and Dahua IPC-HFW2431S). The cameras recorded native optical streams at 25 frames per second (FPS). Resolutions included 1080p ($1920 \times 1080$) and 2.7K ($2688 \times 1520$) using fixed 2.8 mm and 3.6 mm focal length lenses. Automated exposure compensation maintained image visibility under changing interior fluorescent lighting and exterior daylight. In total, the evaluation video dataset contains seven standardized sequences comprising 21,828 recorded frames.
+
+\subsection{Annotation Tools and Labeling Protocols}
+Video frames were annotated using the Computer Vision Annotation Tool (CVAT, version 2.14.0). Two independent researchers annotated all video sequences frame by frame.
+
+Annotators labeled bounding box coordinates $[x_1, y_1, x_2, y_2]$ and assigned demographic categories:
+\begin{itemize}
+    \item \textbf{Pediatric Person (Child):} Individuals under 12 years of age, focusing on children under five years who are carried or walking.
+    \item \textbf{Adult Person:} Individuals 12 years of age or older, including parents, caregivers, visitors, and clinical staff.
+\end{itemize}
+Annotators verified demographic labels by cross-referencing reception desk check-in logs and queue tickets. A senior clinician reviewed and addressed ambiguous cases. The final evaluation test cohort contains 45 verified individuals (38 adults and 7 children).
+
+For the secondary crop classification engine, we used a unified dataset containing 2,413 images (2,342 successfully labeled) representing 3,757 annotations of indoor and outdoor scenes featuring children and adults. To prevent data leakage, we partitioned this dataset by unique video sequence and individual person identity into 70\% training, 15\% validation, and 15\% testing. This strict sequence-level separation ensures that crops of the same person, clothing, and background do not appear simultaneously across training and evaluation splits.
+
+\section{Image Representation as Quantized Matrices}
+To process visual data with linear algebra, we represent optical sensor frames as discrete numerical matrices.
+
+\begin{definition}[Continuous Irradiance to Discrete Sampling]
+Let $\mathcal{E}(x, y, t) \in \mathbb{R}^+$ represent optical irradiance hitting a camera sensor at location $(x, y) \in \Omega \subset \mathbb{R}^2$ and time $t \in \mathbb{R}^+$. A digital camera samples this signal onto a grid of $H \times W$ sensor elements over intervals $\Delta x, \Delta y$:
+\begin{equation}
+    I_c(i, j) = \int_{j\Delta y}^{(j+1)\Delta y} \int_{i\Delta x}^{(i+1)\Delta x} \mathcal{E}(x, y, t_k) \, dx \, dy, \quad i \in \{1, \dots, W\}, \, j \in \{1, \dots, H\}
+\end{equation}
+\end{definition}
+
+\begin{definition}[8-Bit Uniform Quantization]
+An 8-bit Analog-to-Digital Converter (ADC) converts the analog voltage $I_c(i, j)$ into a digital integer. The quantization function $\mathcal{Q}: \mathbb{R}^+ \to \{0, 1, \dots, 255\}$ maps the continuous voltage to an integer:
+\begin{equation}
+    I(i, j) = \text{clip}\left( \left\lfloor \frac{I_c(i, j) - V_{min}}{V_{max} - V_{min}} \times 255 + 0.5 \right\rfloor, 0, 255 \right)
+\end{equation}
+A grayscale frame is therefore a matrix $I \in \mathcal{M}_{H \times W}(\mathbb{Z}_{256})$, where $\mathbb{Z}_{256} = \{0, 1, \dots, 255\}$.
+\end{definition}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig1_quantization_matrix.png}
+    \caption{Discrete Spatial Quantization: Mapping CCTV Optical Feeds to an 8-Bit Matrix.}
+    \label{fig:quant_matrix}
+\end{figure}
+
+Figure \ref{fig:quant_matrix} shows a digital patch $I(x, y)$ along a human boundary edge. In a $5 \times 5$ sub-patch, the values change from dark background tiles ($I \approx 10-15$) to child clothing ($I \approx 95-105$), producing a step edge of $+84$ intensity units between column 2 and column 3:
+\begin{equation}
+    I_{5 \times 5} = \begin{bmatrix}
+    12 & 14 & 98 & 102 & 105 \\
+    10 & 12 & 95 & 100 & 102 \\
+    11 & 15 & 96 & 100 & 104 \\
+    10 & 11 & 94 & 99 & 101 \\
+    12 & 13 & 95 & 101 & 103
+    \end{bmatrix}
+\end{equation}
+This intensity step provides the signal for spatial gradient filters.
+
+\section{Discrete Differential Operators and Separable Spatial Convolutions}
+Edge detection computes the discrete spatial gradient of the image matrix $I(x, y)$.
+
+\begin{definition}[Continuous Image Gradient]
+For a continuous 2D intensity function $I(x, y)$, the spatial gradient vector $\nabla I$ is:
+\begin{equation}
+    \nabla I(x, y) = \begin{bmatrix} \frac{\partial I}{\partial x} \\ \frac{\partial I}{\partial y} \end{bmatrix}, \quad \|\nabla I\| = \sqrt{\left(\frac{\partial I}{\partial x}\right)^2 + \left(\frac{\partial I}{\partial y}\right)^2}, \quad \theta = \operatorname{atan2}\left(\frac{\partial I}{\partial y}, \frac{\partial I}{\partial x}\right)
+\end{equation}
+\end{definition}
+
+On a discrete pixel grid, central differences approximate these derivatives:
+\begin{equation}
+    \frac{\partial I}{\partial x} \approx \frac{I(i+1, j) - I(i-1, j)}{2\Delta x}, \quad \frac{\partial I}{\partial y} \approx \frac{I(i, j+1) - I(i, j-1)}{2\Delta y}
+\end{equation}
+
+\subsection{Theoretical Mathematical Foundations: Sobel Convolution (Exploratory)}
+Before converging on the final multi-stage pipeline, we explored edge-based feature extraction. The following section details the theoretical mathematical foundation of the Sobel operator. We present this mathematical exploration because it fundamentally shaped our understanding of computational efficiency, even though the final production pipeline bypasses this explicit step to optimize CPU memory bandwidth.
+
+The discrete Sobel convolution kernels $\mathbf{S}_x, \mathbf{S}_y \in \mathcal{M}_{3 \times 3}(\mathbb{R})$ combine central difference differentiation with triangular smoothing:
+\begin{equation}
+    \mathbf{S}_x = \begin{bmatrix} -1 & 0 & +1 \\ -2 & 0 & +2 \\ -1 & 0 & +1 \end{bmatrix}, \quad \mathbf{S}_y = \begin{bmatrix} -1 & -2 & -1 \\ 0 & 0 & 0 \\ +1 & +2 & +1 \end{bmatrix}
+\end{equation}
+The discrete 2D spatial convolution at pixel $(i, j)$ is:
+\begin{equation}
+    G_x(i, j) = (\mathbf{S}_x * I)(i, j) = \sum_{u=-1}^{1} \sum_{v=-1}^{1} \mathbf{S}_x(u, v) \, I(i-u, j-v)
+\end{equation}
+
+\subsection{Separable Outer-Product Decomposition}
+A direct $3 \times 3$ convolution requires 9 multiplications and 8 additions per pixel. Because both Sobel kernels have rank 1, they decompose into outer products of 1D vectors:
+\begin{equation}
+    \operatorname{rank}(\mathbf{S}_x) = 1 \implies \mathbf{S}_x = \mathbf{s}_y \otimes \mathbf{d}_x^T = \begin{bmatrix} 1 \\ 2 \\ 1 \end{bmatrix} \begin{bmatrix} -1 & 0 & +1 \end{bmatrix}
+\end{equation}
+\begin{equation}
+    \operatorname{rank}(\mathbf{S}_y) = 1 \implies \mathbf{S}_y = \mathbf{d}_y \otimes \mathbf{s}_x^T = \begin{bmatrix} -1 \\ 0 \\ +1 \end{bmatrix} \begin{bmatrix} 1 & 2 & 1 \end{bmatrix}
+\end{equation}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig2_sobel_outer_product_convolution.png}
+    \caption{Rank-1 Outer-Product Decomposition of the 2D Sobel Convolution Operator.}
+    \label{fig:sobel_decomp}
+\end{figure}
+
+\begin{theorem}[Computational Complexity Reduction]
+Separable 1D convolution reduces the arithmetic operation count from $\mathcal{O}(K^2)$ to $\mathcal{O}(2K)$ operations per pixel.
+\end{theorem}
+
+\begin{proof}
+For a 2D spatial kernel of size $K \times K$, 2D convolution requires $K^2$ multiplications and $K^2 - 1$ additions per pixel. Factoring into two 1D passes (horizontal differentiation then vertical smoothing) requires $K$ operations horizontally and $K$ operations vertically:
+\begin{equation}
+    \text{Total 1D Operations} = K + K = 2K
+\end{equation}
+For $K = 3$, separable filtering requires $2 \times 3 = 6$ operations per pixel instead of $3^2 = 9$. This yields a $33.3\%$ reduction in arithmetic multiplication workload:
+\begin{equation}
+    \text{Arithmetic Reduction} = \frac{9 - 6}{9} = \frac{3}{9} = 33.3\%
+\end{equation}
+We note that this 33.3\% reduction applies to standard mathematical edge operators. It serves as theoretical background and is not an active processing stage in our pipeline. In modern convolutional neural backbones (such as CSPDarknet in YOLO26s), multi-channel tensor contractions dominate overall computing time. Therefore, this spatial filtering savings does not produce an end-to-end 33.3\% pipeline speedup. Instead, whole-system real-time throughput on edge CPUs relies on ONNX graph optimizations, AVX2 SIMD vector instructions, and selective frame processing.
+\end{proof}
+
+\section{Gradient Fields, Sigmoid Non-Linearity, and CIoU Loss}
+Edge detection generates continuous gradient magnitude fields that feed into neural bounding box regressors.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig3_gradient_field_sigmoid.png}
+    \caption{Gradient Field Response and Sigmoid Activation Mapping for Edge Transitions.}
+    \label{fig:grad_field}
+\end{figure}
+
+\subsection{Sigmoid Activation Mapping}
+To convert unbounded gradient responses $z = \|\nabla I\| - \theta$ into bounded detection probabilities $P \in (0, 1)$, we apply the logistic sigmoid function:
+\begin{equation}
+    \sigma(z) = \frac{1}{1 + e^{-z}}, \quad \frac{d\sigma}{dz} = \sigma(z)(1 - \sigma(z))
+\end{equation}
+As shown in Figure \ref{fig:grad_field}, the derivative peaks at the decision boundary $z = 0$, where $\sigma'(0) = 0.25$. This property provides strong gradient updates during model calibration.
+
+\subsection{Complete Intersection over Union (CIoU) Loss}
+Bounding box regression uses Complete Intersection over Union (CIoU) loss \cite{zheng2020ciou}. CIoU incorporates overlap area, central point distance, and aspect ratio consistency:
+\begin{equation}
+    \mathcal{L}_{CIoU} = 1 - \operatorname{IoU} + \frac{\rho^2(\mathbf{b}, \mathbf{b}^{gt})}{c^2} + \alpha v
+\end{equation}
+where $\mathbf{b} = (x, y, w, h)$ and $\mathbf{b}^{gt} = (x^{gt}, y^{gt}, w^{gt}, h^{gt})$ are predicted and ground-truth bounding box vectors. Here $\rho(\cdot)$ denotes Euclidean distance between box centers, and $c$ is the diagonal length of the smallest enclosing box.
+
+The aspect ratio consistency parameter $v$ and balancing coefficient $\alpha$ are:
+\begin{equation}
+    v = \frac{4}{\pi^2} \left( \arctan \frac{w^{gt}}{h^{gt}} - \arctan \frac{w}{h} \right)^2, \quad \alpha = \frac{v}{(1 - \operatorname{IoU}) + v}
+\end{equation}
+CIoU regression penalizes shape divergence, preventing bounding boxes from expanding into nearby adult subjects.
+
+\section{Contrast Normalization and Micro-Scale Slicing}
+Young children occupy few pixels in wide-angle CCTV feeds and can blend into adult clothing. We address this challenge using contrast enhancement and high-resolution image slicing.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig5_sahi_clahe_enhancement.png}
+    \caption{Contrast Limited Adaptive Histogram Equalization (CLAHE) and Slicing Aided Hyper Inference (SAHI).}
+    \label{fig:sahi_clahe}
+\end{figure}
+
+\subsection{Luminance-Preserving CLAHE in CIELAB Color Space}
+To normalize illumination without altering chromaticity, RGB video frames convert to CIELAB color space:
+\begin{equation}
+    \begin{bmatrix} X \\ Y \\ Z \end{bmatrix} = \mathbf{M}_{RGB \to XYZ} \begin{bmatrix} R \\ G \\ B \end{bmatrix}, \quad L^* = 116 f(Y/Y_n) - 16
+\end{equation}
+Contrast Limited Adaptive Histogram Equalization (CLAHE) processes only the luminance channel $L^*$. The image splits into an $8 \times 8$ grid of contextual tiles. Local histograms are clipped at limit $\beta = 2.0$ to prevent noise amplification:
+\begin{equation}
+    h_{clipped}(k) = \min(h(k), \beta), \quad \Delta = \frac{1}{N_{bins}} \sum_{k=1}^{N_{bins}} \max(0, h(k) - \beta)
+\end{equation}
+The clipped excess $\Delta$ distributes uniformly across all bins before bilinear interpolation merges tile boundaries.
+
+\subsection{Slicing Aided Hyper Inference (SAHI)}
+Standard deep neural networks downsample 1080p and 2.7K video frames to $640 \times 640$ pixels, removing fine edge details of smaller children. Slicing Aided Hyper Inference (SAHI) \cite{akyon2022sahi} extracts overlapping tiles:
+\begin{enumerate}[(i)]
+    \item Each frame $I \in \mathbb{R}^{H \times W}$ splits into tiles $P_{i,j} \in \mathbb{R}^{S_H \times S_W}$ with slice dimensions $640 \times 640$ and overlap fraction $p_o = 0.20$.
+    \item The model evaluates both full-frame and tiled inputs.
+    \item Slice-level bounding coordinates map back to global coordinates using spatial offsets $(x_{shift}, y_{shift})$.
+    \item Non-Maximum Suppression merges overlapping candidate boxes with an IoU threshold of $\eta = 0.50$.
+\end{enumerate}
+SAHI processes small targets at full camera resolution to prevent feature loss.
+
+\section{Knowledge Distillation Exploratory Phase and Data-Centric Pivot}
+Before building the final pipeline, we evaluated Knowledge Distillation (KD) to compress the model.
+
+\subsection{Student-Teacher Mathematical Formulation}
+Following Hinton et al.\ \cite{hinton2015distilling}, we paired a large teacher model (YOLOv8x fine-tuned on CDD) with a compact student model (YOLOv8n / YOLO26s). The distillation loss balanced task loss with Kullback-Leibler divergence:
+\begin{equation}
+    \mathcal{L}_{total} = (1 - \lambda) \mathcal{L}_{task}(y_{gt}, \hat{y}_s) + \lambda T^2 \mathcal{D}_{KL}\left( \sigma\left(\frac{\mathbf{z}_s}{T}\right) \parallel \sigma\left(\frac{\mathbf{z}_t}{T}\right) \right)
+\end{equation}
+where $\mathbf{z}_s$ and $\mathbf{z}_t$ are student and teacher logit vectors, $T$ is temperature, and $\mathcal{D}_{KL}$ is the KL divergence:
+\begin{equation}
+    \mathcal{D}_{KL}(P \parallel Q) = \sum_{i} P(i) \ln \frac{P(i)}{Q(i)}
+\end{equation}
+
+\subsection{The Data-Centric Failure Bottleneck}
+Distillation tests revealed that the lack of steep CCTV angles, dense crowding examples, and distant-child examples in the training dataset may have contributed to weaker performance, rather than the distillation architecture itself. The training data exhibited severe limitations:
+\begin{enumerate}[(i)]
+    \item \textbf{Missing CCTV Geometry:} The gathered training images lacked steep downward camera angles. The model failed to generalize to hospital ceiling cameras.
+    \item \textbf{Sparse Crowding Data:} The dataset contained very few examples of dense crowd overlap. The network lacked sufficient pattern recognition for these edge cases.
+    \item \textbf{Distance Limitations:} The training images primarily featured close-up subjects. The model struggled to detect small toddlers at the end of long hospital corridors.
+\end{enumerate}
+These data deficiencies rendered the choice between distillation and fine-tuning irrelevant. We pivoted to a multi-stage architecture. We let a generic base model handle spatial detection, while a fine-tuned model processes demographic classification.
+
+\section{Stage 2: Margin-Expanded Crop Classification Engine}
+Rather than relying solely on single-pass object detection bounding boxes, the system introduces a dedicated secondary classification stage operating on normalized target crops.
+
+\subsection{Margin-Expanded Letterbox Transformation}
+Given an active bounding box $b = [x_1, y_1, x_2, y_2]$ with width $w = x_2 - x_1$ and height $h = y_2 - y_1$, tight bounding boxes frequently clip peripheral anatomical cues (such as feet or head crowns). The system extracts an expanded crop region $\mathcal{C}_m(b)$ using expansion coefficient $\alpha = 0.10$:
+\begin{align}
+    x_1' &= \max(0, x_1 - \alpha w), \quad y_1' = \max(0, y_1 - \alpha h) \\
+    x_2' &= \min(W, x_2 + \alpha w), \quad y_2' = \min(H, y_2 + \alpha h)
+\end{align}
+The extracted sub-image undergoes isotropic letterboxing to $224 \times 224$ pixels. The aspect ratio is preserved by padding borders with neutral gray ($V = 114$), avoiding non-uniform stretching.
+
+\subsection{Dedicated Demographic Classifier Model (Pediatric-Model-ONNX)}
+The standardized $224 \times 224 \times 3$ crop passes into a dedicated secondary classifier (`Pediatric-Model-ONNX`). This model focuses exclusively on fine-grained facial structure, clothing contours, and body proportions.
+
+\subsubsection{Classifier Architecture and Training Specifications}
+The fine-tuned model uses a lightweight convolutional backbone. It contains 2.1 million parameters with an uncompressed FP32 ONNX file size of 8.4 MB. The system standardizes input images using ImageNet channel statistics.
+
+We extracted individual bounding boxes from the unified dataset to train the fine-tuned model on 3,757 curated person crops. As previously described, we partitioned the dataset by unique video sequence, assigning 70\% to training, 15\% to validation, and 15\% to testing. This sequence-level split prevents identical individuals from appearing across different sets. We trained the model for 100 epochs using the Stochastic Gradient Descent (SGD) optimizer with a batch size of 16. We applied an initial learning rate of $\eta_0 = 0.01$ with cosine decay to $0.0001$. We exported the final model to the ONNX format.
+
+In standalone pre-pipeline validation testing on the held-out test split, the classifier achieved:
+\begin{itemize}
+    \item \textbf{Top-1 Classification Accuracy:} $92.4\%$
+    \item \textbf{Pediatric Class Precision:} $91.8\%$
+    \item \textbf{Pediatric Class Recall:} $93.1\%$
+    \item \textbf{Macro F1-Score:} $92.4\%$
+    \item \textbf{Area Under ROC Curve (AUC-ROC):} $0.968$
+\end{itemize}
+The classification model executes in $1.8\text{--}2.4\text{ ms}$ per crop on host CPUs under ONNX Runtime. It outputs a raw demographic child probability:
+\begin{equation}
+    P_{\text{model}} = \operatorname{Softmax}(\mathbf{z}_{\text{crop}})_{\text{child}} \in [0, 1]
+\end{equation}
+
+\section{Stage 3: Physical Stature Prior and Weighted Temporal Smoothing}
+Single-frame classifier scores fluctuate under camera noise, perspective tilt, and motion blur. Stage 3 stabilizes classifications by combining physical stature priors with weighted temporal smoothing.
+
+\subsection{Normalized Height Prior and Stature Modulation}
+Let normalized bounding box height relative to total frame height be:
+\begin{equation}
+    h_{\text{norm}} = \frac{h}{H}
+\end{equation}
+In triage waiting areas and playrooms, adult statures exceed child statures when standing. We formulate a likelihood modulation function:
+\begin{equation}
+    \mathcal{M}(h_{\text{norm}}) = \begin{cases}
+    \min(0.20, P_{\text{model}}), & \text{if } h_{\text{norm}} \ge \theta_{\text{adult}} \text{ in child-dominant rooms} \\
+    \max(0.75, P_{\text{model}}), & \text{if } h_{\text{norm}} \le \theta_{\text{child}} \text{ in child-dominant rooms} \\
+    P_{\text{model}}, & \text{otherwise}
+    \end{cases}
+\end{equation}
+where $\theta_{\text{adult}} = 0.32$ and $\theta_{\text{child}} = 0.20$. These thresholds derive from empirical CCTV measurements where standing adults measure $h_{\text{norm}} \in [0.334, 0.420]$ and young children measure $h_{\text{norm}} \in [0.170, 0.274]$. Older adolescents who have achieved adult stature ($h_{\text{norm}} \ge 0.32$) are visually classified within the adult group.
+
+\subsection{Weighted Temporal Smoothing}
+To suppress transient classification fluctuations when toddlers bend or crawl, the final demographic probability blends cumulative historical observation (70\%) with a rolling 15-frame window mean (30\%):
+\begin{equation}
+    \bar{P}_k(t) = 0.70 \cdot \left( \frac{1}{t} \sum_{i=1}^t P_{k,i} \right) + 0.30 \cdot \left( \frac{1}{M} \sum_{j=t-M+1}^t P_{k,j} \right)
+\end{equation}
+where $M = 15$. A tracklet is confirmed as pediatric when $\bar{P}_k(t) \ge 0.60$ over at least 5 consecutive observation frames.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{images/fig10_tracklet_bayesian_convergence.png}
+    \caption{Weighted Temporal Smoothing: Probability Stabilization Over Frames.}
+    \label{fig:temporal_smoothing}
+\end{figure}
+
+As shown in Figure \ref{fig:temporal_smoothing}, when a child crawls or bends (frames 38--46), the raw score dips temporarily. The 70\% cumulative memory anchors the probability $\bar{P}_k(t)$ above 0.78, preventing false identity flips.
+
+\subsection{Calibration and Justification of Pipeline Hyperparameters}
+The multi-stage pipeline relies on empirical and biological thresholds. Table \ref{tab:threshold_justifications} summarizes the operating parameters, functional roles, and justifications.
+
+\begin{table}[htbp]
+\centering
+\caption{Operational Parameters and Justifications for the Multi-Stage Framework.}
+\label{tab:threshold_justifications}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llp{4.5cm}p{6.5cm}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Algorithmic Role} & \textbf{Empirical or Theoretical Justification} \\
+\midrule
+$\theta_{\text{adult}}$ & $0.32$ & Adult stature floor ($h/H$) in child zones & Empirically calibrated on standing adults ($h_{\text{norm}} \in [0.334, 0.420]$) in overhead CCTV views. \\
+$\theta_{\text{child}}$ & $0.20$ & Child stature ceiling ($h/H$) in child zones & Derived from toddler observations ($h_{\text{norm}} \in [0.170, 0.274]$), boosting the pediatric prior. \\
+$P_{\text{thresh}}$ & $0.60$ & Pediatric confirmation threshold & Conservative decision cutoff above random guess ($0.50$) to suppress false class switches. \\
+$N_{\text{init}}$ & $5\text{ frames}$ & Minimum tracklet confirmation duration & Requires $0.20\text{ s}$ of continuous observation at 25 FPS to filter transient false positives. \\
+$w_{\text{hist}} / w_{\text{roll}}$ & $0.70 / 0.30$ & Temporal smoothing blend weights & Anchors 70\% weight to cumulative track evidence while allowing 30\% sensitivity to posture shifts. \\
+$M$ & $15\text{ frames}$ & Rolling window smoothing horizon & Spans $0.60\text{ s}$ at 25 FPS to absorb momentary bending or crawling without lagging behind transit. \\
+$\tau_{\text{ceph}}$ & $0.80$ & Cephalocaudal ratio threshold ($L_{\text{torso}} / L_{\text{leg}}$) & Empirically calibrated threshold derived from our 6-subject local sample measurements. \\
+$\alpha_{\text{EMA}}$ & $0.15$ & Track velocity smoothing factor & Reduces centroid trajectory variance by 61.3\% while avoiding lag during fast walking. \\
+$\theta_{\text{sim}}$ & $0.78$ & Re-ID cosine similarity match threshold & Calibrated on 256-D color histograms to minimize false room-to-room tracklet merges. \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+These thresholds were verified against sensitivity sweeps across the seven benchmark CCTV sequences.
+
+\section{Anthropometric Pose Estimation and Cephalocaudal Morphology}
+When clothing or swaddling blankets obscure facial features, the system applies biological allometric growth laws.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{images/vis_stage5_allometric_scale.jpg}
+    \caption{Allometric Scaling Principles: Comparison of Head-to-Body Ratios Across Human Development.}
+    \label{fig:allometric_scale}
+\end{figure}
+
+\subsection{Formulation of Allometric Proportions}
+Let $\mathcal{K} = \{k_i = (x_i, y_i, c_i)\}_{i=1}^{17}$ denote detected 2D skeletal keypoints extracted via pose estimation \cite{cao2019openpose} with confidence $c_i \in [0, 1]$:
+\begin{itemize}
+    \item \textbf{Head keypoints ($k_1\text{--}k_5$):} $k_1$ (Nose), $k_2$ (Left Eye), $k_3$ (Right Eye), $k_4$ (Left Ear), and $k_5$ (Right Ear).
+    \item \textbf{Torso keypoints ($k_6, k_7, k_{12}, k_{13}$):} $k_6$ (Left Shoulder), $k_7$ (Right Shoulder), $k_{12}$ (Left Hip), and $k_{13}$ (Right Hip).
+    \item \textbf{Leg keypoints ($k_{14}\text{--}k_{17}$):} $k_{14}$ (Left Knee), $k_{15}$ (Right Knee), $k_{16}$ (Left Ankle), and $k_{17}$ (Right Ankle).
+\end{itemize}
+
+As established in developmental anthropology \cite{bogin1999, mlinaric2024} and shown in Figure \ref{fig:allometric_scale}:
+\begin{equation}
+    R_{head} = \frac{H_{head}}{B_{body}} \approx \begin{cases}
+    1:4 = 0.250 & \text{(Pediatric)} \\
+    1:8 = 0.125 & \text{(Adult Mature)}
+    \end{cases}
+\end{equation}
+
+\subsection{The Cephalocaudal Segment Ratio ($R_{ceph}$)}
+When swaddling cloth hides head features, we evaluate the torso-to-leg \textbf{cephalocaudal segment ratio} $R_{ceph}$:
+\begin{equation}
+    L_{torso} = \frac{1}{2}\left( \|k_{12} - k_6\|_2 + \|k_{13} - k_7\|_2 \right)
+\end{equation}
+\begin{equation}
+    L_{leg} = \frac{1}{2}\left( \|k_{16} - k_{12}\|_2 + \|k_{17} - k_{13}\|_2 \right)
+\end{equation}
+\begin{equation}
+    R_{ceph} = \frac{L_{torso}}{L_{leg}}
+\end{equation}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig4_allometric_cephalocaudal.png}
+    \caption{Empirical Cephalocaudal Ratio Distribution and Biological Separation Boundary ($\tau = 0.80$).}
+    \label{fig:ceph_threshold}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig6_pose_cephalocaudal_comparison.png}
+    \caption{17-Point Skeletal Keypoint Extraction and Cephalocaudal Classification Across Test Environments.}
+    \label{fig:pose_comparison}
+\end{figure}
+
+As shown in Figures \ref{fig:ceph_threshold} and \ref{fig:pose_comparison}, children have shorter legs relative to their torso length. Pediatric subjects show:
+\begin{equation}
+    R_{ceph}^{(\text{pediatric})} \in [0.941, 0.982]
+\end{equation}
+Adults have longer legs relative to their torso:
+\begin{equation}
+    R_{ceph}^{(\text{adult})} \in [0.621, 0.737]
+\end{equation}
+We define the allometric classification rule using a preliminary calibrated threshold $\tau = 0.80$ for this specific camera geometry. We acknowledge that $\tau$ is not yet established as a universal biological separator across diverse ethnic populations, varied postures, or extreme off-nadir camera perspectives:
+\begin{equation}
+    \mathcal{C}_{allometric}(\mathcal{K}) = \begin{cases}
+    \text{Pediatric}, & \text{if } R_{ceph} \ge \tau \quad (\tau = 0.80) \\
+    \text{Adult}, & \text{if } R_{ceph} < \tau
+    \end{cases}
+\end{equation}
+The observed separation margin $\Delta R_{\min} = 0.204$ provides an effective preliminary decision boundary between children and adults across the evaluated scenes, but requires future validation on larger, demographically diverse clinical cohorts.
+
+\subsection{Camera Perspective, Mounting Geometry, and 2D Projection Invariance}
+In hospital waiting areas, CCTV cameras mount to ceilings at heights between $2.8\text{ m}$ and $3.5\text{ m}$. Cameras angle downward with tilt angles between $25^\circ$ and $35^\circ$ relative to the horizontal ceiling plane.
+
+Under pinhole camera geometry, a 3D world coordinate $\mathbf{P} = [X, Y, Z]^T$ projects to image plane pixel coordinates $[u, v]^T$:
+\begin{equation}
+    u = f_x \frac{X}{Z} + c_x, \quad v = f_y \frac{Y}{Z} + c_y
+\end{equation}
+where $(f_x, f_y)$ represents focal lengths and $(c_x, c_y)$ is the principal optical center. Downward tilt causes projective foreshortening along the vertical image axis.
+
+However, dimensionless anatomical ratios remain invariant to distance along parallel axes. Let torso length $L_{\text{torso}}$ and leg length $L_{\text{leg}}$ occupy similar depth $Z_{\text{body}}$ from the camera. The projected 2D lengths on the sensor evaluate to:
+\begin{equation}
+    l_{\text{torso}} \approx f_y \frac{L_{\text{torso}} \cos(\phi)}{Z_{\text{body}}}, \quad l_{\text{leg}} \approx f_y \frac{L_{\text{leg}} \cos(\phi)}{Z_{\text{body}}}
+\end{equation}
+where $\phi$ represents the effective tilt angle. Taking the ratio gives:
+\begin{equation}
+    R_{\text{ceph}} = \frac{l_{\text{torso}}}{l_{\text{leg}}} = \frac{f_y L_{\text{torso}} \cos(\phi) / Z_{\text{body}}}{f_y L_{\text{leg}} \cos(\phi) / Z_{\text{body}}} = \frac{L_{\text{torso}}}{L_{\text{leg}}}
+\end{equation}
+The focal length, camera distance, and cosine tilt factor cancel out. Therefore, the cephalocaudal ratio $R_{\text{ceph}}$ remains stable across standard clinical queue distances ($3\text{--}8\text{ m}$).
+
+This cancellation assumes an upright posture aligned with the vertical plane. Significant non-vertical body tilt or bending introduces differential foreshortening, which represents an empirical source of noise. Steep vertical perspectives exceeding $60^\circ$ cause the torso to occlude the lower limbs. In those extreme top-down angles, the pipeline requires homographic inverse perspective mapping. Standard clinical CCTV installations ($25^\circ\text{--}35^\circ$) preserve keypoint visibility and keep ratio calculations accurate.
+
+\section{ByteTrack Association and Deduplication Mechanisms}
+ByteTrack \cite{zhang2022bytetrack} matches detections across consecutive video frames, combined with Exponential Moving Average (EMA) velocity smoothing and duplicate suppression.
+
+\subsection{Two-Stage Association Hierarchy}
+At frame $t$, detections split into high- and low-confidence sets:
+\begin{equation}
+    \mathcal{D}_{high} = \{d \in \mathcal{D} \mid \text{score}(d) \ge \theta_{high}\}, \quad \mathcal{D}_{low} = \{d \in \mathcal{D} \mid \theta_{low} \le \text{score}(d) < \theta_{high}\}
+\end{equation}
+where $\theta_{high} = 0.60$ and $\theta_{low} = 0.15$. Active tracks match to $\mathcal{D}_{high}$ via Hungarian matching on cost matrix $C_{IoU} = 1 - \operatorname{IoU}(\mathcal{T}, \mathcal{D}_{high})$. Unmatched tracks then match against low-confidence detections $\mathcal{D}_{low}$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/fig6_adaptive_tracking_ema.png}
+    \caption{Parent-Child Spatial Anchoring and Tracklet Velocity Smoothing with EMA.}
+    \label{fig:tracking_ema}
+\end{figure}
+
+\subsection{Velocity Regularization via EMA}
+To smooth trajectory noise from partial physical overlap, centroid velocity $\mathbf{v}_t = \mathbf{p}_t - \mathbf{p}_{t-1}$ is regularized with an Exponential Moving Average:
+\begin{equation}
+    \hat{\mathbf{v}}_t = \alpha \mathbf{v}_t + (1 - \alpha) \hat{\mathbf{v}}_{t-1}, \quad \alpha = 0.15
+\end{equation}
+
+\begin{theorem}[Geometric Convergence of EMA Smoothing]
+The smoothed velocity estimator $\hat{\mathbf{v}}_t$ is an infinite impulse response filter whose weights sum to one:
+\begin{equation}
+    \hat{\mathbf{v}}_t = \alpha \sum_{k=0}^{t-1} (1 - \alpha)^k \mathbf{v}_{t-k} + (1 - \alpha)^t \mathbf{v}_0 \implies \sum_{k=0}^{\infty} \alpha(1 - \alpha)^k = 1.0
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Applying the geometric series sum formula for $|1 - \alpha| < 1$:
+\begin{equation}
+    \sum_{k=0}^{\infty} \alpha(1 - \alpha)^k = \alpha \sum_{k=0}^{\infty} (1 - \alpha)^k = \alpha \cdot \frac{1}{1 - (1 - \alpha)} = \alpha \cdot \frac{1}{\alpha} = 1.0
+\end{equation}
+As shown in Figure \ref{fig:tracking_ema}, choosing $\alpha = 0.15$ reduces velocity fluctuations from 15 px/frame to 5.8 px/frame while maintaining responsive tracking.
+\end{proof}
+
+\subsection{History-Prioritized Containment Resolution}
+When a pediatric bounding box $b_A$ overlaps with an adult's bounding box $b_B$ such that $\frac{\text{Area}(b_A \cap b_B)}{\min(\text{Area}(b_A), \text{Area}(b_B))} \ge \tau_{\text{contain}}$, standard IoU often drops the established track. We formulate History-Prioritized Containment Resolution:
+\begin{equation}
+    \text{Primary}(A, B) = \begin{cases} 
+    A, & \text{if } N_{\text{hits}}(A) > N_{\text{hits}}(B) + \delta \\
+    B, & \text{if } N_{\text{hits}}(B) > N_{\text{hits}}(A) + \delta \\
+    \text{IoU\_Match}(A, B), & \text{otherwise}
+\end{cases}
+\end{equation}
+where $N_{\text{hits}}$ is confirmed historical tracklet length. $\delta = 10$ frames is the track persistence margin. The overlap threshold is $\tau_{\text{contain}} = 0.85$. Sensitivity sweeps across $\tau \in [0.70, 0.95]$ confirmed these values. Specifically, values below $0.80$ caused false track merging during physical overlap, while values above $0.90$ caused identity fragmentation. This prevents newly spawned single-frame proposals from overwriting verified tracks.
+
+\subsection{Anatomical Seated Occupant Deduplication}
+In hospital waiting halls, seated occupants often trigger two fragmented bounding boxes: one for the upper torso/head and one for the lap/knees. Standard IoU fails to merge them because horizontal overlap is minimal. The system detects anatomical fragmentation when:
+\begin{enumerate}[(i)]
+    \item Aspect ratios are non-tall: $\max(h_A/w_A, h_B/w_B) \le 1.60$.
+    \item Vertical or horizontal span overlap satisfies: $\text{overlap}_{\text{span}} \ge 0.70$.
+    \item Edge gap satisfies: $\text{gap}(b_A, b_B) \le 25\text{ px}$.
+    \item Enclosing area ratio satisfies:
+    \begin{equation}
+        \frac{\text{Area}(b_A) + \text{Area}(b_B)}{\text{Area}(b_A \cup b_B)} \ge 0.75
+    \end{equation}
+\end{enumerate}
+When satisfied, $b_A$ and $b_B$ merge into the encompassing union track $b_A \cup b_B$, suppressing duplicate bounding boxes.
+
+\subsection{Clinical Staff and Non-Patient Zone Filtering}\label{sec:staff_filtering}
+Clinical staff work at registration counters, triage desks, and pharmacy dispensary windows. The computer vision detector classifies clinical staff as adult persons. To prevent staff from inflating demographic occupancy numbers, the system uses spatial exclusion masks.
+
+Administrators configure non-counting polygonal zones $\Omega_{\text{staff}}$ over staff service counters. The system determines occupancy status from tracklet bounding box centroids:
+\begin{equation}
+    (x_c, y_c) \in \Omega_{\text{staff}} \implies \text{Status}(T_k) = \text{Staff Occupant}
+\end{equation}
+The software tracks staff occupants for local corridor safety. However, it filters out these tracklet IDs before sending waiting-room census aggregates to LHIMS. In addition, clinical staff wearing uniforms (such as white laboratory coats or nursing scrubs) exhibit uniform upper-body color signatures that support automated identification.
+
+\section{Cross-Camera Person Re-Identification (Re-ID) Decoupled Plugin}
+To track individuals across multi-room clinics without cloud dependencies, the architecture includes a decoupled Person Re-Identification plugin.
+
+\subsection{Dual-Zone Color Appearance Signature}
+To maintain low latency on edge CPUs ($< 0.2\text{ ms}$ per crop), the descriptor splits bounding box $B = (x_1, y_1, x_2, y_2)$ into upper and lower regions:
+\begin{align}
+    \Omega_{\text{upper}} &= \{(x, y) \in B \mid y \le y_1 + 0.60(y_2 - y_1)\} \\
+    \Omega_{\text{lower}} &= \{(x, y) \in B \mid y > y_1 + 0.60(y_2 - y_1)\}
+\end{align}
+For each region, a two-dimensional Hue-Saturation color histogram is computed ($N_H = 16$, $N_S = 8$, $D = 128$):
+\begin{equation}
+    h_{\Omega}(u, v) = \sum_{(x, y) \in \Omega} \mathbb{I}\left( \lfloor H(x, y) / \Delta H \rfloor = u \right) \cdot \mathbb{I}\left( \lfloor S(x, y) / \Delta S \rfloor = v \right)
+\end{equation}
+Each sub-histogram is $L_2$-normalized and concatenated into a 256-dimensional signature:
+\begin{equation}
+    \mathbf{f} = \left[ \frac{\mathbf{h}_{\text{upper}}}{\|\mathbf{h}_{\text{upper}}\|_2 + \epsilon} \;\Big\|\; \frac{\mathbf{h}_{\text{lower}}}{\|\mathbf{h}_{\text{lower}}\|_2 + \epsilon} \right] \in \mathbb{R}^{256}, \quad \|\mathbf{f}\|_2 = 1.0
+\end{equation}
+
+\subsection{Cross-Camera Matching with Spatio-Temporal Topology}
+Cross-camera association combines visual cosine similarity with corridor transit duration constraints:
+\begin{equation}
+    \mathcal{S}_{\text{ReID}}(T_i, T_j) = \mathbf{f}_i^{\top} \mathbf{f}_j \cdot \Phi_{\text{transit}}(t_j - t_i, C_A, C_B)
+\end{equation}
+where $\Phi_{\text{transit}}(\Delta t, C_A, C_B) = 1.0$ if $\tau_{\min} \le \Delta t \le \tau_{\max}$, and $0.0$ otherwise. Matches above threshold $\theta_{\text{sim}} = 0.78$ link tracks across feeds.
+
+\section{Hardware Vectorization: AVX2 SIMD and ONNX Runtime}
+To run on hospital CPUs without GPUs, model weights and operators compile into the Open Neural Network Exchange (ONNX) format using ONNX Runtime \cite{onnxruntime2021}.
+
+On x86\_64 CPUs with Advanced Vector Extensions 2 (AVX2), convolution operations use 256-bit vector registers:
+\begin{equation}
+    \mathbf{y}_{1:8} = \operatorname{vfmadd231ps}(\mathbf{w}_{1:8}, \mathbf{x}_{1:8}, \mathbf{y}_{1:8})
+\end{equation}
+This instruction performs eight 32-bit floating-point Multiply-Accumulate (MAC) operations in one CPU cycle. Native FP32 AVX2 execution delivers higher throughput than emulated FP16 on hospital CPUs.
+
+\section{Ethical Considerations and Data Governance}
+Deploying computer vision in healthcare environments requires strict data governance and privacy safeguards \cite{milkaite2019, javaid2024}. This section details administrative approvals, non-interventional waivers, patient privacy safeguards, and the zero-retention edge deployment model.
+
+\subsection{Institutional Approvals and Non-Interventional Waivers}
+Hospital management granted administrative and operational approval at Komfo Anokye Teaching Hospital (KATH) and KNUST University Hospital in Kumasi, Ghana.
+
+Because this study conducted passive optical monitoring without clinical intervention, physical contact, or diagnosis, hospital authorities granted an observational research waiver. Prominent signage at clinic entrances informed occupants that optical sensors monitored waiting room density for workflow research.
+
+\subsection{Privacy Risks Beyond Facial Recognition}
+Standard privacy literature often focuses only on facial identification. However, clinical video feeds introduce broader privacy risks:
+\begin{enumerate}[(i)]
+    \item \textbf{Unique Clothing and Appearance Tracking:} Distinctive clothing patterns or traditional cloths could allow re-identification across hallways.
+    \item \textbf{Family Accompaniment and Triage Stigma:} Video could expose sensitive medical visits or associate families with specific specialized clinics.
+    \item \textbf{Data Leakage and Transmission Interception:} Transmitting video to third-party cloud servers risks unauthorized interception or data loss.
+\end{enumerate}
+
+\subsection{Separation of Research Data Collection and Zero-Retention Deployment}
+The initial research data collection phase required saving video clips and extracting 2,413 person crops permanently to persistent disk storage to train the computer vision models. However, the proposed production deployment phase strictly forbids this. To mitigate privacy risks by design, the final operational framework implements a zero-retention edge processing model:
+\begin{enumerate}[(i)]
+    \item \textbf{Local On-Premises Execution:} All neural inference, tracking, and allometric checks execute locally on hospital-owned CPU hardware. The system transmits zero video streams or raw crops over the internet.
+    \item \textbf{Ephemeral In-Memory Frame Processing:} Video frames and bounding box crops exist exclusively in volatile system RAM during the active inference pass ($\approx 120\text{ ms}$). The pipeline immediately overwrites frame buffers in memory. The software never saves raw images, video clips, or facial crops to persistent disk storage.
+    \item \textbf{De-Identification via Abstract Geometry:} The system converts human bodies into abstract 17-point skeletal coordinate tuples $\mathbf{k}_j = (x_j, y_j)$ and bounding box centroids. These numerical coordinates preserve allometric morphology while discarding texture, color, and facial identity.
+    \item \textbf{Encrypted Telemetry Outputs:} The system outputs only anonymous numerical occupancy telemetry (such as timestamped demographic headcounts). Telemetry logs are stored on local hospital storage drives with AES-256 encryption.
+\end{enumerate}
+The system design minimizes the exposure of directly identifying visual information by processing video locally and transmitting only derived telemetry.
+
+Chapter 4 evaluates this multi-stage pipeline across clinical video feeds and benchmarks its execution speed on edge CPU hardware.

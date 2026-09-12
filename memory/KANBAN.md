@@ -72,3 +72,20 @@ Status markers: `[ ]` To Do, `[/]` In Progress, `[x]` Done.
 ## 🎯 Phase 5: GPT 8.2/10 Rationale Remediation (Cross-Domain Feasibility)
 - [x] **5.1 Rationale for Multi-Environment Evaluation**: Add an explicit methodological justification paragraph to Section 4.1.1 clarifying the division between clinical environment evaluation (hospital) and demographic stress testing (kindergarten).
 - [x] **5.2 Reframe Conclusion**: Update Chapter 5 to explicitly position the thesis as demonstrating the *feasibility of pediatric person detection in clinical environments*, rather than asserting identical hospital/kindergarten conditions.
+
+---
+
+## 🎯 Phase 6: Final Supervisor Polish (13-Point Review)
+- [x] **6.1 Data Leakage & Sequence Splits**: Detail how crop-classifier data was split by sequence/person, not randomly, to avoid train/test leakage.
+- [x] **6.2 YOLO26s Dataset Origins**: Clarify origins of the 4,850 YOLO26s images (public vs custom) and proper separation.
+- [x] **6.3 Hospital Test Cohort Clarification**: Reconcile Section 4.1 (children present in OPD) with Table 4.4 (0 children in selected 700 frames).
+- [x] **6.4 Conclusion Claim Softening**: Soften Chapter 5 to state pediatric validation occurred in non-clinical stress videos, needing clinical pediatric validation.
+- [x] **6.5 Cephalocaudal "Biological Invariance"**: Remove "biological invariance" from Chapter 5, use "preliminary separation observed" due to $n=6$.
+- [x] **6.6 Threshold Definitions & $\tau_{\text{contain}}$**: Show sensitivity sweep results, and define $\tau_{\text{contain}}$ and $\delta$ in equations.
+- [x] **6.7 Annotation Noise Clarification**: Reframe knowledge distillation failure to "annotation noise may have contributed" rather than "confirmed".
+- [x] **6.8 Sobel Filtering Usage**: Clarify if Sobel is purely mathematical background or actually used; if used, show where.
+- [x] **6.9 Frame Buffer/FPS Clarification**: Explain how 25 FPS CCTV feeds are processed by a 7 FPS pipeline (frame skipping/sampling).
+- [x] **6.10 CPU vs GPU Appendix Contradiction**: Correct Appendix to say final benchmarks on CPU, teacher distillation on GPU.
+- [x] **6.11 Data Retention Ethics**: Clearly separate one-time research data collection (saved) from future zero-retention deployment.
+- [x] **6.12 Telemetry Terminology**: Rename "patient queue estimate" to "waiting-area occupancy" or "demographic occupancy".
+- [x] **6.13 Citation Audit**: Replace or verify Ref [15] for Ghanaian carrying practices and ensure anthropometry references support $R_{\text{ceph}}$.

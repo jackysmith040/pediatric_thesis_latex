@@ -13,22 +13,19 @@ This study addresses the systematic undercounting and misclassification of pedia
 This work provides three key contributions:
 \begin{enumerate}[(i)]
     \item \textbf{Mathematical and Biological Constraints:} Instead of relying solely on black-box models, this work applies discrete differential operators, rank-1 tensor separability, and cephalocaudal growth priors. These geometric constraints stabilize demographic classification in occluded scenes.
-    \item \textbf{Operational Healthcare Telemetry:} Objective automated person counts provide real-time waiting-room occupancy telemetry designed to interface with hospital information systems (such as LHIMS). Computer vision detects physical bodies rather than clinical illness. However, accurate demographic counts provide baseline crowding data to help administrators allocate triage staff and supplies during peak clinic hours.
+    \item \textbf{Operational Healthcare Telemetry:} Objective automated person counts provide near-real-time occupancy inference designed to interface with hospital information systems (such as LHIMS). Computer vision detects physical bodies rather than clinical illness. However, accurate demographic counts provide baseline crowding data to help administrators allocate triage staff and supplies during peak clinic hours.
     \item \textbf{Privacy-Preserving Edge Computing:} The framework runs on local low-power CPU hardware using AVX2 SIMD instructions. It outputs anonymous coordinate vectors without storing facial data or transmitting raw video to cloud servers. This design minimizes the exposure of directly identifying visual information \cite{milkaite2019}.
 \end{enumerate}
 
 \section{Problem Statement}
-Standard computer vision models fail when detecting and tracking pediatric persons under heavy occlusion, dim lighting, and local carrying practices. We call this the \textbf{``Invisible Child'' Problem}.
-
-In Ghanaian clinics, mothers and caregivers carry infants wrapped tightly to their backs with traditional cloth (\textit{kaba} and slings) \cite{agyepong1992}. Under standard ceiling CCTV cameras:
+Standard detection algorithms often struggle to accurately count children in pediatric clinical triage due to three physical constraints:
 \begin{enumerate}[(i)]
-    \item The child merges visually with the caregiver's torso, creating one silhouette with shared edge gradients.
-    \item Standard Convolutional Neural Network (CNN) detectors suppress the child bounding box during Non-Maximum Suppression (NMS), mistaking the infant for a duplicate detection of the adult.
-    \item The child occupies few pixels in the video frame (often below $32 \times 32$ pixels in a $640 \times 480$ stream), causing spatial feature loss in deep convolutional layers.
-    \item Fluorescent lighting, open courtyards, and dense metal benches create harsh shadows and broken edges that degrade gradient filters.
+    \item \textbf{Small Patient Scale (Scale Problem):} Children occupy few pixels in the video frame. This low pixel count removes fine facial and body features, which can cause standard detectors to miss small bodies.
+    \item \textbf{Poor Lighting (Contrast Problem):} Variable hospital lighting reduces visual contrast. Patients blend into background chairs and blankets, which can cause detectors to lose boundary edges.
+    \item \textbf{Dynamic Movement (Tracking Problem):} Children move erratically. Fast patient movement can cause identity swaps and duplicate counts across video frames.
 \end{enumerate}
 
-Manual records and baseline automated counts diverge sharply. This creates a high Mean Absolute Percentage Error (MAPE) and makes general detectors unsuitable for hospital triage.
+These factors cause standard detectors to misclassify children as adults or miss them entirely. This creates a high Mean Absolute Percentage Error (MAPE). Consequently, general detectors provide unreliable demographic data for hospital triage.
 
 \section{Aim and Objectives}
 
@@ -36,38 +33,37 @@ Manual records and baseline automated counts diverge sharply. This creates a hig
 The main goal is to implement and validate a privacy-preserving computer vision system for automated pediatric detection, allometric verification, and multi-object tracking.
 
 \subsection{Specific Objectives}
-To achieve this goal, we set seven specific objectives:
+To achieve this goal, we set six specific objectives:
 \begin{enumerate}[(i)]
-    \item Formulate discrete image representations and separable gradient convolutions to evaluate pixel-level edge computation on clinical hardware.
-    \item Examine and quantify the empirical limitations of soft-logit knowledge distillation on occluded pediatric benchmark data.
-    \item Build a high-resolution pipeline combining CLAHE enhancement and SAHI slicing to detect small and occluded persons.
-    \item Build a multi-stage pipeline combining full-frame person detection, margin-expanded crop classification, and allometric verification to identify pediatric subjects.
-    \item Formulate and empirically evaluate a cephalocaudal allometric classification metric ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) from 17-point pose estimation to differentiate observed children from adults.
-    \item Develop a weighted temporal filter that stabilizes demographic classifications across tracklet frames and prevents identity flips.
-    \item Evaluate the multi-stage system across clinical and educational CCTV test feeds to quantify counting accuracy, tracking continuity, and CPU throughput under AVX2 SIMD acceleration.
+    \item Evaluate pixel-level edge computation using discrete image representations and separable gradient convolutions on clinical hardware.
+    \item Evaluate how CCTV viewing angles and training data limitations affect demographic detection. Assess the improvement of a decoupled classification stage.
+    \item Build a multi-stage pipeline that decouples generic person detection from targeted demographic classification.
+    \item Formulate a cephalocaudal allometric metric ($R_{\text{ceph}} = L_{\text{torso}}/L_{\text{leg}}$) to separate observed children from adults using body proportions.
+    \item Develop a weighted temporal filter to stabilize demographic classifications and prevent identity flips.
+    \item Evaluate the system across clinical CCTV feeds to measure counting accuracy, tracking continuity, and edge CPU throughput.
 \end{enumerate}
 
 \section{Research Questions}
 This work answers five research questions:
 \begin{enumerate}[(i)]
-    \item How does rank-1 separable convolution filtering compare with 2D spatial convolution in arithmetic complexity and computational workload on edge hardware?
-    \item What factors contribute to the lower performance of soft-logit knowledge distillation on occluded pediatric data, and does a dedicated crop classification stage improve demographic precision?
-    \item To what extent does the skeletal cephalocaudal ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$) provide a measurable separation margin between pre-pubescent children and adults under the evaluated camera geometries and viewing conditions?
-    \item How effectively does weighted temporal smoothing reduce single-frame posture noise and maintain tracklet demographic identity during temporary occlusions?
-    \item What are the empirical trade-offs between native FP32 AVX2 SIMD execution and emulated FP16 execution in inference latency and memory throughput on standard hospital CPUs?
+    \item How does rank-1 separable convolution compare with 2D spatial convolution in arithmetic complexity on edge hardware?
+    \item How do CCTV camera angles and data quality affect demographic detection? Does a decoupled classification stage improve precision?
+    \item Does the skeletal cephalocaudal ratio ($R_{\text{ceph}} = L_{\text{torso}} / L_{\text{leg}}$) provide a reliable separation margin between children and adults under steep camera angles?
+    \item How effectively does weighted temporal smoothing reduce posture noise and maintain tracklet identity?
+    \item What are the trade-offs between native FP32 AVX2 SIMD and emulated FP16 execution for latency and throughput on standard CPUs?
 \end{enumerate}
 
 \section{Delimitation and Scope}
 This study combines applied mathematics, computer vision, and healthcare operations. We evaluate data from ambulatory triage areas, waiting corridors, and consultation halls at KATH and the KNUST Hospital in Kumasi, Ghana.
 
-The scope is limited to non-invasive optical detection, demographic classification, and tracking of pediatric and adult persons. In this study, the pediatric cohort operationally includes children under 12 years of age. The primary focus is children under five years who experience carrying occlusion. The computer vision model separates individuals by physical allometry. Pre-pubescent children exhibit large cephalocaudal ratios ($R_{\text{ceph}} \ge 0.80$) and shorter normalized stature ($\theta_{\text{adult}} = 0.32$). Post-pubescent adolescents who have attained adult height and limb proportions are grouped with the adult class by visual sensors. Ground-truth demographic labels were established by two independent observers who reviewed video recordings alongside clinic reception registers.
+The scope is limited to non-invasive optical detection, demographic classification, and tracking of pediatric and adult persons. In this study, the pediatric cohort operationally includes children under 12 years of age. The primary goal is counting children accurately despite severe CCTV perspective distortion. The computer vision model separates individuals by physical allometry. Pre-pubescent children exhibit large cephalocaudal ratios ($R_{\text{ceph}} \ge 0.80$) and shorter normalized stature ($\theta_{\text{adult}} = 0.32$). Post-pubescent adolescents who have attained adult height and limb proportions are grouped with the adult class by visual sensors. Ground-truth demographic labels were established by two independent observers who reviewed video recordings alongside clinic reception registers.
 
 The system does not assess clinical acuity or determine patient status independently of hospital workflow records. True patient identification requires linking optical counts with registration or queue-zone management rules. We exclude facial recognition and biometric identity logging to protect patient privacy. All tracking and occupancy metrics rely solely on anonymous bounding box centroids and skeletal coordinates.
 
 \section{Organization of the Thesis}
 This thesis contains five chapters:
 \begin{itemize}
-    \item \textbf{Chapter 2 (Literature Review):} Traces object detection from hand-crafted features to deep neural networks, reviews pediatric anthropometry and occlusion handling, and defines the research gap.
+    \item \textbf{Chapter 2 (Literature Review):} Traces object detection from hand-crafted features to deep neural networks. It reviews pediatric anthropometry and crowd obstruction handling. It defines the research gap.
     \item \textbf{Chapter 3 (Methodology):} Formulates the multi-stage pipeline, digital quantization, separable convolutions, CIoU regression, margin-expanded crop classification, allometric growth ratios, and temporal tracking.
     \item \textbf{Chapter 4 (Results):} Reports empirical benchmarks in clinical waiting areas and pharmacy counters, presents detection and counting metrics, and evaluates CPU acceleration benchmarks.
     \item \textbf{Chapter 5 (Conclusion):} Summarizes the main findings, describes practical limitations, provides deployment recommendations for hospital administrators, and outlines future research directions.
